@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update QR Code - Bag Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f0f2f5; }
+        
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); }
+        .sidebar::-webkit-scrollbar-thumb { background: #667eea; border-radius: 4px; }
+        
+        .sidebar-header { padding: 25px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-header .logo-icon { font-size: 40px; margin-bottom: 10px; }
+        .sidebar-header h4 { font-size: 20px; font-weight: 700; margin: 0; }
+        
+        .nav-menu { padding: 20px 0; }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            margin: 4px 12px;
+            border-radius: 12px;
+        }
+        .nav-link:hover, .nav-link.active { background: #667eea; color: white; }
+        .nav-link i { width: 25px; margin-right: 15px; font-size: 18px; }
+        
+        .main-content { margin-left: 280px; padding: 20px; transition: all 0.3s; }
+        
+        .top-header {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .update-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .current-qr {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .current-qr img {
+            max-width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            background: white;
+        }
+        
+        .btn-save {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-save:hover { background: #667eea; transform: translateY(-2px); }
+        
+        .form-label { font-weight: 600; margin-bottom: 8px; color: #2d2a24; }
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 12px 15px;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: #c4a747;
+            box-shadow: 0 0 0 3px rgba(196,167,71,0.1);
+            outline: none;
+        }
+        
+        .toast-notification {
+            position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+            animation: slideIn 0.3s ease;
+            background: white;
+            border-radius: 12px;
+            padding: 12px 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @media (max-width: 991px) {
+            .sidebar { left: -280px; position: fixed; z-index: 1000; transition: left 0.3s; }
+            .sidebar.show { left: 0; }
+            .main-content { margin-left: 0; }
+            .menu-toggle { display: block; position: fixed; top: 20px; left: 20px; z-index: 1001; background: #c4a747; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; }
+        }
+        @media (min-width: 992px) { .menu-toggle { display: none; } }
+        
+        .spinner-border-sm { width: 1rem; height: 1rem; border-width: 0.2em; }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i> Menu</button>
+    
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon"><i class="fas fa-shopping-bag"></i></div>
+            <h4>Bag Admin</h4>
+        </div>
+        <nav class="nav-menu">
+            <a href="/admin-dashboard/" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="/admin-orders/" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a>
+            <a href="/admin-products/" class="nav-link"><i class="fas fa-box"></i> Products</a>
+            <a href="/admin-categories/" class="nav-link"><i class="fas fa-tags"></i> Categories</a>
+            <a href="/admin-users/" class="nav-link"><i class="fas fa-users"></i> Users</a>
+            <a href="/admin-update-qr/" class="nav-link active"><i class="fas fa-qrcode"></i> QR Code</a>
+            <a href="/admin-payments/" class="nav-link"><i class="fas fa-credit-card"></i> Payments</a>
+            <hr style="margin: 20px; border-color: rgba(255,255,255,0.1);">
+            <a href="#" class="nav-link" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+    
+    <div class="main-content">
+        <div class="top-header">
+            <h4 class="mb-0"><i class="fas fa-qrcode me-2" style="color: #667eea;"></i>Update Payment QR Code</h4>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="update-card">
+                    <div id="message" class="alert" style="display: none;"></div>
+                    
+                    <div class="current-qr" id="currentQRContainer">
+                        <h5 class="mb-3">Current QR Code:</h5>
+                        <img id="currentQR" src="" alt="Current QR Code">
+                        <p class="text-muted mt-2 small">This is the QR code currently showing on checkout</p>
+                    </div>
+                    
+                    <form id="updateQRForm" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Upload New QR Code</label>
+                            <input type="file" class="form-control" id="qrImage" accept="image/*">
+                            <small class="text-muted">Supported formats: PNG, JPG, JPEG. Max size: 2MB</small>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Bank Name</label>
+                                <input type="text" class="form-control" id="bankName" placeholder="e.g., NIC Asia Bank, HDFC Bank">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Account Number</label>
+                                <input type="text" class="form-control" id="accountNumber" placeholder="Account number">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn-save w-100">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                    </form>
+                    
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Note:</strong> Customers can pay by scanning the QR code using any banking app. The QR code should contain your bank account details.
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="/admin-dashboard/" class="text-decoration-none" style="color: #c4a747;">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin + '/api';
+        
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.style.borderLeft = `4px solid ${isError ? '#dc3545' : '#28a745'}`;
+            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} me-2" style="color: ${isError ? '#dc3545' : '#28a745'}"></i>${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function logout() { 
+            localStorage.clear(); 
+            window.location.href = '/login/'; 
+        }
+        
+        async function loadCurrentQR() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`${API_BASE}/payments/bank-qr/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                console.log('Bank QR data:', data);
+                
+                if (data.success && data.bank_qr) {
+                    const bankQr = data.bank_qr;
+                    let qrUrl = bankQr.qr_code_url || bankQr.qr_code_image;
+                    if (qrUrl && qrUrl.startsWith('/')) {
+                        qrUrl = window.location.origin + qrUrl;
+                    }
+                    if (qrUrl) {
+                        document.getElementById('currentQR').src = qrUrl;
+                    } else {
+                        document.getElementById('currentQRContainer').innerHTML = `
+                            <h5 class="mb-3">Current QR Code:</h5>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                No QR code uploaded yet. Upload one using the form below.
+                            </div>
+                        `;
+                    }
+                    document.getElementById('bankName').value = bankQr.bank_name || '';
+                    document.getElementById('accountNumber').value = bankQr.account_number || '';
+                } else {
+                    document.getElementById('currentQRContainer').innerHTML = `
+                        <h5 class="mb-3">Current QR Code:</h5>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            No payment configuration found. Fill the form below to set up.
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading QR:', error);
+            }
+        }
+        
+        document.getElementById('updateQRForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const qrImage = document.getElementById('qrImage').files[0];
+            
+            if (qrImage) {
+                formData.append('qr_code_image', qrImage);
+            }
+            formData.append('bank_name', document.getElementById('bankName').value);
+            formData.append('account_number', document.getElementById('accountNumber').value);
+            formData.append('is_active', 'true');
+            formData.append('name', 'Shop QR Code');
+            
+            const messageDiv = document.getElementById('message');
+            const submitBtn = document.querySelector('button[type="submit"]');
+            
+            try {
+                const token = localStorage.getItem('access_token');
+                
+                // First get the existing QR ID
+                const getResponse = await fetch(`${API_BASE}/payments/bank-qr/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const getData = await getResponse.json();
+                
+                let url = `${API_BASE}/payments/admin/bank-qr/`;
+                let method = 'POST';
+                let qrId = null;
+                
+                if (getData.success && getData.bank_qr && getData.bank_qr.id) {
+                    qrId = getData.bank_qr.id;
+                    url = `${API_BASE}/payments/admin/bank-qr/${qrId}/`;
+                    method = 'PUT';
+                }
+                
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    messageDiv.className = 'alert alert-success';
+                    messageDiv.innerHTML = '<i class="fas fa-check-circle me-2"></i>QR Code updated successfully!';
+                    messageDiv.style.display = 'block';
+                    showToast('QR Code updated successfully!');
+                    setTimeout(() => {
+                        loadCurrentQR();
+                        document.getElementById('qrImage').value = '';
+                    }, 1000);
+                } else {
+                    throw new Error(data.error || data.message || 'Update failed');
+                }
+            } catch (error) {
+                console.error('Update error:', error);
+                messageDiv.className = 'alert alert-danger';
+                messageDiv.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>' + error.message;
+                messageDiv.style.display = 'block';
+                showToast(error.message, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Save Changes';
+                setTimeout(() => { messageDiv.style.display = 'none'; }, 3000);
+            }
+        });
+        
+        // Sidebar toggle for mobile
+        document.getElementById('menuToggle')?.addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('show');
+        });
+        
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('menuToggle');
+            if (window.innerWidth < 992 && sidebar.classList.contains('show')) {
+                if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                    sidebar.classList.remove('show');
+                }
+            }
+        });
+        
+        // Check authentication
+        const token = localStorage.getItem('access_token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token || (!user.is_staff && !user.is_superuser)) {
+            window.location.href = '/login/';
+        } else {
+            loadCurrentQR();
+        }
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payments Management - Bag Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f0f2f5; }
+        
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); }
+        .sidebar::-webkit-scrollbar-thumb { background: #667eea; border-radius: 4px; }
+        
+        .sidebar-header { padding: 25px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-header .logo-icon { font-size: 40px; margin-bottom: 10px; }
+        .sidebar-header h4 { font-size: 20px; font-weight: 700; margin: 0; }
+        
+        .nav-menu { padding: 20px 0; }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            margin: 4px 12px;
+            border-radius: 12px;
+        }
+        .nav-link:hover, .nav-link.active { background: #667eea; color: white; }
+        .nav-link i { width: 25px; margin-right: 15px; font-size: 18px; }
+        
+        .main-content { margin-left: 280px; padding: 20px; transition: all 0.3s; }
+        
+        .top-header {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .stat-icon { width: 50px; height: 50px; background: rgba(196,167,71,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
+        .stat-icon i { font-size: 24px; color: #667eea; }
+        .stat-value { font-size: 28px; font-weight: 700; margin-bottom: 5px; }
+        .stat-label { color: #6c757d; font-size: 14px; }
+        
+        .search-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .search-input { flex: 1; position: relative; min-width: 200px; }
+        .search-input i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #adb5bd; }
+        .search-input input { width: 100%; padding: 12px 15px 12px 45px; border: 2px solid #e9ecef; border-radius: 12px; font-size: 14px; }
+        .search-input input:focus { border-color: #667eea; outline: none; }
+        
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            background: white;
+            min-width: 150px;
+        }
+        
+        .payment-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .payment-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        .payment-header {
+            background: linear-gradient(135deg, #667eea, #a88930);
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .payment-id { font-size: 14px; font-weight: 600; }
+        .payment-date { font-size: 12px; opacity: 0.9; }
+        
+        .payment-body { padding: 20px; }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-pending { background: #fff3e0; color: #ff9800; }
+        .status-awaiting_verification { background: #e3f2fd; color: #2196f3; }
+        .status-verified { background: #d4edda; color: #28a745; }
+        .status-completed { background: #d4edda; color: #28a745; }
+        .status-failed { background: #f8d7da; color: #dc3545; }
+        .status-refunded { background: #e0e0e0; color: #6c757d; }
+        
+        .payment-method-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #e8eaf6;
+            color: #3f51b5;
+        }
+        
+        .payment-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .btn-view, .btn-verify, .btn-reject, .btn-paid { 
+            padding: 8px 16px; 
+            border-radius: 8px; 
+            border: none; 
+            font-size: 13px; 
+            font-weight: 500; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+        }
+        .btn-view { background: #e3f2fd; color: #2196f3; }
+        .btn-view:hover { background: #2196f3; color: white; }
+        .btn-verify { background: #d4edda; color: #28a745; }
+        .btn-verify:hover { background: #28a745; color: white; }
+        .btn-reject { background: #ffebee; color: #f44336; }
+        .btn-reject:hover { background: #f44336; color: white; }
+        .btn-paid { background: #28a745; color: white; }
+        .btn-paid:hover { background: #218838; transform: translateY(-2px); }
+        
+        .screenshot-preview {
+            max-width: 100px;
+            max-height: 100px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+        .screenshot-preview:hover { transform: scale(1.05); }
+        
+        .modal-content { border-radius: 20px; border: none; }
+        .modal-header { background: linear-gradient(135deg, #667eea, #a88930); color: white; border-radius: 20px 20px 0 0; border: none; }
+        .modal-header .btn-close { filter: brightness(0) invert(1); }
+        
+        .toast-notification { position: fixed; bottom: 20px; right: 20px; z-index: 9999; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        .order-detail-row {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        .order-detail-label { font-weight: 600; width: 140px; color: #495057; }
+        .order-detail-value { flex: 1; color: #212529; }
+        
+        @media (max-width: 991px) {
+            .sidebar { left: -280px; position: fixed; z-index: 1000; transition: left 0.3s; }
+            .sidebar.show { left: 0; }
+            .main-content { margin-left: 0; }
+            .menu-toggle { display: block; position: fixed; top: 20px; left: 20px; z-index: 1001; background: #667eea; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; }
+        }
+        @media (min-width: 992px) { .menu-toggle { display: none; } }
+        
+        .loading-spinner { display: inline-block; width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 30px; }
+        .page-btn { padding: 8px 12px; border: 1px solid #e9ecef; background: white; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .page-btn:hover { background: #667eea; color: white; border-color: #667eea; }
+        .page-btn.active { background: #667eea; color: white; border-color: #667eea; }
+        
+        .amount { font-size: 20px; font-weight: 700; color: #667eea; }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i> Menu</button>
+    
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon"><i class="fas fa-shopping-bag"></i></div>
+            <h4>Bag Admin</h4>
+        </div>
+        <nav class="nav-menu">
+            <a href="/admin-dashboard/" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="/admin-orders/" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a>
+            <a href="/admin-products/" class="nav-link"><i class="fas fa-box"></i> Products</a>
+            <a href="/admin-categories/" class="nav-link"><i class="fas fa-tags"></i> Categories</a>
+            <a href="/admin-users/" class="nav-link"><i class="fas fa-users"></i> Users</a>
+            <a href="/admin-update-qr/" class="nav-link"><i class="fas fa-qrcode"></i> QR</a>            
+            <a href="/admin-payments/" class="nav-link active"><i class="fas fa-credit-card"></i> Payments</a>
+            <hr style="margin: 20px; border-color: rgba(255,255,255,0.1);">
+            <a href="#" class="nav-link" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+    
+    <div class="main-content">
+        <div class="top-header">
+            <h4 class="mb-0"><i class="fas fa-credit-card me-2 text-primary"></i>Payments Management</h4>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-credit-card"></i></div><div class="stat-value" id="totalPayments">0</div><div class="stat-label">Total Payments</div></div></div>
+            <div class="col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-rupee-sign"></i></div><div class="stat-value" id="totalAmount">₹0</div><div class="stat-label">Total Amount</div></div></div>
+            <div class="col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-value" id="pendingVerification">0</div><div class="stat-label">Awaiting Verification</div></div></div>
+            <div class="col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-value" id="completedPayments">0</div><div class="stat-label">Completed Payments</div></div></div>
+        </div>
+        
+        <!-- Search & Filters -->
+        <div class="search-bar">
+            <div class="search-input">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search by order number or customer...">
+            </div>
+            <select id="statusFilter" class="filter-select">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="awaiting_verification">Awaiting Verification</option>
+                <option value="verified">Verified</option>
+                <option value="completed">Completed</option>
+                <option value="failed">Failed</option>
+                <option value="refunded">Refunded</option>
+            </select>
+            <select id="methodFilter" class="filter-select">
+                <option value="">All Methods</option>
+                <option value="bank_qr">Bank QR</option>
+                <option value="cod">Cash on Delivery</option>
+            </select>
+            <button class="btn btn-outline-secondary" onclick="resetFilters()"><i class="fas fa-undo-alt me-1"></i> Reset</button>
+        </div>
+        
+        <!-- Payments Container -->
+        <div id="paymentsContainer">
+            <div class="text-center py-5">
+                <div class="loading-spinner"></div>
+                <p class="mt-3 text-muted">Loading payments...</p>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+    </div>
+    
+    <!-- Payment Details Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Payment Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="paymentModalBody"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Verify/Complete Payment Modal -->
+    <div class="modal fade" id="actionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Process Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="actionPaymentId">
+                    <input type="hidden" id="actionType">
+                    <div id="bankQrFields">
+                        <div class="mb-3">
+                            <label class="form-label">Transaction ID</label>
+                            <input type="text" class="form-control" id="transactionId" placeholder="Enter transaction ID">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes (Optional)</label>
+                        <textarea class="form-control" id="actionNotes" rows="2" placeholder="Add notes..."></textarea>
+                    </div>
+                    <div id="codChecklist" class="alert alert-info">
+                        <strong>Confirm Cash Collection:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>✓ Verify customer received the order</li>
+                            <li>✓ Confirm cash amount matches order total</li>
+                            <li>✓ Mark payment as completed</li>
+                        </ul>
+                    </div>
+                    <div id="bankQrChecklist" class="alert alert-info" style="display: none;">
+                        <strong>Verification Checklist:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>✓ Check if amount matches order total</li>
+                            <li>✓ Verify transaction ID in bank statement</li>
+                            <li>✓ Confirm payment date is recent</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="rejectPayment()" id="rejectBtn">Reject</button>
+                    <button type="button" class="btn btn-success" onclick="completePayment()" id="completeBtn">Complete Payment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin + '/api';
+        let payments = [];
+        let currentPage = 1;
+        let totalPages = 1;
+        let itemsPerPage = 10;
+        
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast-notification bg-${type === 'success' ? 'success' : 'danger'} text-white p-3 rounded shadow`;
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function logout() { localStorage.clear(); window.location.href = '/login/'; }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            return new Date(dateString).toLocaleString();
+        }
+        
+        function formatCurrency(amount) {
+            return '₹' + parseFloat(amount).toFixed(2);
+        }
+        
+        function getStatusBadgeClass(status) {
+            const statusMap = {
+                'pending': 'status-pending',
+                'awaiting_verification': 'status-awaiting_verification',
+                'verified': 'status-verified',
+                'completed': 'status-completed',
+                'failed': 'status-failed',
+                'refunded': 'status-refunded'
+            };
+            return statusMap[status] || 'status-pending';
+        }
+        
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'Pending',
+                'awaiting_verification': 'Awaiting Verification',
+                'verified': 'Verified',
+                'completed': 'Completed',
+                'failed': 'Failed',
+                'refunded': 'Refunded'
+            };
+            return statusMap[status] || status;
+        }
+        
+        async function loadPayments() {
+            const container = document.getElementById('paymentsContainer');
+            container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3 text-muted">Loading payments...</p></div>';
+            
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`${API_BASE}/payments/admin/all/`, {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+                const data = await response.json();
+                payments = data.payments || [];
+                
+                // Apply filters
+                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                const statusFilter = document.getElementById('statusFilter').value;
+                const methodFilter = document.getElementById('methodFilter').value;
+                
+                let filtered = payments.filter(payment => {
+                    const matchSearch = (payment.order_number || '').toLowerCase().includes(searchTerm) || 
+                                      (payment.customer_name || '').toLowerCase().includes(searchTerm);
+                    const matchStatus = statusFilter === '' || payment.status === statusFilter;
+                    const matchMethod = methodFilter === '' || payment.payment_method === methodFilter;
+                    return matchSearch && matchStatus && matchMethod;
+                });
+                
+                // Calculate stats
+                const totalPayments = filtered.length;
+                const totalAmount = filtered.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+                const pendingVerification = filtered.filter(p => p.status === 'awaiting_verification').length;
+                const completedPayments = filtered.filter(p => p.status === 'completed' || p.status === 'verified').length;
+                
+                document.getElementById('totalPayments').textContent = totalPayments;
+                document.getElementById('totalAmount').textContent = formatCurrency(totalAmount);
+                document.getElementById('pendingVerification').textContent = pendingVerification;
+                document.getElementById('completedPayments').textContent = completedPayments;
+                
+                // Pagination
+                totalPages = Math.ceil(filtered.length / itemsPerPage);
+                const start = (currentPage - 1) * itemsPerPage;
+                const paginatedPayments = filtered.slice(start, start + itemsPerPage);
+                
+                if (paginatedPayments.length === 0) {
+                    container.innerHTML = '<div class="text-center py-5"><i class="fas fa-credit-card fa-4x text-muted mb-3"></i><h5>No payments found</h5><p class="text-muted">Try adjusting your search or filters</p></div>';
+                    document.getElementById('pagination').innerHTML = '';
+                    return;
+                }
+                
+                container.innerHTML = paginatedPayments.map(payment => `
+                    <div class="payment-card">
+                        <div class="payment-header">
+                            <div>
+                                <div class="payment-id">Payment #${payment.id}</div>
+                                <div class="payment-date"><i class="far fa-calendar-alt me-1"></i> ${formatDate(payment.payment_date)}</div>
+                            </div>
+                            <div>
+                                <span class="status-badge ${getStatusBadgeClass(payment.status)}">${getStatusText(payment.status)}</span>
+                                <span class="payment-method-badge ms-2"><i class="fas fa-${payment.payment_method === 'bank_qr' ? 'qrcode' : 'truck'} me-1"></i> ${payment.payment_method === 'bank_qr' ? 'Bank QR' : 'Cash on Delivery'}</span>
+                            </div>
+                        </div>
+                        <div class="payment-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div><strong>Order #:</strong> <span class="text-primary">${escapeHtml(payment.order_number || 'N/A')}</span></div>
+                                    <div><strong>Customer:</strong> ${escapeHtml(payment.customer_name || 'N/A')}</div>
+                                    <div><strong>Email:</strong> ${escapeHtml(payment.customer_email || 'N/A')}</div>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <div><strong>Amount:</strong> <span class="amount">${formatCurrency(payment.amount)}</span></div>
+                                    <div><strong>Transaction ID:</strong> ${escapeHtml(payment.transaction_id || 'N/A')}</div>
+                                    ${payment.payment_screenshot ? `<div class="mt-2"><img src="${payment.payment_screenshot}" class="screenshot-preview" onclick="window.open('${payment.payment_screenshot}', '_blank')" alt="Payment Screenshot"></div>` : ''}
+                                </div>
+                            </div>
+                            <div class="payment-actions">
+                                <button class="btn-view" onclick="viewPayment(${payment.id})"><i class="fas fa-eye me-1"></i> View Details</button>
+                                ${payment.payment_method === 'bank_qr' && payment.status === 'awaiting_verification' ? `
+                                    <button class="btn-verify" onclick="openActionModal(${payment.id}, 'bank_qr', 'verify')"><i class="fas fa-check-circle me-1"></i> Verify Payment</button>
+                                    <button class="btn-reject" onclick="openActionModal(${payment.id}, 'bank_qr', 'reject')"><i class="fas fa-times-circle me-1"></i> Reject</button>
+                                ` : ''}
+                                ${payment.payment_method === 'cod' && payment.status === 'pending' ? `
+                                    <button class="btn-paid" onclick="openActionModal(${payment.id}, 'cod', 'complete')"><i class="fas fa-money-bill-wave me-1"></i> Mark as Paid</button>
+                                ` : ''}
+                                ${payment.payment_method === 'cod' && payment.status === 'completed' ? `
+                                    <span class="badge bg-success px-3 py-2"><i class="fas fa-check-circle me-1"></i> Payment Completed</span>
+                                ` : ''}
+                                ${payment.payment_method === 'bank_qr' && payment.status === 'verified' ? `
+                                    <span class="badge bg-success px-3 py-2"><i class="fas fa-check-circle me-1"></i> Payment Verified</span>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                updatePagination();
+            } catch (error) {
+                console.error('Error:', error);
+                container.innerHTML = '<div class="text-center py-5 text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><h5>Error loading payments</h5><button class="btn btn-primary mt-3" onclick="loadPayments()">Retry</button></div>';
+            }
+        }
+        
+        function updatePagination() {
+            const pagination = document.getElementById('pagination');
+            if (totalPages <= 1) { pagination.innerHTML = ''; return; }
+            
+            let html = '';
+            if (currentPage > 1) html += `<button class="page-btn" onclick="changePage(${currentPage - 1})">Previous</button>`;
+            for (let i = 1; i <= Math.min(totalPages, 5); i++) html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            if (currentPage < totalPages) html += `<button class="page-btn" onclick="changePage(${currentPage + 1})">Next</button>`;
+            pagination.innerHTML = html;
+        }
+        
+        function changePage(page) { currentPage = page; loadPayments(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('methodFilter').value = '';
+            currentPage = 1;
+            loadPayments();
+        }
+        
+        async function viewPayment(paymentId) {
+            const modalBody = document.getElementById('paymentModalBody');
+            modalBody.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div></div>';
+            
+            try {
+                const payment = payments.find(p => p.id === paymentId);
+                
+                if (!payment) {
+                    modalBody.innerHTML = '<div class="text-center py-5 text-danger">Payment not found</div>';
+                    return;
+                }
+                
+                modalBody.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="order-detail-row">
+                                <div class="order-detail-label">Payment ID:</div>
+                                <div class="order-detail-value"><strong>#${payment.id}</strong></div>
+                            </div>
+                            <div class="order-detail-row">
+                                <div class="order-detail-label">Order Number:</div>
+                                <div class="order-detail-value">${escapeHtml(payment.order_number)}</div>
+                            </div>
+                            <div class="order-detail-row">
+                                <div class="order-detail-label">Date:</div>
+                                <div class="order-detail-value">${formatDate(payment.payment_date)}</div>
+                            </div>
+                            <div class="order-detail-row">
+                                <div class="order-detail-label">Status:</div>
+                                <div class="order-detail-value"><span class="status-badge ${getStatusBadgeClass(payment.status)}">${getStatusText(payment.status)}</span></div>
+                            </div>
+                            <div class="order-detail-row">
+                                <div class="order-detail-label">Payment Method:</div>
+                                <div class="order-detail-value">${payment.payment_method === 'bank_qr' ? 'Bank QR Code' : 'Cash on Delivery'}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="order-detail-row">
+                                <div class="order-detail-label">Customer Name:</div>
+                                <div class="order-detail-value">${escapeHtml(payment.customer_name)}</div>
+                            </div>
+                            <div class="order-detail-row">
+                                <div class="order-detail-label">Customer Email:</div>
+                                <div class="order-detail-value">${escapeHtml(payment.customer_email)}</div>
+                            </div>
+                            <div class="order-detail-row">
+                                <div class="order-detail-label">Customer Phone:</div>
+                                <div class="order-detail-value">${escapeHtml(payment.customer_phone)}</div>
+                            </div>
+                            <div class="order-detail-row">
+                                <div class="order-detail-label">Amount:</div>
+                                <div class="order-detail-value"><strong class="text-primary fs-4">${formatCurrency(payment.amount)}</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="order-detail-row">
+                        <div class="order-detail-label">Transaction ID:</div>
+                        <div class="order-detail-value">${escapeHtml(payment.transaction_id || 'Not provided')}</div>
+                    </div>
+                    ${payment.payment_screenshot ? `
+                    <div class="order-detail-row">
+                        <div class="order-detail-label">Payment Screenshot:</div>
+                        <div class="order-detail-value"><img src="${payment.payment_screenshot}" style="max-width: 300px; border-radius: 10px;" onclick="window.open('${payment.payment_screenshot}', '_blank')" alt="Payment Screenshot"></div>
+                    </div>
+                    ` : ''}
+                    ${payment.notes ? `
+                    <div class="order-detail-row">
+                        <div class="order-detail-label">Notes:</div>
+                        <div class="order-detail-value">${escapeHtml(payment.notes)}</div>
+                    </div>
+                    ` : ''}
+                    ${payment.verified_at ? `
+                    <div class="order-detail-row">
+                        <div class="order-detail-label">Verified At:</div>
+                        <div class="order-detail-value">${formatDate(payment.verified_at)}</div>
+                    </div>
+                    ` : ''}
+                `;
+                new bootstrap.Modal(document.getElementById('paymentModal')).show();
+            } catch (error) {
+                modalBody.innerHTML = '<div class="text-center py-5 text-danger">Error loading payment details</div>';
+            }
+        }
+        
+        function openActionModal(paymentId, method, action) {
+            document.getElementById('actionPaymentId').value = paymentId;
+            document.getElementById('actionType').value = action;
+            document.getElementById('transactionId').value = '';
+            document.getElementById('actionNotes').value = '';
+            
+            const bankQrFields = document.getElementById('bankQrFields');
+            const codChecklist = document.getElementById('codChecklist');
+            const bankQrChecklist = document.getElementById('bankQrChecklist');
+            const rejectBtn = document.getElementById('rejectBtn');
+            const completeBtn = document.getElementById('completeBtn');
+            
+            if (method === 'cod') {
+                bankQrFields.style.display = 'none';
+                codChecklist.style.display = 'block';
+                bankQrChecklist.style.display = 'none';
+                rejectBtn.style.display = 'none';
+                completeBtn.innerHTML = '<i class="fas fa-money-bill-wave me-1"></i> Mark as Paid';
+                document.querySelector('#actionModal .modal-title').textContent = 'Confirm Cash Collection';
+            } else {
+                bankQrFields.style.display = 'block';
+                codChecklist.style.display = 'none';
+                bankQrChecklist.style.display = 'block';
+                rejectBtn.style.display = 'inline-block';
+                
+                if (action === 'verify') {
+                    completeBtn.innerHTML = '<i class="fas fa-check-circle me-1"></i> Verify Payment';
+                    document.querySelector('#actionModal .modal-title').textContent = 'Verify Bank Payment';
+                } else {
+                    completeBtn.innerHTML = '<i class="fas fa-times-circle me-1"></i> Reject Payment';
+                    document.querySelector('#actionModal .modal-title').textContent = 'Reject Payment';
+                }
+            }
+            
+            new bootstrap.Modal(document.getElementById('actionModal')).show();
+        }
+        
+        async function completePayment() {
+            const paymentId = document.getElementById('actionPaymentId').value;
+            const actionType = document.getElementById('actionType').value;
+            const transactionId = document.getElementById('transactionId').value;
+            const notes = document.getElementById('actionNotes').value;
+            const modal = bootstrap.Modal.getInstance(document.getElementById('actionModal'));
+            
+            const confirmMsg = actionType === 'complete' ? 
+                'Confirm cash collected for this order?' : 
+                'Confirm payment verification?';
+            
+            if (!confirm(confirmMsg)) return;
+            
+            const completeBtn = document.getElementById('completeBtn');
+            completeBtn.disabled = true;
+            completeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+            
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`${API_BASE}/payments/admin/verify/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ 
+                        payment_id: parseInt(paymentId), 
+                        action: 'verify',
+                        notes: notes + (transactionId ? `\nTransaction ID: ${transactionId}` : '')
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showToast(data.message || 'Payment processed successfully!', 'success');
+                    modal.hide();
+                    loadPayments();
+                } else {
+                    showToast(data.error || 'Error processing payment', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Network error', 'error');
+            } finally {
+                completeBtn.disabled = false;
+                completeBtn.innerHTML = '<i class="fas fa-check-circle me-1"></i> Complete';
+            }
+        }
+        
+        async function rejectPayment() {
+            const paymentId = document.getElementById('actionPaymentId').value;
+            const notes = document.getElementById('actionNotes').value;
+            const modal = bootstrap.Modal.getInstance(document.getElementById('actionModal'));
+            
+            if (!confirm('Are you sure you want to REJECT this payment? This will cancel the order.')) return;
+            
+            const rejectBtn = document.getElementById('rejectBtn');
+            rejectBtn.disabled = true;
+            rejectBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+            
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`${API_BASE}/payments/admin/verify/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ 
+                        payment_id: parseInt(paymentId), 
+                        action: 'reject',
+                        notes: notes
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showToast(data.message || 'Payment rejected', 'success');
+                    modal.hide();
+                    loadPayments();
+                } else {
+                    showToast(data.error || 'Error rejecting payment', 'error');
+                }
+            } catch (error) {
+                showToast('Network error', 'error');
+            } finally {
+                rejectBtn.disabled = false;
+                rejectBtn.innerHTML = '<i class="fas fa-times-circle me-1"></i> Reject';
+            }
+        }
+        
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => { currentPage = 1; loadPayments(); }, 500);
+        });
+        
+        document.getElementById('statusFilter').addEventListener('change', () => { currentPage = 1; loadPayments(); });
+        document.getElementById('methodFilter').addEventListener('change', () => { currentPage = 1; loadPayments(); });
+        document.getElementById('menuToggle').addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('show'); });
+        
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('menuToggle');
+            if (window.innerWidth < 992 && sidebar.classList.contains('show')) {
+                if (!sidebar.contains(e.target) && !toggle.contains(e.target)) sidebar.classList.remove('show');
+            }
+        });
+        
+        const token = localStorage.getItem('access_token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token || (!user.is_staff && !user.is_superuser)) { window.location.href = '/login/'; }
+        else { loadPayments(); }
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

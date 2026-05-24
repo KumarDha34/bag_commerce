@@ -1,0 +1,703 @@
+{% extends 'base.html' %}
+
+{% block title %}Services - BagStyle Premium Bags{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 80px 0;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+        background-size: cover;
+        opacity: 0.3;
+    }
+    
+    /* Service Card */
+    .service-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px 30px;
+        text-align: center;
+        transition: all 0.3s ease;
+        height: 100%;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .service-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        transform: scaleX(0);
+        transition: transform 0.3s;
+    }
+    
+    .service-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    .service-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea20, #764ba220);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        transition: all 0.3s;
+    }
+    
+    .service-card:hover .service-icon {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    
+    .service-icon i {
+        font-size: 40px;
+        color: #667eea;
+        transition: all 0.3s;
+    }
+    
+    .service-card:hover .service-icon i {
+        color: white;
+    }
+    
+    .service-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    
+    .service-description {
+        color: #6c757d;
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+    
+    /* Process Section */
+    .process-section {
+        background: #f8f9fa;
+        padding: 80px 0;
+    }
+    
+    .process-step {
+        text-align: center;
+        position: relative;
+    }
+    
+    .step-number {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        font-size: 24px;
+        font-weight: 700;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .process-step:not(:last-child) .step-number::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: -60px;
+        width: 60px;
+        height: 2px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        z-index: 1;
+    }
+    
+    @media (max-width: 991px) {
+        .process-step:not(:last-child) .step-number::after {
+            display: none;
+        }
+    }
+    
+    .step-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .step-description {
+        color: #6c757d;
+        font-size: 14px;
+    }
+    
+    /* Features Grid */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+    }
+    
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        background: white;
+        border-radius: 12px;
+        transition: all 0.3s;
+    }
+    
+    .feature-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .feature-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea20, #764ba220);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .feature-icon i {
+        font-size: 24px;
+        color: #667eea;
+    }
+    
+    .feature-text h6 {
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    
+    .feature-text p {
+        color: #6c757d;
+        font-size: 13px;
+        margin-bottom: 0;
+    }
+    
+    /* Pricing Cards */
+    .pricing-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s;
+        height: 100%;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        position: relative;
+    }
+    
+    .pricing-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    .pricing-card.popular {
+        border: 2px solid #667eea;
+        transform: scale(1.02);
+    }
+    
+    .popular-badge {
+        position: absolute;
+        top: 20px;
+        right: -30px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 5px 30px;
+        font-size: 12px;
+        font-weight: 600;
+        transform: rotate(45deg);
+    }
+    
+    .pricing-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 30px;
+        text-align: center;
+    }
+    
+    .pricing-name {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .pricing-price {
+        font-size: 48px;
+        font-weight: 800;
+    }
+    
+    .pricing-price small {
+        font-size: 16px;
+        font-weight: 400;
+    }
+    
+    .pricing-body {
+        padding: 30px;
+    }
+    
+    .pricing-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 30px 0;
+    }
+    
+    .pricing-features li {
+        padding: 10px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .pricing-features li i {
+        color: #28a745;
+        font-size: 14px;
+    }
+    
+    /* FAQ Section */
+    .faq-section {
+        background: #f8f9fa;
+        padding: 80px 0;
+    }
+    
+    .accordion-item {
+        border: none;
+        margin-bottom: 15px;
+        background: white;
+        border-radius: 12px !important;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .accordion-button {
+        padding: 20px;
+        font-weight: 600;
+        background: white;
+        box-shadow: none;
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background: linear-gradient(135deg, #667eea10, #764ba210);
+        color: #667eea;
+    }
+    
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: transparent;
+    }
+    
+    .accordion-body {
+        padding: 20px;
+        color: #6c757d;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    /* Testimonial Card */
+    .testimonial-card {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        margin: 20px 0;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+    }
+    
+    .testimonial-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .testimonial-rating {
+        color: #ffc107;
+        margin-bottom: 15px;
+    }
+    
+    .testimonial-text {
+        color: #495057;
+        margin-bottom: 20px;
+        font-style: italic;
+    }
+    
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 60px 0;
+        text-align: center;
+        color: white;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .service-card {
+            padding: 30px 20px;
+        }
+        .pricing-card.popular {
+            transform: scale(1);
+        }
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3" data-aos="fade-up">Our Services</h1>
+        <p class="lead mb-0 opacity-90" data-aos="fade-up" data-aos-delay="100">Everything you need, all in one place</p>
+    </div>
+</section>
+
+<!-- Main Services Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-3">What We Offer</span>
+            <h2 class="display-5 fw-bold mb-3">Premium Services for Bag Lovers</h2>
+            <p class="lead text-muted">Discover the range of services we provide to make your shopping experience exceptional</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <h3 class="service-title">Express Delivery</h3>
+                    <p class="service-description">Get your orders delivered within 2-3 business days. Free express shipping on orders over $100.</p>
+                    <a href="/shop/" class="btn btn-outline-primary btn-sm">Learn More <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h3 class="service-title">Gift Wrapping</h3>
+                    <p class="service-description">Make your gift extra special with our premium gift wrapping service. Includes personalized message.</p>
+                    <a href="/shop/" class="btn btn-outline-primary btn-sm">Learn More <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-undo-alt"></i>
+                    </div>
+                    <h3 class="service-title">Easy Returns</h3>
+                    <p class="service-description">Not satisfied? Return within 30 days for a full refund. Free returns on all orders.</p>
+                    <a href="/contact/" class="btn btn-outline-primary btn-sm">Learn More <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-wrench"></i>
+                    </div>
+                    <h3 class="service-title">Repair Service</h3>
+                    <p class="service-description">Professional bag repair and maintenance services. Extend the life of your favorite bag.</p>
+                    <a href="/contact/" class="btn btn-outline-primary btn-sm">Learn More <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="500">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3 class="service-title">24/7 Support</h3>
+                    <p class="service-description">Round-the-clock customer support. Chat, email, or call us anytime.</p>
+                    <a href="/contact/" class="btn btn-outline-primary btn-sm">Learn More <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="600">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <h3 class="service-title">Price Match</h3>
+                    <p class="service-description">Found a lower price elsewhere? We'll match it. Best price guaranteed.</p>
+                    <a href="/contact/" class="btn btn-outline-primary btn-sm">Learn More <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="process-section">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-3">Simple Process</span>
+            <h2 class="display-5 fw-bold mb-3">How It Works</h2>
+            <p class="lead text-muted">Get your perfect bag in just a few simple steps</p>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h4 class="step-title">Browse & Select</h4>
+                    <p class="step-description">Explore our collection and choose your favorite bag</p>
+                </div>
+            </div>
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h4 class="step-title">Place Order</h4>
+                    <p class="step-description">Add to cart and complete your purchase securely</p>
+                </div>
+            </div>
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h4 class="step-title">Fast Delivery</h4>
+                    <p class="step-description">We pack and ship your order with care</p>
+                </div>
+            </div>
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h4 class="step-title">Enjoy & Share</h4>
+                    <p class="step-description">Receive your bag and share your experience</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Key Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-3">Why Choose Us</span>
+                <h2 class="display-5 fw-bold mb-4">What Makes Us Different</h2>
+                <p class="lead text-muted mb-4">We go above and beyond to ensure you have the best shopping experience possible.</p>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h6>Premium Quality</h6>
+                            <p>Only the best materials</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h6>Secure Payments</h6>
+                            <p>100% secure checkout</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h6>Fast Shipping</h6>
+                            <p>2-3 day delivery</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-smile"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h6>Satisfaction Guarantee</h6>
+                            <p>Love it or return it</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <img src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=600" alt="Why Choose Us" class="img-fluid rounded-4 shadow-lg">
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Customer Testimonials -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-3">Testimonials</span>
+            <h2 class="display-5 fw-bold mb-3">What Our Customers Say</h2>
+            <p class="lead text-muted">Don't just take our word for it</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"The express delivery service is amazing! I received my bag in just 2 days. The quality exceeded my expectations."</p>
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="https://randomuser.me/api/portraits/women/1.jpg" class="rounded-circle" width="50" height="50" alt="Customer">
+                        <div>
+                            <h6 class="mb-0">Sarah Johnson</h6>
+                            <small class="text-muted">Verified Buyer</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"The gift wrapping service made my present extra special. The customer support team was very helpful and responsive."</p>
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="https://randomuser.me/api/portraits/men/1.jpg" class="rounded-circle" width="50" height="50" alt="Customer">
+                        <div>
+                            <h6 class="mb-0">Michael Chen</h6>
+                            <small class="text-muted">Premium Member</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <p class="testimonial-text">"Great service and amazing quality products. The repair service fixed my old bag perfectly. Highly recommended!"</p>
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="https://randomuser.me/api/portraits/women/2.jpg" class="rounded-circle" width="50" height="50" alt="Customer">
+                        <div>
+                            <h6 class="mb-0">Emily Davis</h6>
+                            <small class="text-muted">Business Member</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-3">FAQ</span>
+            <h2 class="display-5 fw-bold mb-3">Frequently Asked Questions</h2>
+            <p class="lead text-muted">Got questions? We've got answers</p>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item" data-aos="fade-up">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                How long does shipping take?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Standard shipping takes 5-7 business days. Express shipping takes 2-3 business days. Free shipping on orders over $50.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="100">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                What is your return policy?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                We offer a 30-day return policy. Items must be unused and in original packaging. Free returns on all orders.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="200">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Do you offer international shipping?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes, we ship worldwide. International shipping takes 7-14 business days. Shipping costs vary by destination.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="300">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                How can I track my order?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Once your order ships, you'll receive a tracking number via email. You can also track your order in your account dashboard.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="400">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                Do you offer gift wrapping?
+                            </button>
+                        </h2>
+                        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes, we offer premium gift wrapping service. You can add it at checkout. Includes a personalized message card.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container" data-aos="fade-up">
+        <h2 class="display-5 fw-bold mb-3">Ready to Experience Our Services?</h2>
+        <p class="lead mb-4 opacity-90">Join thousands of satisfied customers who trust BagStyle</p>
+        <a href="/shop/" class="btn btn-light btn-lg px-5">
+            Shop Now <i class="fas fa-arrow-right ms-2"></i>
+        </a>
+    </div>
+</section>
+{% endblock %}

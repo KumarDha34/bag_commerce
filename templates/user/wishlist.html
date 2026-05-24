@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>My Wishlist | Bag - Handcrafted Bags</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #fefcf8; color: #2a2a2a; overflow-x: hidden; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c4a747; border-radius: 10px; }
+        
+        /* Navbar */
+        .navbar {
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(12px);
+            padding: 15px 0;
+            transition: all 0.3s ease;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.03);
+        }
+        .navbar.scrolled { padding: 10px 0; box-shadow: 0 5px 25px rgba(0,0,0,0.08); }
+        .navbar .container { max-width: 1400px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .logo { 
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px; 
+            font-weight: 700; 
+            color: #2d2a24;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+        .logo span { color: #c4a747; font-weight: 800; }
+        .nav-links { display: flex; gap: 35px; align-items: center; }
+        .nav-links a { text-decoration: none; color: #3d3a35; font-weight: 500; transition: 0.3s; font-size: 14px; }
+        .nav-links a:hover, .nav-links a.active { color: #c4a747; }
+        .nav-icons { display: flex; gap: 22px; align-items: center; }
+        .nav-icons a { color: #2d2a24; font-size: 18px; position: relative; text-decoration: none; transition: 0.3s; }
+        .nav-icons a:hover { color: #c4a747; }
+        .cart-badge, .wish-badge {
+            position: absolute; top: -8px; right: -12px; background: #c4a747; color: white;
+            border-radius: 50%; width: 18px; height: 18px; font-size: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .auth-btn {
+            background: #c4a747;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.3s;
+            display: inline-block;
+        }
+        .auth-btn:hover { background: #a88930; color: white; transform: translateY(-2px); }
+        .user-menu { position: relative; display: inline-block; }
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            min-width: 180px;
+            display: none;
+            z-index: 1000;
+            margin-top: 10px;
+            border: 1px solid #f0ebe0;
+        }
+        .user-menu:hover .user-dropdown { display: block; }
+        .user-dropdown a {
+            display: block;
+            padding: 12px 20px;
+            color: #2d2a24;
+            text-decoration: none;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+        .user-dropdown a:hover { background: #fef9f0; color: #c4a747; }
+        
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #2d2a24;
+            cursor: pointer;
+            padding: 5px 10px;
+            z-index: 1001;
+        }
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        .menu-overlay.show { display: block; }
+        
+        @media (max-width: 992px) {
+            .mobile-menu-btn { display: block; }
+            .nav-links { 
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 280px;
+                height: 100vh;
+                background: white;
+                flex-direction: column;
+                padding: 80px 25px 30px;
+                transition: 0.3s ease-in-out;
+                box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+                z-index: 1000;
+                gap: 15px;
+                align-items: flex-start;
+                overflow-y: auto;
+            }
+            .nav-links.show { left: 0; }
+            .nav-links a { 
+                font-size: 16px; 
+                padding: 10px 0;
+                width: 100%;
+                border-bottom: 1px solid #f0ebe0;
+            }
+            .nav-icons { margin-left: auto; margin-right: 15px; }
+        }
+        
+        @media (max-width: 576px) {
+            .nav-icons { gap: 12px; }
+            .nav-icons a { font-size: 16px; }
+            .auth-btn { padding: 5px 12px; font-size: 11px; }
+            .logo { font-size: 22px; }
+        }
+        
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, #faf7f0 0%, #f0ebe0 100%);
+            padding: 100px 0 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -10%;
+            width: 50%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(196,167,71,0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .page-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 700; color: #2d2a24; }
+        .breadcrumb { background: transparent; padding: 0; margin-top: 15px; }
+        .breadcrumb a { color: #c4a747; text-decoration: none; }
+        
+        @media (max-width: 768px) {
+            .page-header { padding: 80px 0 40px; }
+            .page-header h1 { font-size: 36px; }
+        }
+        
+        /* Control Bar */
+        .control-bar {
+            background: white;
+            border-radius: 20px;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid #f0ebe0;
+        }
+        .item-count { font-size: 13px; color: #6b6a66; }
+        .item-count strong { color: #c4a747; font-size: 16px; }
+        .clear-btn {
+            background: transparent;
+            border: 1.5px solid #dc3545;
+            color: #dc3545;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .clear-btn:hover { background: #dc3545; color: white; transform: translateY(-2px); }
+        
+        @media (max-width: 576px) {
+            .control-bar { flex-direction: column; text-align: center; }
+        }
+        
+        /* Wishlist Grid */
+        .wishlist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .wishlist-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.4s;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+            border: 1px solid #f0ebe0;
+            cursor: pointer;
+        }
+        .wishlist-card:hover { transform: translateY(-8px); box-shadow: 0 20px 35px rgba(196,167,71,0.12); border-color: #c4a747; }
+        .wishlist-img { height: 240px; overflow: hidden; background: #faf7f0; display: flex; align-items: center; justify-content: center; position: relative; }
+        .wishlist-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .wishlist-card:hover .wishlist-img img { transform: scale(1.05); }
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #c4a747;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .wishlist-info { padding: 18px; }
+        .wishlist-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+        .wishlist-price { font-size: 18px; font-weight: 800; color: #c4a747; }
+        .old-price { text-decoration: line-through; font-size: 12px; color: #a0aaba; margin-left: 8px; }
+        .product-rating i { color: #ffc107; font-size: 11px; margin-right: 2px; }
+        .btn-add-cart {
+            background: #2d2a24;
+            color: white;
+            border: none;
+            padding: 9px;
+            border-radius: 40px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 12px;
+            transition: 0.3s;
+            font-size: 13px;
+        }
+        .btn-add-cart:hover { background: #c4a747; transform: translateY(-2px); }
+        .btn-remove {
+            background: none;
+            border: 1px solid #e0dbd3;
+            padding: 9px;
+            border-radius: 40px;
+            width: 100%;
+            margin-top: 8px;
+            color: #dc2626;
+            font-weight: 500;
+            transition: 0.3s;
+            font-size: 13px;
+        }
+        .btn-remove:hover { background: #fee2e2; border-color: #dc2626; }
+        
+        @media (max-width: 576px) {
+            .wishlist-grid { grid-template-columns: 1fr; gap: 20px; }
+        }
+        
+        /* Empty State */
+        .empty-wishlist { text-align: center; padding: 60px 20px; background: white; border-radius: 28px; }
+        .empty-wishlist i { font-size: 70px; color: #ddd0c0; margin-bottom: 20px; }
+        .empty-wishlist h3 { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+        .shop-now-btn {
+            display: inline-block; margin-top: 20px; background: #c4a747; color: white;
+            padding: 10px 32px; border-radius: 40px; text-decoration: none; font-weight: 600;
+            transition: 0.3s; font-size: 14px;
+        }
+        .shop-now-btn:hover { background: #a88930; transform: translateY(-2px); }
+        
+        .guest-notice {
+            background: #fef3e0;
+            border: 1px solid #ffe8c7;
+            border-radius: 16px;
+            padding: 12px 18px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 13px;
+        }
+        .guest-notice a { color: #c4a747; text-decoration: none; font-weight: 600; }
+        
+        .loading-container { text-align: center; padding: 60px 20px; background: white; border-radius: 28px; }
+        .loading-spinner { display: inline-block; width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid #c4a747; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .toast-notification {
+            position: fixed; bottom: 30px; right: 30px; background: #2d2a24; color: white;
+            padding: 10px 20px; border-radius: 50px; z-index: 9999; animation: slideIn 0.3s ease;
+            font-size: 13px;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        .footer { background: #1a1a18; color: #a0a09b; padding: 40px 0 20px; margin-top: 60px; text-align: center; }
+        .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; color: white; margin-bottom: 10px; }
+        .footer-logo span { color: #c4a747; }
+        
+        .back-to-top {
+            position: fixed; bottom: 30px; left: 30px; width: 40px; height: 40px;
+            background: #c4a747; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; color: white; cursor: pointer; opacity: 0;
+            visibility: hidden; transition: 0.3s; z-index: 1000;
+        }
+        .back-to-top.show { opacity: 1; visibility: visible; }
+        @media (max-width: 576px) {
+            .back-to-top { width: 35px; height: 35px; bottom: 20px; left: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar fixed-top">
+    <div class="container">
+        <a href="/" class="logo"><span>BAG</span></a>
+        <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+        <div class="nav-links" id="navLinks">
+            <a href="/">Home</a>
+            <a href="/shop/">Shop</a>
+            <a href="/collections/">Collections</a>
+            <a href="/about/">About</a>
+            <a href="/contact/">Contact</a>
+        </div>
+        <div class="nav-icons">
+            <a href="/user/wishlist/"><i class="far fa-heart"></i><span class="wish-badge" id="wishlistCount">0</span></a>
+            <a href="/user/cart/"><i class="fas fa-shopping-bag"></i><span class="cart-badge" id="cartCount">0</span></a>
+            <div id="authContainer"></div>
+        </div>
+    </div>
+</nav>
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<section class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1>My Wishlist</h1>
+                <nav class="breadcrumb"><a href="/">Home</a> / <span style="color:#8e8c87;">Wishlist</span></nav>
+                <p class="mt-3 text-muted">Your curated collection of favorite bags</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div id="guestNotice" class="guest-notice" style="display: none;"><div><i class="fas fa-info-circle me-2" style="color:#c4a747;"></i> You're browsing as a guest. Sign in to save your wishlist permanently.</div><a href="/login/">Sign in →</a></div>
+        
+        <div id="wishlistContent">
+            <div class="loading-container" id="loadingState"><div class="loading-spinner"></div><p class="mt-3 text-muted">Loading your wishlist...</p></div>
+            <div class="empty-wishlist" id="emptyState" style="display: none;"><i class="far fa-heart"></i><h3>Your wishlist is empty</h3><p>Save your favorite bags here and come back anytime!</p><a href="/shop/" class="shop-now-btn">Start Shopping</a></div>
+            <div id="wishlistGrid" style="display: none;"><div class="control-bar"><div class="item-count"><i class="far fa-heart me-2"></i><strong id="wishlistItemCount">0</strong> items in your wishlist</div><button class="clear-btn" id="clearWishlistBtn"><i class="fas fa-trash-alt me-2"></i>Clear All</button></div><div class="wishlist-grid" id="wishlistItemsContainer"></div></div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer"><div class="container"><div class="footer-logo mb-2"><span>BAG</span></div><small>&copy; 2024 Bag. All rights reserved. | Crafted with ❤️</small></div></footer>
+<div class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i></div>
+
+<script>
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const navLinks = document.getElementById('navLinks');
+    const menuOverlay = document.getElementById('menuOverlay');
+    function closeMenu() { navLinks.classList.remove('show'); menuOverlay.classList.remove('show'); if(mobileMenuBtn){const icon=mobileMenuBtn.querySelector('i');icon.classList.remove('fa-times');icon.classList.add('fa-bars');} document.body.style.overflow=''; }
+    function openMenu() { navLinks.classList.add('show'); menuOverlay.classList.add('show'); if(mobileMenuBtn){const icon=mobileMenuBtn.querySelector('i');icon.classList.remove('fa-bars');icon.classList.add('fa-times');} document.body.style.overflow='hidden'; }
+    if(mobileMenuBtn){ mobileMenuBtn.addEventListener('click',(e)=>{ e.stopPropagation(); if(navLinks.classList.contains('show')) closeMenu(); else openMenu(); }); }
+    if(menuOverlay){ menuOverlay.addEventListener('click', closeMenu); }
+    document.querySelectorAll('#navLinks a').forEach(link=>{ link.addEventListener('click', closeMenu); });
+    
+    const API_BASE = window.location.origin + '/api';
+    
+    window.addEventListener('scroll', () => { document.querySelector('.navbar')?.classList.toggle('scrolled', window.scrollY > 50); });
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => { backToTop.classList.toggle('show', window.scrollY > 300); });
+    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    
+    function updateAuthUI() {
+        const token = localStorage.getItem('access_token');
+        const auth = document.getElementById('authContainer');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (token) {
+            auth.innerHTML = `<div class="user-menu"><a href="#" class="auth-btn"><i class="fas fa-user-circle me-1"></i> ${user.full_name || user.email?.split('@')[0] || 'My Account'} <i class="fas fa-chevron-down ms-1"></i></a><div class="user-dropdown"><a href="/user/dashboard/">Dashboard</a><a href="/user/orders/">My Orders</a><a href="/user/wishlist/">Wishlist</a><a href="/user/profile/">Profile</a><a href="/user/cart/">Cart</a><hr><a href="#" id="logoutBtn">Logout</a></div></div>`;
+            document.getElementById('logoutBtn')?.addEventListener('click', (e) => { e.preventDefault(); localStorage.clear(); showToast('Logged out'); setTimeout(() => location.reload(), 1000); });
+        } else { auth.innerHTML = `<a href="/login/" class="auth-btn"><i class="fas fa-sign-in-alt me-1"></i> Sign In</a>`; }
+    }
+    
+    function getAuthHeaders() { const token = localStorage.getItem('access_token'); return token ? { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } : {}; }
+    
+    function showToast(msg, isErr = false) { const t = document.createElement('div'); t.className = 'toast-notification'; t.style.backgroundColor = isErr ? '#dc2626' : '#2d2a24'; t.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'} me-2"></i> ${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+    
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
+    
+    function generateStars(rating) { let stars=''; const full=Math.floor(rating||4.5); const half=(rating||4.5)%1!==0; for(let i=1;i<=5;i++){ if(i<=full) stars+='<i class="fas fa-star"></i>'; else if(half&&i===full+1) stars+='<i class="fas fa-star-half-alt"></i>'; else stars+='<i class="far fa-star"></i>'; } return stars; }
+    
+    async function updateBadges() {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            try {
+                const [cartRes, wishRes] = await Promise.all([fetch(`${API_BASE}/cart/`, { headers: { 'Authorization': `Bearer ${token}` } }), fetch(`${API_BASE}/wishlist/`, { headers: { 'Authorization': `Bearer ${token}` } })]);
+                if (cartRes.ok) { const d=await cartRes.json(); document.getElementById('cartCount').innerText=d.cart?.total_items||0; }
+                if (wishRes.ok) { const w=await wishRes.json(); document.getElementById('wishlistCount').innerText=w.wishlist?.items?.length||0; }
+            } catch(e) {}
+        } else { document.getElementById('cartCount').innerText='0'; document.getElementById('wishlistCount').innerText='0'; }
+    }
+    
+    async function addToCart(productId, event) {
+        if(event) event.stopPropagation();
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            let guest = JSON.parse(localStorage.getItem('_cart')) || [];
+            const existing = guest.find(i => i.id === productId);
+            if(existing) existing.quantity = (existing.quantity||1)+1;
+            else guest.push({ id: productId, quantity: 1 });
+            localStorage.setItem('_cart', JSON.stringify(guest));
+            updateBadges();
+            showToast('Added to cart (guest)');
+            return;
+        }
+        try {
+            const res = await fetch(`${API_BASE}/cart/add/`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ bag_id: productId, quantity: 1 }) });
+            if(res.ok) { updateBadges(); showToast('Added to cart!'); }
+            else { const err = await res.json(); showToast(err.error || 'Failed', true); }
+        } catch(e) { showToast('Error', true); }
+    }
+    
+    async function removeFromWishlist(productId, event) {
+        if(event) event.stopPropagation();
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            let guest = JSON.parse(localStorage.getItem('_wishlist')) || [];
+            guest = guest.filter(id => id !== productId);
+            localStorage.setItem('_wishlist', JSON.stringify(guest));
+            await loadWishlist();
+            updateBadges();
+            showToast('Removed from wishlist');
+            return;
+        }
+        try {
+            const res = await fetch(`${API_BASE}/wishlist/remove/${productId}/`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            if(res.ok) { showToast('Removed from wishlist'); await loadWishlist(); updateBadges(); }
+            else showToast('Failed to remove', true);
+        } catch(e) { showToast('Error', true); }
+    }
+    
+    async function moveToCart(productId, event) {
+        if(event) event.stopPropagation();
+        const token = localStorage.getItem('access_token');
+        if (!token) { await addToCart(productId); await removeFromWishlist(productId); return; }
+        try {
+            const res = await fetch(`${API_BASE}/wishlist/move-to-cart/${productId}/`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+            if(res.ok) { showToast('Moved to cart!'); await loadWishlist(); updateBadges(); }
+            else { const err = await res.json(); showToast(err.error || 'Failed', true); }
+        } catch(e) { showToast('Error', true); }
+    }
+    
+    async function clearWishlist() {
+        if(!confirm('Remove all items from wishlist?')) return;
+        const token = localStorage.getItem('access_token');
+        if (!token) { localStorage.removeItem('_wishlist'); await loadWishlist(); updateBadges(); showToast('Wishlist cleared'); return; }
+        try {
+            const res = await fetch(`${API_BASE}/wishlist/clear/`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            if(res.ok) { showToast('Wishlist cleared'); await loadWishlist(); updateBadges(); }
+            else showToast('Failed', true);
+        } catch(e) { showToast('Error', true); }
+    }
+    
+    async function loadWishlist() {
+        const loading = document.getElementById('loadingState');
+        const empty = document.getElementById('emptyState');
+        const grid = document.getElementById('wishlistGrid');
+        const container = document.getElementById('wishlistItemsContainer');
+        const countSpan = document.getElementById('wishlistItemCount');
+        
+        loading.style.display = 'block';
+        empty.style.display = 'none';
+        grid.style.display = 'none';
+        
+        const token = localStorage.getItem('access_token');
+        
+        if (!token) {
+            const guest = JSON.parse(localStorage.getItem('_wishlist')) || [];
+            loading.style.display = 'none';
+            if(guest.length===0){ empty.style.display='block'; return; }
+            grid.style.display='block';
+            countSpan.innerText=guest.length;
+            const proms = guest.map(async id=>{ try{ const r=await fetch(`${API_BASE}/products/bags/${id}/`); return await r.json(); }catch(e){return null;} });
+            const products = (await Promise.all(proms)).filter(p=>p);
+            container.innerHTML = products.map(p=>{ const final=(p.final_price||p.price).toFixed(2); const orig=p.discount_price?parseFloat(p.price).toFixed(2):null; const disc=p.discount_percentage||0; const img=p.image||'https://via.placeholder.com/300x300?text=Bag'; return `<div class="wishlist-card" onclick="window.location.href='/product/${p.slug}/'"><div class="wishlist-img"><img src="${img}" alt="${escapeHtml(p.name)}">${disc>0?`<span class="product-badge">-${disc}%</span>`:''}</div><div class="wishlist-info"><div class="wishlist-title">${escapeHtml(p.name)}</div><div class="product-rating">${generateStars(4.5)}</div><div><span class="wishlist-price">₹${final}</span>${orig?`<span class="old-price">₹${orig}</span>`:''}</div><button class="btn-add-cart" onclick="event.stopPropagation(); moveToCart(${p.id}, event)"><i class="fas fa-cart-plus me-2"></i> Move to Cart</button><button class="btn-remove" onclick="event.stopPropagation(); removeFromWishlist(${p.id}, event)"><i class="fas fa-trash-alt me-2"></i> Remove</button></div></div>`; }).join('');
+            return;
+        }
+        
+        try {
+            const res = await fetch(`${API_BASE}/wishlist/`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await res.json();
+            const items = data.wishlist?.items || [];
+            loading.style.display='none';
+            if(items.length===0){ empty.style.display='block'; return; }
+            grid.style.display='block';
+            countSpan.innerText=items.length;
+            container.innerHTML = items.map(item=>{ const bag=item.bag_details||{}; const final=(bag.final_price||bag.price||0).toFixed(2); const orig=bag.discount_price?parseFloat(bag.price).toFixed(2):null; const disc=bag.discount_percentage||0; const img=bag.image||'https://via.placeholder.com/300x300?text=Bag'; return `<div class="wishlist-card" onclick="window.location.href='/product/${bag.slug||item.bag}/'"><div class="wishlist-img"><img src="${img}" alt="${escapeHtml(bag.name||'Product')}">${disc>0?`<span class="product-badge">-${disc}%</span>`:''}</div><div class="wishlist-info"><div class="wishlist-title">${escapeHtml(bag.name||'Product')}</div><div class="product-rating">${generateStars(4.5)}</div><div><span class="wishlist-price">₹${final}</span>${orig?`<span class="old-price">₹${orig}</span>`:''}</div><button class="btn-add-cart" onclick="event.stopPropagation(); moveToCart(${item.bag}, event)"><i class="fas fa-cart-plus me-2"></i> Move to Cart</button><button class="btn-remove" onclick="event.stopPropagation(); removeFromWishlist(${item.bag}, event)"><i class="fas fa-trash-alt me-2"></i> Remove</button></div></div>`; }).join('');
+        } catch(e) { loading.style.display='none'; empty.style.display='block'; showToast('Failed to load wishlist', true); }
+    }
+    
+    document.getElementById('clearWishlistBtn')?.addEventListener('click', clearWishlist);
+    
+    const guestNotice = document.getElementById('guestNotice');
+    if(!localStorage.getItem('access_token')) guestNotice.style.display = 'flex';
+    
+    loadWishlist();
+    updateAuthUI();
+    updateBadges();
+</script>
+</body>
+</html>

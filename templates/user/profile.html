@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>My Profile - Bag</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #fefcf8; color: #2a2a2a; overflow-x: hidden; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c4a747; border-radius: 10px; }
+        
+        .navbar {
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(12px);
+            padding: 15px 0;
+            transition: all 0.3s ease;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.03);
+        }
+        .navbar.scrolled { padding: 10px 0; box-shadow: 0 5px 25px rgba(0,0,0,0.08); }
+        .navbar .container { max-width: 1400px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .logo { 
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px; 
+            font-weight: 700; 
+            color: #2d2a24;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+        .logo span { color: #c4a747; font-weight: 800; }
+        .nav-links { display: flex; gap: 35px; align-items: center; }
+        .nav-links a { text-decoration: none; color: #3d3a35; font-weight: 500; transition: 0.3s; font-size: 14px; }
+        .nav-links a:hover, .nav-links a.active { color: #c4a747; }
+        .nav-icons { display: flex; gap: 22px; align-items: center; }
+        .nav-icons a { color: #2d2a24; font-size: 18px; position: relative; text-decoration: none; }
+        .nav-icons a:hover { color: #c4a747; }
+        .cart-badge, .wish-badge {
+            position: absolute; top: -8px; right: -12px; background: #c4a747; color: white;
+            border-radius: 50%; width: 18px; height: 18px; font-size: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .auth-btn {
+            background: #c4a747;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.3s;
+            display: inline-block;
+        }
+        .auth-btn:hover { background: #a88930; color: white; transform: translateY(-2px); }
+        .user-menu { position: relative; display: inline-block; }
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            min-width: 180px;
+            display: none;
+            z-index: 1000;
+            margin-top: 10px;
+            border: 1px solid #f0ebe0;
+        }
+        .user-menu:hover .user-dropdown { display: block; }
+        .user-dropdown a {
+            display: block;
+            padding: 12px 20px;
+            color: #2d2a24;
+            text-decoration: none;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+        .user-dropdown a:hover { background: #fef9f0; color: #c4a747; }
+        
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #2d2a24;
+            cursor: pointer;
+            padding: 5px 10px;
+            z-index: 1001;
+        }
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        .menu-overlay.show { display: block; }
+        
+        @media (max-width: 992px) {
+            .mobile-menu-btn { display: block; }
+            .nav-links { 
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 280px;
+                height: 100vh;
+                background: white;
+                flex-direction: column;
+                padding: 80px 25px 30px;
+                transition: 0.3s ease-in-out;
+                box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+                z-index: 1000;
+                gap: 15px;
+                align-items: flex-start;
+                overflow-y: auto;
+            }
+            .nav-links.show { left: 0; }
+            .nav-links a { 
+                font-size: 16px; 
+                padding: 10px 0;
+                width: 100%;
+                border-bottom: 1px solid #f0ebe0;
+            }
+            .nav-icons { margin-left: auto; margin-right: 15px; }
+        }
+        
+        @media (max-width: 576px) {
+            .nav-icons { gap: 12px; }
+            .nav-icons a { font-size: 16px; }
+            .auth-btn { padding: 5px 12px; font-size: 11px; }
+            .logo { font-size: 22px; }
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, #faf7f0 0%, #f0ebe0 100%);
+            padding: 100px 0 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        .page-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 700; color: #2d2a24; }
+        .breadcrumb { background: transparent; padding: 0; margin-top: 15px; }
+        .breadcrumb-item a { color: #c4a747; text-decoration: none; }
+        
+        @media (max-width: 768px) {
+            .page-header { padding: 80px 0 40px; }
+            .page-header h1 { font-size: 36px; }
+        }
+        
+        .profile-sidebar {
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid #f0ebe0;
+            position: sticky;
+            top: 100px;
+        }
+        .profile-avatar {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        .avatar-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #c4a747;
+            padding: 2px;
+        }
+        .avatar-upload-btn {
+            position: absolute;
+            bottom: 5px;
+            right: calc(50% - 50px);
+            background: #c4a747;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid white;
+        }
+        .avatar-upload-btn:hover { background: #a88930; transform: scale(1.1); }
+        .avatar-upload-btn i { color: white; font-size: 12px; }
+        .profile-name { font-size: 18px; font-weight: 700; margin-top: 12px; margin-bottom: 5px; }
+        .profile-email { font-size: 12px; color: #8e8c87; }
+        
+        .profile-menu {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0 0;
+        }
+        .profile-menu li {
+            margin-bottom: 8px;
+        }
+        .profile-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            color: #2d2a24;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        .profile-menu a:hover, .profile-menu a.active {
+            background: #fef9f0;
+            color: #c4a747;
+        }
+        .profile-menu a i { width: 20px; }
+        
+        @media (max-width: 768px) {
+            .profile-sidebar { position: relative; top: 0; margin-bottom: 30px; }
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid #f0ebe0;
+            margin-bottom: 30px;
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0ebe0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .info-row {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0ebe0;
+            flex-wrap: wrap;
+        }
+        .info-label {
+            width: 120px;
+            font-weight: 600;
+            color: #8e8c87;
+            font-size: 13px;
+        }
+        .info-value {
+            flex: 1;
+            color: #2d2a24;
+            font-size: 13px;
+        }
+        .edit-btn {
+            background: transparent;
+            border: 1px solid #c4a747;
+            color: #c4a747;
+            padding: 5px 16px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .edit-btn:hover { background: #c4a747; color: white; }
+        
+        @media (max-width: 576px) {
+            .info-row { flex-direction: column; gap: 5px; }
+            .info-label { width: auto; }
+        }
+        
+        .form-control {
+            padding: 10px 14px;
+            border: 1px solid #e0dbd3;
+            border-radius: 12px;
+            font-size: 13px;
+        }
+        .form-control:focus { border-color: #c4a747; outline: none; box-shadow: 0 0 0 2px rgba(196,167,71,0.1); }
+        .btn-primary { background: #c4a747; border: none; padding: 10px 20px; border-radius: 40px; font-size: 13px; }
+        .btn-primary:hover { background: #a88930; transform: translateY(-2px); }
+        .btn-secondary { background: #e0dbd3; border: none; padding: 10px 20px; border-radius: 40px; font-size: 13px; }
+        
+        .order-card {
+            background: white;
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid #f0ebe0;
+            margin-bottom: 18px;
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #f0ebe0;
+        }
+        .order-id { font-weight: 700; color: #c4a747; font-size: 13px; }
+        .order-status {
+            padding: 3px 10px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .status-delivered { background: #d4edda; color: #28a745; }
+        .status-processing { background: #fff3cd; color: #ffc107; }
+        .status-shipped { background: #cfe2ff; color: #0d6efd; }
+        .order-items { display: flex; gap: 12px; flex-wrap: wrap; }
+        .order-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: #faf7f0;
+            padding: 8px;
+            border-radius: 12px;
+            flex: 1;
+            min-width: 160px;
+        }
+        .order-item-img {
+            width: 45px;
+            height: 45px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .order-item-img i { font-size: 20px; color: #cbb99f; }
+        .order-item-info { font-size: 11px; }
+        .order-total { text-align: right; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0ebe0; font-size: 13px; }
+        
+        .wishlist-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #f0ebe0;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .wishlist-img {
+            width: 80px;
+            height: 80px;
+            background: #faf7f0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .wishlist-img img { width: 100%; height: 100%; object-fit: cover; }
+        .wishlist-info { flex: 1; min-width: 150px; }
+        .wishlist-title { font-weight: 700; margin-bottom: 5px; cursor: pointer; font-size: 14px; }
+        .wishlist-price { font-weight: 700; color: #c4a747; margin-bottom: 8px; font-size: 14px; }
+        .wishlist-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-wishlist-cart {
+            background: #c4a747;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .btn-wishlist-cart:hover { background: #a88930; transform: translateY(-2px); }
+        .btn-wishlist-remove {
+            background: transparent;
+            border: 1px solid #dc2626;
+            color: #dc2626;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 576px) {
+            .wishlist-item { flex-direction: column; align-items: center; text-align: center; }
+            .wishlist-img { width: 120px; height: 120px; }
+        }
+        
+        .toast-notification {
+            position: fixed; bottom: 30px; right: 30px; background: #2d2a24; color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            z-index: 9999; animation: slideIn 0.3s ease;
+            font-size: 13px;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        .footer { background: #1a1a18; color: #a0a09b; padding: 40px 0 20px; margin-top: 60px; text-align: center; }
+        .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; color: white; margin-bottom: 10px; }
+        .footer-logo span { color: #c4a747; }
+        
+        .back-to-top {
+            position: fixed; bottom: 30px; left: 30px; width: 40px; height: 40px;
+            background: #c4a747; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; color: white; cursor: pointer; opacity: 0;
+            visibility: hidden; transition: 0.3s; z-index: 1000;
+        }
+        .back-to-top.show { opacity: 1; visibility: visible; }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #c4a747;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<nav class="navbar fixed-top">
+    <div class="container">
+        <a href="/" class="logo"><span>BAG</span></a>
+        <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+        <div class="nav-links" id="navLinks">
+            <a href="/">Home</a>
+            <a href="/shop/">Shop</a>
+            <a href="/collections/">Collections</a>
+            <a href="/about/">About</a>
+            <a href="/contact/">Contact</a>
+        </div>
+        <div class="nav-icons">
+            <a href="/user/wishlist/"><i class="far fa-heart"></i><span class="wish-badge" id="wishlistCount">0</span></a>
+            <a href="/user/cart/"><i class="fas fa-shopping-bag"></i><span class="cart-badge" id="cartCount">0</span></a>
+            <div id="authContainer"></div>
+        </div>
+    </div>
+</nav>
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<section class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8" data-aos="fade-up">
+                <h1>My Profile</h1>
+                <nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="/">Home</a></li><li class="breadcrumb-item active">My Profile</li></ol></nav>
+                <p class="mt-3 text-muted">Manage your account information, orders, and preferences</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 mb-4">
+                <div class="profile-sidebar">
+                    <div class="profile-avatar">
+                        <img src="https://ui-avatars.com/api/?name=User&background=c4a747&color=fff&size=100" alt="Profile" class="avatar-img" id="avatarImg">
+                        <div class="avatar-upload-btn" onclick="document.getElementById('avatarUpload').click()"><i class="fas fa-camera"></i></div>
+                        <input type="file" id="avatarUpload" accept="image/*" style="display: none;" onchange="uploadProfilePicture(this)">
+                        <h3 class="profile-name" id="profileName">Loading...</h3>
+                        <p class="profile-email" id="profileEmail">Loading...</p>
+                    </div>
+                    <ul class="profile-menu">
+                        <li><a href="#" class="active" onclick="showSection('profile'); return false;"><i class="fas fa-user"></i> Profile Information</a></li>
+                        <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-lg-9">
+                <div id="profileSection">
+                    <div class="profile-card">
+                        <div class="card-title"><span>Profile Information</span><button class="edit-btn" onclick="enableEdit()"><i class="fas fa-edit me-1"></i> Edit Profile</button></div>
+                        <div id="profileView">
+                            <div class="info-row"><div class="info-label">Full Name</div><div class="info-value" id="displayName">Loading...</div></div>
+                            <div class="info-row"><div class="info-label">Email Address</div><div class="info-value" id="displayEmail">Loading...</div></div>
+                            <div class="info-row"><div class="info-label">Phone Number</div><div class="info-value" id="displayPhone">Loading...</div></div>
+                            <div class="info-row"><div class="info-label">Member Since</div><div class="info-value" id="displaySince">Loading...</div></div>
+                        </div>
+                        <div id="profileEdit" style="display: none;">
+                            <div class="mb-3"><label class="form-label">Full Name</label><input type="text" class="form-control" id="editName"></div>
+                            <div class="mb-3"><label class="form-label">Phone Number</label><input type="tel" class="form-control" id="editPhone"></div>
+                            <div class="mb-3"><label class="form-label">Current Password</label><input type="password" class="form-control" id="currentPassword" placeholder="Required to save changes"></div>
+                            <div class="mb-3"><label class="form-label">New Password (Optional)</label><input type="password" class="form-control" id="newPassword" placeholder="Enter new password"></div>
+                            <div class="mb-3"><label class="form-label">Confirm New Password</label><input type="password" class="form-control" id="confirmPassword" placeholder="Confirm new password"></div>
+                            <div class="d-flex gap-2"><button class="btn btn-primary" onclick="saveProfile()">Save Changes</button><button class="btn btn-secondary" onclick="cancelEdit()">Cancel</button></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="ordersSection" style="display: none;">
+                    <div class="profile-card"><div class="card-title">My Orders</div><div id="ordersList" class="text-center py-5"><div class="loading-spinner"></div><p class="mt-2">Loading orders...</p></div></div>
+                </div>
+                
+                <div id="wishlistSection" style="display: none;">
+                    <div class="profile-card"><div class="card-title">My Wishlist</div><div id="wishlistList" class="text-center py-5"><div class="loading-spinner"></div><p class="mt-2">Loading wishlist...</p></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer"><div class="container"><div class="footer-logo mb-2"><span>BAG</span></div><small>&copy; 2024 Bag. All rights reserved. | Crafted with ❤️</small></div></footer>
+<div class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({ duration: 800, once: true });
+    
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const navLinks = document.getElementById('navLinks');
+    const menuOverlay = document.getElementById('menuOverlay');
+    function closeMenu() { navLinks.classList.remove('show'); menuOverlay.classList.remove('show'); if(mobileMenuBtn){const icon=mobileMenuBtn.querySelector('i');icon.classList.remove('fa-times');icon.classList.add('fa-bars');} document.body.style.overflow=''; }
+    function openMenu() { navLinks.classList.add('show'); menuOverlay.classList.add('show'); if(mobileMenuBtn){const icon=mobileMenuBtn.querySelector('i');icon.classList.remove('fa-bars');icon.classList.add('fa-times');} document.body.style.overflow='hidden'; }
+    if(mobileMenuBtn){ mobileMenuBtn.addEventListener('click',(e)=>{ e.stopPropagation(); if(navLinks.classList.contains('show')) closeMenu(); else openMenu(); }); }
+    if(menuOverlay){ menuOverlay.addEventListener('click', closeMenu); }
+    document.querySelectorAll('#navLinks a').forEach(link=>{ link.addEventListener('click', closeMenu); });
+    
+    const API_BASE = window.location.origin + '/api';
+    let currentSection = 'profile';
+    let userData = {};
+    
+    window.addEventListener('scroll', () => { document.querySelector('.navbar')?.classList.toggle('scrolled', window.scrollY > 50); });
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => { backToTop.classList.toggle('show', window.scrollY > 300); });
+    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    
+    function showToast(msg, isErr = false) { const t = document.createElement('div'); t.className = 'toast-notification'; t.style.backgroundColor = isErr ? '#dc2626' : '#2d2a24'; t.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'} me-2"></i> ${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+    function getAuthHeaders() { const token = localStorage.getItem('access_token'); return token ? { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } : {}; }
+    
+    function showSection(section) {
+        currentSection = section;
+        document.getElementById('profileSection').style.display = section === 'profile' ? 'block' : 'none';
+        document.getElementById('ordersSection').style.display = section === 'orders' ? 'block' : 'none';
+        document.getElementById('wishlistSection').style.display = section === 'wishlist' ? 'block' : 'none';
+        document.querySelectorAll('.profile-menu a').forEach(link => link.classList.remove('active'));
+        if (event && event.target) event.target.classList.add('active');
+        if (section === 'orders') loadOrders();
+        if (section === 'wishlist') loadWishlist();
+    }
+    
+    function updateAuthUI() {
+        const token = localStorage.getItem('access_token');
+        const auth = document.getElementById('authContainer');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (token) {
+            auth.innerHTML = `<div class="user-menu"><a href="#" class="auth-btn"><i class="fas fa-user-circle me-1"></i> ${user.full_name || user.email?.split('@')[0] || 'My Account'} <i class="fas fa-chevron-down ms-1"></i></a><div class="user-dropdown"><a href="/user/dashboard/">Dashboard</a><a href="/user/orders/">My Orders</a><a href="/user/wishlist/">Wishlist</a><a href="/user/profile/">Profile</a><a href="/user/cart/">Cart</a><hr><a href="#" id="logoutBtn">Logout</a></div></div>`;
+            document.getElementById('logoutBtn')?.addEventListener('click', (e) => { e.preventDefault(); localStorage.clear(); showToast('Logged out'); setTimeout(() => location.reload(), 1000); });
+        } else { auth.innerHTML = `<a href="/login/" class="auth-btn"><i class="fas fa-sign-in-alt me-1"></i> Sign In</a>`; }
+    }
+    
+    async function updateBadges() {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            try {
+                const [cartRes, wishRes] = await Promise.all([fetch(`${API_BASE}/cart/`, { headers: { 'Authorization': `Bearer ${token}` } }), fetch(`${API_BASE}/wishlist/`, { headers: { 'Authorization': `Bearer ${token}` } })]);
+                if (cartRes.ok) { const d = await cartRes.json(); document.getElementById('cartCount').innerText = d.cart?.total_items || 0; }
+                if (wishRes.ok) { const w = await wishRes.json(); document.getElementById('wishlistCount').innerText = w.wishlist?.items?.length || 0; }
+            } catch(e) {}
+        } else { document.getElementById('cartCount').innerText = '0'; document.getElementById('wishlistCount').innerText = '0'; }
+    }
+    
+    async function uploadProfilePicture(input) {
+        const file = input.files[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) { showToast('Please select an image file', true); return; }
+        if (file.size > 5 * 1024 * 1024) { showToast('Image must be less than 5MB', true); return; }
+        const reader = new FileReader();
+        reader.onload = function(e) { document.getElementById('avatarImg').src = e.target.result; };
+        reader.readAsDataURL(file);
+        showToast('Uploading...');
+        const formData = new FormData();
+        formData.append('profile_picture', file);
+        try {
+            const response = await fetch(`${API_BASE}/auth/profile/`, { method: 'PUT', headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }, body: formData });
+            if (response.ok) {
+                const data = await response.json();
+                const user = data.user || data;
+                if (user.profile_picture_url) document.getElementById('avatarImg').src = user.profile_picture_url + '?t=' + new Date().getTime();
+                localStorage.setItem('user', JSON.stringify(user));
+                userData = user;
+                showToast('Profile picture updated!');
+            } else {
+                const nameForAvatar = userData.full_name || userData.email?.split('@')[0] || 'User';
+                document.getElementById('avatarImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(nameForAvatar)}&background=c4a747&color=fff&size=100`;
+                showToast('Failed to upload', true);
+            }
+        } catch(e) { showToast('Network error', true); }
+        input.value = '';
+    }
+    
+    async function loadUserProfile() {
+        const token = localStorage.getItem('access_token');
+        if (!token) { window.location.href = '/login/'; return; }
+        try {
+            const response = await fetch(`${API_BASE}/auth/profile/`, { headers: getAuthHeaders() });
+            if (response.ok) {
+                const data = await response.json();
+                userData = data.user || data;
+                document.getElementById('displayName').innerText = userData.full_name || 'Not set';
+                document.getElementById('displayEmail').innerText = userData.email;
+                document.getElementById('displayPhone').innerText = userData.phone || 'Not set';
+                document.getElementById('displaySince').innerText = userData.created_at ? new Date(userData.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'January 2024';
+                document.getElementById('profileName').innerText = userData.full_name || userData.email.split('@')[0];
+                document.getElementById('profileEmail').innerText = userData.email;
+                if (userData.profile_picture_url) document.getElementById('avatarImg').src = userData.profile_picture_url;
+                else { const name = userData.full_name || userData.email.split('@')[0]; document.getElementById('avatarImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=c4a747&color=fff&size=100`; }
+                document.getElementById('editName').value = userData.full_name || '';
+                document.getElementById('editPhone').value = userData.phone || '';
+                localStorage.setItem('user', JSON.stringify(userData));
+                updateAuthUI();
+            } else if (response.status === 401) { localStorage.clear(); window.location.href = '/login/'; }
+            else { showToast('Failed to load profile', true); }
+        } catch(e) { showToast('Failed to load profile', true); }
+    }
+    
+    async function saveProfile() {
+        const fullName = document.getElementById('editName').value;
+        const phone = document.getElementById('editPhone').value;
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        if (newPassword && newPassword !== confirmPassword) { showToast('Passwords do not match', true); return; }
+        try {
+            const profileRes = await fetch(`${API_BASE}/auth/profile/`, { method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify({ full_name: fullName, phone: phone }) });
+            if (!profileRes.ok) { const err = await profileRes.json(); showToast(err.error || 'Failed to update profile', true); return; }
+            if (newPassword) {
+                const passRes = await fetch(`${API_BASE}/auth/change-password/`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify({ current_password: currentPassword, new_password: newPassword, confirm_password: confirmPassword }) });
+                if (!passRes.ok) { const err = await passRes.json(); showToast(err.error || 'Failed to update password', true); return; }
+            }
+            showToast('Profile updated successfully!');
+            await loadUserProfile();
+            cancelEdit();
+        } catch(e) { showToast('Network error', true); }
+    }
+    
+    async function loadOrders() {
+        const container = document.getElementById('ordersList');
+        container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-2">Loading orders...</p></div>';
+        const token = localStorage.getItem('access_token');
+        if (!token) return;
+        try {
+            const response = await fetch(`${API_BASE}/orders/`, { headers: getAuthHeaders() });
+            if (response.ok) {
+                const orders = await response.json();
+                const ordersList = orders.results || orders;
+                if (ordersList.length === 0) { container.innerHTML = '<div class="text-center py-5"><i class="fas fa-box-open fa-3x text-muted mb-3"></i><p>No orders yet</p><a href="/shop/" class="btn btn-primary">Start Shopping</a></div>'; return; }
+                container.innerHTML = ordersList.map(order => `<div class="order-card"><div class="order-header"><div><span class="order-id">${order.order_id || 'ORD-' + order.id}</span><span class="ms-3 text-muted small">${new Date(order.created_at).toLocaleDateString()}</span></div><span class="order-status status-${order.status || 'processing'}">${(order.status || 'Processing').charAt(0).toUpperCase() + (order.status || 'Processing').slice(1)}</span></div><div class="order-items">${(order.items || []).map(item => `<div class="order-item"><div class="order-item-img">${item.image ? `<img src="${item.image}" alt="${item.name}">` : `<i class="fas fa-bag-shopping"></i>`}</div><div class="order-item-info"><strong>${item.name}</strong><br>Qty: ${item.quantity}<br>₹${item.price}</div></div>`).join('')}</div><div class="order-total"><strong>Total: ₹${parseFloat(order.total_amount || order.total).toFixed(2)}</strong></div></div>`).join('');
+            } else { container.innerHTML = '<div class="text-center py-5 text-danger">Failed to load orders</div>'; }
+        } catch(e) { container.innerHTML = '<div class="text-center py-5 text-danger">Error loading orders</div>'; }
+    }
+    
+    async function loadWishlist() {
+        const container = document.getElementById('wishlistList');
+        container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-2">Loading wishlist...</p></div>';
+        const token = localStorage.getItem('access_token');
+        if (!token) return;
+        try {
+            const response = await fetch(`${API_BASE}/wishlist/`, { headers: getAuthHeaders() });
+            if (response.ok) {
+                const data = await response.json();
+                const items = data.wishlist?.items || data.results || data || [];
+                if (items.length === 0) { container.innerHTML = '<div class="text-center py-5"><i class="far fa-heart fa-3x text-muted mb-3"></i><p>Your wishlist is empty</p><a href="/shop/" class="btn btn-primary">Start Shopping</a></div>'; return; }
+                document.getElementById('wishlistCount').innerText = items.length;
+                container.innerHTML = items.map(item => { const bag = item.bag_details || item; const final = parseFloat(bag.final_price || bag.price).toFixed(2); const img = bag.image || 'https://via.placeholder.com/80x80?text=Bag'; const slug = bag.slug || bag.id; return `<div class="wishlist-item"><div class="wishlist-img" onclick="window.location.href='/product/${slug}/'"><img src="${img}" alt="${bag.name}"></div><div class="wishlist-info"><div class="wishlist-title" onclick="window.location.href='/product/${slug}/'">${bag.name}</div><div class="wishlist-price">₹${final}</div><div class="wishlist-actions"><button class="btn-wishlist-cart" onclick="moveToCart(${bag.id})"><i class="fas fa-cart-plus me-1"></i> Move to Cart</button><button class="btn-wishlist-remove" onclick="removeFromWishlist(${bag.id})"><i class="fas fa-trash me-1"></i> Remove</button></div></div></div>`; }).join('');
+            } else { container.innerHTML = '<div class="text-center py-5 text-danger">Failed to load wishlist</div>'; }
+        } catch(e) { container.innerHTML = '<div class="text-center py-5 text-danger">Error loading wishlist</div>'; }
+    }
+    
+    async function moveToCart(productId) {
+        const token = localStorage.getItem('access_token');
+        if (!token) { showToast('Please login', true); return; }
+        try {
+            const res = await fetch(`${API_BASE}/cart/add/`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify({ bag_id: productId, quantity: 1 }) });
+            if (res.ok) { await removeFromWishlist(productId, false); showToast('Moved to cart!'); updateBadges(); }
+            else { const err = await res.json(); showToast(err.error || 'Failed', true); }
+        } catch(e) { showToast('Network error', true); }
+    }
+    
+    async function removeFromWishlist(productId, showMsg = true) {
+        const token = localStorage.getItem('access_token');
+        try {
+            const res = await fetch(`${API_BASE}/wishlist/remove/${productId}/`, { method: 'DELETE', headers: getAuthHeaders() });
+            if (res.ok) { if (showMsg) showToast('Removed from wishlist'); await loadWishlist(); updateBadges(); }
+            else { showToast('Failed to remove', true); }
+        } catch(e) { showToast('Network error', true); }
+    }
+    
+    function enableEdit() { document.getElementById('profileView').style.display = 'none'; document.getElementById('profileEdit').style.display = 'block'; document.getElementById('currentPassword').value = ''; document.getElementById('newPassword').value = ''; document.getElementById('confirmPassword').value = ''; }
+    function cancelEdit() { document.getElementById('profileView').style.display = 'block'; document.getElementById('profileEdit').style.display = 'none'; }
+    function logout() { localStorage.clear(); showToast('Logged out'); setTimeout(() => window.location.href = '/login/', 1000); }
+    
+    const token = localStorage.getItem('access_token');
+    if (!token) { window.location.href = '/login/'; } else { loadUserProfile(); loadOrders(); loadWishlist(); updateBadges(); updateAuthUI(); }
+</script>
+</body>
+</html>

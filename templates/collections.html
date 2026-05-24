@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Collections - Bag | Premium Handcrafted Bag Collections</title>
+    <meta name="description" content="Explore Bag's curated collections - Heritage Collection, Royal Embroidery, Modern Minimalist, Travel Essentials, and more. Discover timeless craftsmanship.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #fefcf8; color: #2a2a2a; overflow-x: hidden; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c4a747; border-radius: 10px; }
+        
+        .navbar {
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(12px);
+            padding: 15px 0;
+            transition: all 0.3s ease;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.03);
+        }
+        .navbar.scrolled { padding: 10px 0; box-shadow: 0 5px 25px rgba(0,0,0,0.08); }
+        .navbar .container { max-width: 1400px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .logo { 
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px; 
+            font-weight: 700; 
+            color: #2d2a24;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+        .logo span { color: #c4a747; font-weight: 800; }
+        .nav-links { display: flex; gap: 35px; align-items: center; }
+        .nav-links a { text-decoration: none; color: #3d3a35; font-weight: 500; transition: 0.3s; font-size: 14px; letter-spacing: 0.5px; }
+        .nav-links a:hover, .nav-links a.active { color: #c4a747; }
+        .nav-icons { display: flex; gap: 22px; align-items: center; }
+        .nav-icons a { color: #2d2a24; font-size: 18px; position: relative; transition: 0.3s; text-decoration: none; }
+        .nav-icons a:hover { color: #c4a747; }
+        .cart-badge, .wish-badge {
+            position: absolute; top: -8px; right: -12px; background: #c4a747; color: white;
+            border-radius: 50%; width: 18px; height: 18px; font-size: 10px;
+            display: flex; align-items: center; justify-content: center; font-weight: 700;
+        }
+        .auth-btn {
+            background: #c4a747;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.3s;
+            display: inline-block;
+        }
+        .auth-btn:hover { background: #a88930; color: white; transform: translateY(-2px); }
+        .user-menu { position: relative; display: inline-block; }
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            min-width: 180px;
+            display: none;
+            z-index: 1000;
+            margin-top: 10px;
+            border: 1px solid #f0ebe0;
+        }
+        .user-menu:hover .user-dropdown { display: block; }
+        .user-dropdown a {
+            display: block;
+            padding: 12px 20px;
+            color: #2d2a24;
+            text-decoration: none;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+        .user-dropdown a:hover { background: #fef9f0; color: #c4a747; }
+        .user-dropdown hr { margin: 0; border-color: #f0ebe0; }
+        
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #2d2a24;
+            cursor: pointer;
+            padding: 5px 10px;
+            z-index: 1001;
+        }
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        .menu-overlay.show { display: block; }
+        
+        @media (max-width: 992px) {
+            .mobile-menu-btn { display: block; }
+            .nav-links { 
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 280px;
+                height: 100vh;
+                background: white;
+                flex-direction: column;
+                padding: 80px 25px 30px;
+                transition: 0.3s ease-in-out;
+                box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+                z-index: 1000;
+                gap: 15px;
+                align-items: flex-start;
+                overflow-y: auto;
+            }
+            .nav-links.show { left: 0; }
+            .nav-links a { 
+                font-size: 16px; 
+                padding: 10px 0;
+                width: 100%;
+                border-bottom: 1px solid #f0ebe0;
+            }
+            .nav-icons { margin-left: auto; margin-right: 15px; }
+        }
+        
+        @media (max-width: 576px) {
+            .nav-icons { gap: 12px; }
+            .nav-icons a { font-size: 16px; }
+            .auth-btn { padding: 5px 12px; font-size: 11px; }
+            .logo { font-size: 22px; }
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, #faf7f0 0%, #f0ebe0 100%);
+            padding: 120px 0 60px;
+            position: relative;
+            overflow: hidden;
+        }
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -10%;
+            width: 50%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(196,167,71,0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .page-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 700; color: #2d2a24; }
+        .breadcrumb { background: transparent; padding: 0; margin-top: 15px; }
+        .breadcrumb-item a { color: #c4a747; text-decoration: none; }
+        .breadcrumb-item.active { color: #8e8c87; }
+        
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 36px; }
+            .page-header { padding: 100px 0 40px; }
+        }
+        
+        .collection-hero {
+            position: relative;
+            border-radius: 30px;
+            overflow: hidden;
+            margin-bottom: 60px;
+            cursor: pointer;
+            transition: all 0.4s;
+        }
+        .collection-hero:hover { transform: translateY(-8px); box-shadow: 0 25px 45px rgba(0,0,0,0.15); }
+        .collection-hero img { width: 100%; height: 500px; object-fit: cover; transition: transform 0.6s; }
+        .collection-hero:hover img { transform: scale(1.05); }
+        .collection-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 50px 40px 40px;
+            color: white;
+        }
+        .collection-overlay h2 { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 700; margin-bottom: 10px; }
+        .collection-overlay p { opacity: 0.9; margin-bottom: 20px; max-width: 500px; }
+        .collection-btn {
+            background: #c4a747;
+            color: white;
+            padding: 10px 28px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .collection-btn:hover { background: #a88930; color: white; transform: translateX(5px); }
+        
+        @media (max-width: 768px) {
+            .collection-hero img { height: 350px; }
+            .collection-overlay { padding: 30px 25px; }
+            .collection-overlay h2 { font-size: 28px; }
+        }
+        
+        .collection-card {
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            transition: all 0.4s;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+            height: 100%;
+            cursor: pointer;
+            border: 1px solid #f0ebe0;
+        }
+        .collection-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(196,167,71,0.15); border-color: #c4a747; }
+        .collection-card-img {
+            height: 240px;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(135deg, #faf7f0, #f0ebe0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .collection-card-img i {
+            font-size: 80px;
+            color: #c4a747;
+            opacity: 0.7;
+        }
+        .collection-card-info { padding: 25px; text-align: center; }
+        .collection-card-info h3 { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+        .collection-card-info p { color: #6b6a66; font-size: 14px; line-height: 1.6; margin-bottom: 0; }
+        
+        .collection-products {
+            background: #faf7f0;
+            padding: 60px 0;
+            margin: 40px 0;
+        }
+        .mini-product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            position: relative;
+        }
+        .mini-product-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(196,167,71,0.12); }
+        .mini-product-img { height: 200px; overflow: hidden; position: relative; cursor: pointer; }
+        .mini-product-img img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+        .mini-product-card:hover .mini-product-img img { transform: scale(1.05); }
+        .mini-product-info { padding: 15px; text-align: center; }
+        .mini-product-price { font-weight: 700; color: #c4a747; font-size: 18px; }
+        .product-action-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: #c4a747;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        .mini-product-card:hover .product-action-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .product-action-btn:hover {
+            background: #a88930;
+            transform: scale(1.1);
+        }
+        .product-rating i { color: #ffc107; font-size: 12px; margin-right: 2px; }
+        
+        @media (max-width: 768px) {
+            .product-action-btn { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Pagination Styles */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        .page-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid #e0dbd3;
+            background: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .page-btn:hover, .page-btn.active {
+            background: #c4a747;
+            border-color: #c4a747;
+            color: white;
+        }
+        @media (max-width: 576px) {
+            .page-btn { width: 36px; height: 36px; font-size: 14px; }
+        }
+        
+        /* Product Detail Page Styles */
+        .product-detail-wrapper {
+            padding: 60px 0;
+        }
+        .product-detail-image {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid #f0ebe0;
+            padding: 30px;
+            text-align: center;
+        }
+        .product-detail-image img {
+            max-width: 100%;
+            height: auto;
+            max-height: 450px;
+            object-fit: contain;
+        }
+        .product-detail-info h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #2d2a24;
+            margin-bottom: 15px;
+        }
+        .product-detail-price {
+            font-size: 28px;
+            font-weight: 800;
+            color: #c4a747;
+            margin-bottom: 20px;
+        }
+        .product-detail-meta {
+            background: #fef9f0;
+            padding: 15px 20px;
+            border-radius: 16px;
+            margin: 20px 0;
+        }
+        .product-detail-meta p { margin-bottom: 8px; }
+        .product-detail-meta strong { color: #2d2a24; width: 100px; display: inline-block; }
+        
+        @media (max-width: 768px) {
+            .product-detail-info h1 { font-size: 28px; }
+            .product-detail-price { font-size: 24px; }
+            .product-detail-meta strong { width: 80px; font-size: 13px; }
+            .product-detail-wrapper { padding: 30px 0; }
+            .product-detail-image { padding: 15px; }
+        }
+        
+        .newsletter {
+            background: linear-gradient(135deg, #2d2a24, #3d3a35);
+            padding: 60px 0;
+            color: white;
+        }
+        .newsletter .input-group input {
+            border-radius: 50px 0 0 50px;
+            border: none;
+            padding: 15px 25px;
+            background: rgba(255,255,255,0.95);
+        }
+        .newsletter .btn {
+            border-radius: 0 50px 50px 0;
+            padding: 15px 30px;
+            background: #c4a747;
+            color: white;
+            font-weight: 600;
+            transition: 0.3s;
+            border: none;
+        }
+        .newsletter .btn:hover { background: #a88930; }
+        
+        @media (max-width: 576px) {
+            .newsletter .input-group { flex-direction: column; }
+            .newsletter .input-group input { border-radius: 50px; margin-bottom: 10px; }
+            .newsletter .btn { border-radius: 50px; }
+        }
+        
+        .footer { background: #1a1a18; color: #a0a09b; padding: 60px 0 30px; margin-top: 0; }
+        .footer h5 { color: white; font-size: 16px; font-weight: 600; margin-bottom: 20px; letter-spacing: 1px; }
+        .footer a { color: #a0a09b; text-decoration: none; transition: 0.3s; }
+        .footer a:hover { color: #c4a747; }
+        .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 700; color: white; }
+        .footer-logo span { color: #c4a747; }
+        
+        @media (max-width: 768px) {
+            .footer { text-align: center; }
+            .footer .d-flex { justify-content: center; }
+        }
+        
+        .toast-notification {
+            position: fixed; bottom: 30px; right: 30px; background: #2d2a24; color: white;
+            padding: 12px 24px; border-radius: 50px; z-index: 9999; animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        .back-to-top {
+            position: fixed; bottom: 30px; left: 30px; width: 45px; height: 45px;
+            background: #c4a747; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; color: white; cursor: pointer; opacity: 0;
+            visibility: hidden; transition: 0.3s; z-index: 1000;
+        }
+        .back-to-top.show { opacity: 1; visibility: visible; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar fixed-top">
+    <div class="container">
+        <a href="/" class="logo"><span>BAG</span></a>
+        <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+        <div class="nav-links" id="navLinks">
+            <a href="/">Home</a>
+            <a href="/shop/">Shop</a>
+            <a href="/collections/" class="active">Collections</a>
+            <a href="/about/">About</a>
+            <a href="/contact/">Contact</a>
+        </div>
+        <div class="nav-icons">
+            <a href="/search/"><i class="fas fa-search"></i></a>
+            <a href="/user/wishlist/"><i class="far fa-heart"></i><span class="wish-badge" id="wishlistCount">0</span></a>
+            <a href="/user/cart/"><i class="fas fa-shopping-bag"></i><span class="cart-badge" id="cartCount">0</span></a>
+            <div id="authContainer"></div>
+        </div>
+    </div>
+</nav>
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<!-- Collections Container -->
+<div id="collectionsContainer">
+    <section class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8" data-aos="fade-up">
+                    <h1>Our Collections</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/">Home</a></li>
+                            <li class="breadcrumb-item active">Collections</li>
+                        </ol>
+                    </nav>
+                    <p class="mt-3 text-muted">Discover our thoughtfully curated collections, each inspired by heritage, artistry, and timeless elegance.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+            <div id="featuredCollectionContainer" class="collection-hero" data-aos="fade-up">
+                <div class="text-center py-5"><div class="spinner-border text-warning"></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-4">
+        <div class="container">
+            <div class="section-header text-center mb-5" data-aos="fade-up">
+                <span class="section-subtitle" style="font-size:12px; letter-spacing:3px; color:#c4a747;">Curated For You</span>
+                <h2 class="section-title" style="font-family:'Cormorant Garamond',serif; font-size:42px;">Explore All Collections</h2>
+                <div class="section-divider" style="width:60px; height:3px; background:#c4a747; margin:20px auto 0;"></div>
+            </div>
+            <div class="row g-4" id="collectionsGrid">
+                <div class="col-12 text-center"><div class="spinner-border text-warning"></div></div>
+            </div>
+            <div id="collectionsPagination" class="pagination-container"></div>
+        </div>
+    </section>
+
+    <section class="collection-products">
+        <div class="container">
+            <div class="text-center mb-4" data-aos="fade-up">
+                <span class="section-subtitle" style="font-size:12px; letter-spacing:3px; color:#c4a747;">Bestsellers</span>
+                <h2 class="section-title" style="font-family:'Cormorant Garamond',serif; font-size:36px;">Popular Picks</h2>
+            </div>
+            <div class="row g-4" id="featuredProductsContainer">
+                <div class="col-12 text-center"><div class="spinner-border text-warning"></div></div>
+            </div>
+            <div id="productsPagination" class="pagination-container"></div>
+        </div>
+    </section>
+
+    <section class="newsletter">
+        <div class="container" data-aos="fade-up">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-7">
+                    <h3 class="mb-3" style="font-size: 28px;">Subscribe to Our Newsletter</h3>
+                    <p class="mb-4 opacity-75">Get 15% off your first order and exclusive updates on new collections</p>
+                    <form id="newsletterForm" class="row g-3 justify-content-center">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <input type="email" class="form-control" placeholder="Your email address" required>
+                                <button class="btn" type="submit">Subscribe <i class="fas fa-paper-plane ms-2"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Product Detail Container -->
+<div id="productDetailContainer" style="display: none;">
+    <section class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h1 id="detailPageTitle">Product Details</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" onclick="backToCollections(); return false;">Collections</a></li>
+                            <li class="breadcrumb-item active" id="breadcrumbProductName">Product</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="product-detail-wrapper">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="product-detail-image">
+                        <img id="detailProductImage" src="" alt="Product">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="product-detail-info">
+                        <h1 id="detailProductName">Loading...</h1>
+                        <div class="product-detail-price">₹<span id="detailProductPrice">0</span><span id="detailOriginalPrice" style="text-decoration: line-through; font-size: 18px; color: #999; margin-left: 10px;"></span></div>
+                        <p id="detailProductDesc" style="color: #6b6a66; line-height: 1.7;"></p>
+                        <div class="product-detail-meta">
+                            <p><strong>SKU:</strong> <span id="detailSku"></span></p>
+                            <p><strong>Categories:</strong> <span id="detailCategories"></span></p>
+                            <p><strong>Availability:</strong> <span id="detailStock"></span></p>
+                            <p><strong>Material:</strong> Premium Handcrafted Leather</p>
+                            <p><strong>Origin:</strong> Handmade in India</p>
+                        </div>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <button class="btn-add-cart" id="detailAddToCartBtn" style="background:#2d2a24; color:white; padding:12px 30px; border-radius:40px; border:none;"><i class="fas fa-shopping-bag me-2"></i> Add to Cart</button>
+                            <button class="btn-wishlist-detail" id="detailWishlistBtn" style="background:white; border:2px solid #e2dbd2; padding:12px 30px; border-radius:40px;"><i class="far fa-heart me-2"></i> Wishlist</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="footer-logo mb-3"><span>BAG</span></div>
+                <p>Crafting timeless elegance since 2015. Each bag tells a story of heritage, artistry, and passion.</p>
+                <div class="d-flex gap-3 mt-3"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-pinterest"></i></a></div>
+            </div>
+            <div class="col-lg-2"><h5>Quick Links</h5><ul class="list-unstyled"><li><a href="/">Home</a></li><li><a href="/shop/">Shop</a></li><li><a href="/collections/">Collections</a></li><li><a href="/about/">About</a></li></ul></div>
+            <div class="col-lg-3"><h5>Customer Care</h5><ul class="list-unstyled"><li><a href="/shipping/">Shipping Info</a></li><li><a href="/returns/">Returns & Exchanges</a></li><li><a href="/privacy/">Privacy Policy</a></li><li><a href="/terms/">Terms of Service</a></li></ul></div>
+            <div class="col-lg-3"><h5>Contact Us</h5><ul class="list-unstyled"><li><i class="fas fa-map-marker-alt me-2"></i> 123 Heritage Street</li><li><i class="fas fa-phone me-2"></i> +91 98765 43210</li><li><i class="fas fa-envelope me-2"></i> info@bag.com</li></ul></div>
+        </div>
+        <hr class="mt-4" style="border-color: #333;">
+        <div class="text-center pt-3"><small>&copy; 2024 Bag. All rights reserved.</small></div>
+    </div>
+</footer>
+
+<div class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({ duration: 800, once: true });
+    
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const navLinks = document.getElementById('navLinks');
+    const menuOverlay = document.getElementById('menuOverlay');
+    function closeMenu() { navLinks.classList.remove('show'); menuOverlay.classList.remove('show'); if(mobileMenuBtn){const icon=mobileMenuBtn.querySelector('i');icon.classList.remove('fa-times');icon.classList.add('fa-bars');} document.body.style.overflow=''; }
+    function openMenu() { navLinks.classList.add('show'); menuOverlay.classList.add('show'); if(mobileMenuBtn){const icon=mobileMenuBtn.querySelector('i');icon.classList.remove('fa-bars');icon.classList.add('fa-times');} document.body.style.overflow='hidden'; }
+    if(mobileMenuBtn){ mobileMenuBtn.addEventListener('click',(e)=>{ e.stopPropagation(); if(navLinks.classList.contains('show')) closeMenu(); else openMenu(); }); }
+    if(menuOverlay){ menuOverlay.addEventListener('click', closeMenu); }
+    document.querySelectorAll('#navLinks a').forEach(link=>{ link.addEventListener('click', closeMenu); });
+    
+    const API_BASE = window.location.origin + '/api';
+    let productDataCache = {};
+    let allCategories = [];
+    let allProducts = [];
+    let categoriesCurrentPage = 1;
+    let productsCurrentPage = 1;
+    let categoriesTotalPages = 0;
+    let productsTotalPages = 0;
+    const categoriesPerPage = 2;
+    const productsPerPage = 4;
+    
+    function renderStars(rating) { let full=Math.floor(rating||4.5), html=''; for(let i=1;i<=full;i++) html+='<i class="fas fa-star"></i>'; if((rating||4.5)-full>=0.5) html+='<i class="fas fa-star-half-alt"></i>'; for(let i=full+(((rating||4.5)-full>=0.5)?1:0);i<5;i++) html+='<i class="far fa-star"></i>'; return html; }
+    function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>]/g, m=> m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
+    function showToast(msg,isErr=false){ const t=document.createElement('div'); t.className='toast-notification'; t.style.backgroundColor=isErr?'#dc2626':'#2d2a24'; t.innerHTML=`<i class="fas ${isErr?'fa-exclamation-triangle':'fa-check-circle'} me-2"></i> ${msg}`; document.body.appendChild(t); setTimeout(()=>t.remove(),3000); }
+    
+    window.addEventListener('scroll',()=>{ document.querySelector('.navbar')?.classList.toggle('scrolled', window.scrollY>50); });
+    const backToTop=document.getElementById('backToTop');
+    window.addEventListener('scroll',()=>{ backToTop.classList.toggle('show', window.scrollY>300); });
+    backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+    
+    function updateAuthUI(){
+        const token=localStorage.getItem('access_token');
+        const auth=document.getElementById('authContainer');
+        const user=JSON.parse(localStorage.getItem('user')||'{}');
+        if(token){
+            auth.innerHTML=`<div class="user-menu"><a href="#" class="auth-btn"><i class="fas fa-user-circle me-1"></i> ${user.full_name||user.email?.split('@')[0]||'My Account'} <i class="fas fa-chevron-down ms-1"></i></a><div class="user-dropdown"><a href="/user/dashboard/">Dashboard</a><a href="/user/orders/">Orders</a><a href="/user/wishlist/">Wishlist</a><a href="/user/profile/">Profile</a><a href="/user/cart/">Cart</a><hr><a href="#" id="logoutBtn">Logout</a></div></div>`;
+            document.getElementById('logoutBtn')?.addEventListener('click',(e)=>{ e.preventDefault(); localStorage.clear(); showToast('Logged out'); setTimeout(()=>location.reload(),1000); });
+        } else auth.innerHTML=`<a href="/login/" class="auth-btn"><i class="fas fa-sign-in-alt me-1"></i> Sign In</a>`;
+    }
+    
+    async function updateBadges(){
+        const token=localStorage.getItem('access_token');
+        if(token){
+            try{
+                const[cartRes,wishRes]=await Promise.all([fetch(`${API_BASE}/cart/`,{headers:{'Authorization':`Bearer ${token}`}}),fetch(`${API_BASE}/wishlist/`,{headers:{'Authorization':`Bearer ${token}`}})]);
+                const cartData=await cartRes.json(), wishData=await wishRes.json();
+                document.getElementById('cartCount').innerText=cartData.cart?.total_items||0;
+                document.getElementById('wishlistCount').innerText=wishData.wishlist?.items?.length||0;
+            }catch(e){}
+        } else { document.getElementById('cartCount').innerText='0'; document.getElementById('wishlistCount').innerText='0'; }
+    }
+    
+    function navigateToProductDetail(productId){ const url=new URL(window.location.href); url.searchParams.set('product',productId); window.history.pushState({productId},'',url); loadProductDetailPage(productId); }
+    function backToCollections(){ const url=new URL(window.location.href); url.searchParams.delete('product'); window.history.pushState({},'',url); document.getElementById('collectionsContainer').style.display='block'; document.getElementById('productDetailContainer').style.display='none'; }
+    
+    async function loadProductDetailPage(productId){
+        let product=productDataCache[productId];
+        if(!product){
+            try{
+                const res=await fetch(`${API_BASE}/products/bags/${productId}/`);
+                if(res.ok) product=await res.json();
+                else{ showToast('Product not found',true); backToCollections(); return; }
+            }catch(e){ showToast('Error loading product',true); backToCollections(); return; }
+        }
+        document.getElementById('collectionsContainer').style.display='none';
+        document.getElementById('productDetailContainer').style.display='block';
+        document.getElementById('detailProductName').innerText=product.name;
+        document.getElementById('detailProductDesc').innerText=product.description||'This exquisite handcrafted bag features premium quality and timeless elegance.';
+        document.getElementById('detailProductPrice').innerText=(product.final_price||product.price).toFixed(2);
+        if(product.discount_price) document.getElementById('detailOriginalPrice').innerHTML=`₹${parseFloat(product.price).toFixed(2)}`;
+        else document.getElementById('detailOriginalPrice').innerHTML='';
+        document.getElementById('detailProductImage').src=product.image||'https://via.placeholder.com/400x400?text=Bag';
+        document.getElementById('detailSku').innerText=product.sku||`BAG-${product.id}`;
+        document.getElementById('detailCategories').innerText=product.category_names||'Handbags';
+        document.getElementById('detailStock').innerHTML=(product.stock>0)?'<span class="text-success">In Stock</span>':'<span class="text-danger">Out of Stock</span>';
+        document.getElementById('breadcrumbProductName').innerText=product.name;
+        document.getElementById('detailPageTitle').innerText=product.name;
+        document.getElementById('detailAddToCartBtn').onclick=()=>addToCart(productId);
+        document.getElementById('detailWishlistBtn').onclick=()=>addToWishlist(productId);
+    }
+    
+    async function addToCart(productId,event){
+        if(event){ event.stopPropagation(); event.preventDefault(); }
+        const token=localStorage.getItem('access_token');
+        if(!token){ showToast('Please login to add to cart',true); setTimeout(()=>window.location.href='/login/',1500); return; }
+        try{
+            const res=await fetch(`${API_BASE}/cart/add/`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({bag_id:productId,quantity:1})});
+            const data=await res.json();
+            if(res.ok&&data.success){ showToast('Added to cart!'); await updateBadges(); }
+            else showToast(data.error||'Failed',true);
+        }catch(e){ showToast('Network error',true); }
+    }
+    
+    async function addToWishlist(productId){
+        const token=localStorage.getItem('access_token');
+        if(!token){
+            let guest=JSON.parse(localStorage.getItem('bag_wishlist'))||[];
+            if(!guest.includes(productId)){ guest.push(productId); localStorage.setItem('bag_wishlist',JSON.stringify(guest)); updateBadges(); showToast('Added to wishlist!'); }
+            else showToast('Already in wishlist',true);
+            return;
+        }
+        try{
+            const res=await fetch(`${API_BASE}/wishlist/add/`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({bag_id:productId})});
+            if(res.ok){ updateBadges(); showToast('Added to wishlist!'); }
+            else{ const err=await res.json(); showToast(err.error||'Failed',true); }
+        }catch(e){ showToast('Error',true); }
+    }
+    
+    async function loadFeaturedCollection(){
+        const container=document.getElementById('featuredCollectionContainer');
+        try{
+            const res=await fetch(`${API_BASE}/products/categories/`);
+            const data=await res.json();
+            const categories=data.results||data||[];
+            if(categories.length===0){ container.innerHTML='<div class="text-center py-5 text-muted">No collections available</div>'; return; }
+            const featured=categories[0];
+            container.innerHTML=`<img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=1200" alt="${featured.name} Collection"><div class="collection-overlay"><span class="badge bg-warning text-dark mb-2">Featured Collection</span><h2>The ${featured.name} Collection</h2><p>${featured.description||'Discover our exquisite collection of handcrafted bags.'}</p><a href="/shop/?category=${featured.slug}" class="collection-btn">Explore Collection <i class="fas fa-arrow-right"></i></a></div>`;
+            container.onclick=()=>window.location.href=`/shop/?category=${featured.slug}`;
+        }catch(e){ container.innerHTML='<div class="text-center py-5 text-danger">Failed to load</div>'; }
+    }
+    
+    async function loadCollections(){
+        try{
+            const res=await fetch(`${API_BASE}/products/categories/`);
+            const data=await res.json();
+            allCategories=data.results||data||[];
+            categoriesTotalPages=Math.ceil(allCategories.length/categoriesPerPage);
+            renderCategoriesPage(1);
+            renderCategoriesPagination();
+        }catch(e){ console.error(e); }
+    }
+    
+    function renderCategoriesPage(page){
+        const container=document.getElementById('collectionsGrid');
+        const start=(page-1)*categoriesPerPage;
+        const end=start+categoriesPerPage;
+        const cats=allCategories.slice(start,end);
+        const icons={'tote':'fa-bag-shopping','handbag':'fa-briefcase','backpack':'fa-backpack','clutch':'fa-hand-peace','travel':'fa-suitcase','heritage':'fa-crown','royal':'fa-gem','default':'fa-bag-shopping'};
+        container.innerHTML=cats.map((cat,idx)=>{
+            let icon=icons.default;
+            for(const[key,val] of Object.entries(icons)) if(cat.slug?.toLowerCase().includes(key)||cat.name?.toLowerCase().includes(key)){ icon=val; break; }
+            return `<div class="col-md-6" data-aos="fade-up" data-aos-delay="${(idx%2)*100}"><div class="collection-card" onclick="window.location.href='/shop/?category=${cat.slug}'"><div class="collection-card-img"><i class="fas ${icon}"></i></div><div class="collection-card-info"><h3>${escapeHtml(cat.name)}</h3><p>${cat.description||'Discover our exquisite collection of handcrafted bags.'}</p></div></div></div>`;
+        }).join('');
+    }
+    
+    function renderCategoriesPagination(){
+        const pag=document.getElementById('collectionsPagination');
+        if(categoriesTotalPages<=1){ pag.innerHTML=''; return; }
+        let html='';
+        for(let i=1;i<=categoriesTotalPages;i++) html+=`<button class="page-btn ${i===categoriesCurrentPage?'active':''}" onclick="goToCategoriesPage(${i})">${i}</button>`;
+        pag.innerHTML=html;
+    }
+    
+    function goToCategoriesPage(page){ categoriesCurrentPage=page; renderCategoriesPage(page); renderCategoriesPagination(); window.scrollTo({top:400,behavior:'smooth'}); }
+    
+    async function loadFeaturedProducts(){
+        try{
+            const res=await fetch(`${API_BASE}/products/bags/?page_size=100`);
+            const data=await res.json();
+            allProducts=data.results||data||[];
+            allProducts.forEach(p=>productDataCache[p.id]=p);
+            productsTotalPages=Math.ceil(allProducts.length/productsPerPage);
+            renderProductsPage(1);
+            renderProductsPagination();
+        }catch(e){ console.error(e); }
+    }
+    
+    function renderProductsPage(page){
+        const container=document.getElementById('featuredProductsContainer');
+        const start=(page-1)*productsPerPage;
+        const end=start+productsPerPage;
+        const products=allProducts.slice(start,end);
+        if(products.length===0){ container.innerHTML='<div class="col-12 text-center text-muted">No products found</div>'; return; }
+        container.innerHTML=products.map(p=>{
+            const final=(p.final_price||p.price).toFixed(2);
+            const orig=p.discount_price?parseFloat(p.price).toFixed(2):null;
+            const disc=p.discount_percentage||0;
+            const rating=p.rating||4.5;
+            return `<div class="col-md-3 col-sm-6"><div class="mini-product-card"><div class="mini-product-img" onclick="navigateToProductDetail(${p.id})"><img src="${p.image||'https://via.placeholder.com/300x200?text=Bag'}" alt="${escapeHtml(p.name)}">${disc>0?`<span style="position:absolute; top:10px; left:10px; background:#c4a747; color:white; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600;">-${disc}%</span>`:''}</div><div class="mini-product-info"><h6 class="mb-1" style="cursor:pointer;" onclick="navigateToProductDetail(${p.id})">${escapeHtml(p.name)}</h6><div class="product-rating mb-1">${renderStars(rating)}</div><div><span class="mini-product-price">₹${final}</span>${orig?`<span style="text-decoration:line-through; font-size:12px; color:#999; margin-left:8px;">₹${orig}</span>`:''}</div></div><button class="product-action-btn" onclick="event.stopPropagation(); addToCart(${p.id}, event)"><i class="fas fa-cart-plus"></i></button></div></div>`;
+        }).join('');
+    }
+    
+    function renderProductsPagination(){
+        const pag=document.getElementById('productsPagination');
+        if(productsTotalPages<=1){ pag.innerHTML=''; return; }
+        let html='';
+        for(let i=1;i<=productsTotalPages;i++) html+=`<button class="page-btn ${i===productsCurrentPage?'active':''}" onclick="goToProductsPage(${i})">${i}</button>`;
+        pag.innerHTML=html;
+    }
+    
+    function goToProductsPage(page){ productsCurrentPage=page; renderProductsPage(page); renderProductsPagination(); window.scrollTo({top:800,behavior:'smooth'}); }
+    
+    document.getElementById('newsletterForm')?.addEventListener('submit',(e)=>{
+        e.preventDefault();
+        const email=e.target.querySelector('input')?.value;
+        if(email&&email.includes('@')){ showToast('Subscribed!'); e.target.reset(); }
+        else showToast('Valid email required',true);
+    });
+    
+    window.addEventListener('popstate',()=>{ let pid=new URLSearchParams(window.location.search).get('product'); if(pid) loadProductDetailPage(parseInt(pid)); else backToCollections(); });
+    
+    window.goToCategoriesPage=goToCategoriesPage;
+    window.goToProductsPage=goToProductsPage;
+    window.navigateToProductDetail=navigateToProductDetail;
+    window.backToCollections=backToCollections;
+    window.addToCart=addToCart;
+    
+    let initialProductId=new URLSearchParams(window.location.search).get('product');
+    if(initialProductId) loadProductDetailPage(parseInt(initialProductId));
+    
+    loadFeaturedCollection();
+    loadCollections();
+    loadFeaturedProducts();
+    updateAuthUI();
+    updateBadges();
+</script>
+</body>
+</html>
