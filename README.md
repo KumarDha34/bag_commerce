@@ -2,26 +2,6 @@
 
 A complete, fully responsive e-commerce website for a premium handcrafted bags brand. This project delivers a seamless shopping experience with modern UI/UX, complete user account management, cart functionality, wishlist, and order tracking.
 
-![Website Preview](https://via.placeholder.com/1200x630?text=Bag+E-commerce+Website)
-
----
-
-## 📋 Table of Contents
-
-- [Overview](#-overview)
-- [Features](#-features)
-- [Pages & Sections](#-pages--sections)
-- [Technology Stack](#-technology-stack)
-- [Project Structure](#-project-structure)
-- [Installation & Setup](#-installation--setup)
-- [API Integration](#-api-integration)
-- [Deployment](#-deployment)
-- [Screenshots](#-screenshots)
-- [Future Enhancements](#-future-enhancements)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Contact](#-contact)
-
 ---
 
 ## 🎯 Overview
@@ -144,19 +124,3 @@ This frontend application is designed to work with a Django REST Framework backe
 
 
 ---
-
-## 🚀 Installation & Setup
-
-### Prerequisites
-
-- Web browser (Chrome, Firefox, Safari, Edge)
-- Local web server (optional, for testing)
-- Backend API server (for full functionality)
-
-### Quick Start
-
-#### 1. Clone the repository
-
-```bash
-git clone https://github.com/your-username/bag-website.git
-cd bag-website
