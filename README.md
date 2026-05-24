@@ -122,19 +122,3 @@ This frontend application is designed to work with a Django REST Framework backe
 
 
 ---
-
-## 🚀 Installation & Setup
-
-### Prerequisites
-
-- Web browser (Chrome, Firefox, Safari, Edge)
-- Local web server (optional, for testing)
-- Backend API server (for full functionality)
-
-### Quick Start
-
-#### 1. Clone the repository
-
-```bash
-git clone https://github.com/your-username/bag-website.git
-cd bag-website
