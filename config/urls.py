@@ -66,6 +66,8 @@ urlpatterns = [
     path('api/orders/', include('apps.orders.urls')),
     path('api/payments/', include('apps.payments.urls')),
     path('api/reviews/', include('apps.reviews.urls')),
+    path('api/contact/', include('apps.contact.urls')),
+
 
 
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
@@ -98,6 +100,7 @@ urlpatterns = [
     path('admin-users/', TemplateView.as_view(template_name='admin/users.html'), name='admin_users'),
     path('admin-payments/', TemplateView.as_view(template_name='admin/payments.html'), name='admin_payments'),
     path('admin-update-qr/', TemplateView.as_view(template_name='admin/update_qr.html'), name='update-qr'),
+    path('admin-contact/', TemplateView.as_view(template_name='admin/contact.html'), name='admin-contact'),
 
 ]
 

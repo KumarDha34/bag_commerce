@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orders Management - Bag Admin</title>
+    <title>Orders Management - Bag Admin | Smart Priority View</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -11,6 +11,7 @@
         * { font-family: 'Inter', sans-serif; }
         body { background: #f0f2f5; }
         
+        /* Sidebar styles */
         .sidebar {
             width: 280px;
             background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
@@ -21,11 +22,9 @@
             transition: all 0.3s;
             z-index: 1000;
         }
-        
         .sidebar-header { padding: 25px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .sidebar-header .logo-icon { font-size: 40px; margin-bottom: 10px; }
         .sidebar-header h4 { font-size: 20px; font-weight: 700; margin: 0; }
-        
         .nav-menu { padding: 20px 0; }
         .nav-link {
             display: flex;
@@ -36,12 +35,11 @@
             transition: all 0.3s;
             margin: 4px 12px;
             border-radius: 12px;
+            position: relative;
         }
         .nav-link:hover, .nav-link.active { background: #667eea; color: white; }
         .nav-link i { width: 25px; margin-right: 15px; font-size: 18px; }
-        
         .main-content { margin-left: 280px; padding: 20px; transition: all 0.3s; }
-        
         .top-header {
             background: white;
             padding: 15px 25px;
@@ -53,7 +51,6 @@
             flex-wrap: wrap;
             gap: 15px;
         }
-        
         .stat-card {
             background: white;
             border-radius: 16px;
@@ -67,6 +64,7 @@
         .stat-value { font-size: 28px; font-weight: 700; margin-bottom: 5px; }
         .stat-label { color: #6c757d; font-size: 14px; }
         
+        /* Filter bar styles */
         .search-bar {
             display: flex;
             gap: 15px;
@@ -76,146 +74,213 @@
         }
         .search-input { flex: 1; position: relative; min-width: 200px; }
         .search-input i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #adb5bd; }
-        .search-input input { width: 100%; padding: 12px 15px 12px 45px; border: 2px solid #e9ecef; border-radius: 12px; font-size: 14px; }
-        .search-input input:focus { border-color: #667eea; outline: none; }
+        .search-input input { width: 100%; padding: 12px 15px 12px 45px; border: 2px solid #e9ecef; border-radius: 12px; font-size: 14px; transition: all 0.2s; }
+        .search-input input:focus { border-color: #667eea; outline: none; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        .filter-select { padding: 10px 15px; border: 2px solid #e9ecef; border-radius: 12px; background: white; min-width: 150px; transition: all 0.2s; }
+        .filter-select:focus { border-color: #667eea; outline: none; }
         
-        .filter-select {
-            padding: 10px 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            background: white;
-            min-width: 150px;
-        }
-        
+        /* ========= ENHANCED ORDER CARDS WITH PAYMENT-BASED PRIORITY ========= */
         .order-card {
             background: white;
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
-            transition: all 0.3s;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+            border: 1px solid rgba(0,0,0,0.03);
+            position: relative;
         }
-        .order-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .order-card:hover { transform: translateY(-5px); box-shadow: 0 20px 30px -12px rgba(0,0,0,0.15); }
+        
+        /* 🚨 CRITICAL: Bank QR Payment - Needs Verification (HIGHEST PRIORITY) */
+        .order-card.critical-bankqr {
+            border-left: 6px solid #ff3b30;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+            box-shadow: 0 8px 25px rgba(255, 59, 48, 0.25);
+            animation: criticalPulse 1.8s ease-in-out infinite;
+        }
+        @keyframes criticalPulse {
+            0% { box-shadow: 0 4px 15px rgba(255, 59, 48, 0.15); border-left-color: #ff3b30; }
+            50% { box-shadow: 0 10px 30px rgba(255, 59, 48, 0.45); border-left-color: #ff6b6b; background: linear-gradient(135deg, #fff0f0 0%, #ffffff 100%); }
+            100% { box-shadow: 0 4px 15px rgba(255, 59, 48, 0.15); border-left-color: #ff3b30; }
+        }
+        
+        /* 🟠 COD Pending - Needs Delivery Confirmation */
+        .order-card.pending-cod {
+            border-left: 6px solid #ff9500;
+            background: linear-gradient(135deg, #fffbf0 0%, #ffffff 100%);
+            box-shadow: 0 6px 18px rgba(255, 149, 0, 0.2);
+            animation: warmGlow 2s ease-in-out infinite;
+        }
+        @keyframes warmGlow {
+            0% { box-shadow: 0 4px 12px rgba(255, 149, 0, 0.1); }
+            50% { box-shadow: 0 8px 22px rgba(255, 149, 0, 0.28); }
+            100% { box-shadow: 0 4px 12px rgba(255, 149, 0, 0.1); }
+        }
+        
+        /* 🟣 Recent Order (within 24h) - Warm Highlight */
+        .order-card.recent-order {
+            border-left: 6px solid #af52de;
+            background: #faf5ff;
+        }
+        
+        /* Priority Badges */
+        .priority-badge {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff3b30, #ff6b6b);
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 5px 14px;
+            border-radius: 40px;
+            letter-spacing: 0.5px;
+            z-index: 2;
+            box-shadow: 0 3px 12px rgba(255,59,48,0.5);
+            animation: badgeShake 0.5s ease-in-out 1;
+        }
+        .priority-badge-cod {
+            background: linear-gradient(135deg, #ff9500, #ffb347);
+            box-shadow: 0 3px 12px rgba(255,149,0,0.4);
+        }
+        @keyframes badgeShake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-3px); }
+            75% { transform: translateX(3px); }
+        }
+        .priority-badge i, .priority-badge-cod i { margin-right: 6px; font-size: 10px; animation: blinkIcon 1.2s infinite; }
+        @keyframes blinkIcon { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        /* Tags */
+        .payment-action-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 40px;
+            margin-left: 12px;
+        }
+        .bankqr-tag {
+            background: linear-gradient(135deg, #ff3b30, #ff6b6b);
+            color: white;
+        }
+        .cod-tag {
+            background: linear-gradient(135deg, #ff9500, #ffb347);
+            color: white;
+        }
+        .recent-tag {
+            background: linear-gradient(135deg, #af52de, #c46eff);
+            color: white;
+        }
         
         .order-header {
-            background: linear-gradient(135deg, #667eea, #a88930);
-            padding: 15px 20px;
-            color: white;
+            padding: 16px 24px;
+            background: rgba(102, 126, 234, 0.02);
+            border-bottom: 1px solid #f0f0f0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
         }
-        
-        .order-number { font-size: 16px; font-weight: 700; }
-        .order-date { font-size: 12px; opacity: 0.9; }
-        
-        .order-body { padding: 20px; }
+        .order-number { font-size: 17px; font-weight: 800; color: #1a1a2e; letter-spacing: -0.2px; }
+        .order-date { font-size: 12px; color: #6c757d; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
         
         .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
+            padding: 5px 14px;
+            border-radius: 40px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
             display: inline-block;
         }
-        .status-pending { background: #fff3e0; color: #ff9800; }
-        .status-awaiting_verification { background: #e3f2fd; color: #2196f3; }
-        .status-confirmed { background: #e3f2fd; color: #2196f3; }
-        .status-processing { background: #e8eaf6; color: #3f51b5; }
-        .status-shipped { background: #e0f2f1; color: #009688; }
-        .status-delivered { background: #e8f5e9; color: #4caf50; }
-        .status-cancelled { background: #ffebee; color: #f44336; }
+        .status-pending { background: #fff1f0; color: #ff3b30; border-left: 2px solid #ff3b30; }
+        .status-awaiting_verification { background: #fff1f0; color: #ff3b30; border-left: 2px solid #ff3b30; animation: softPulse 1.5s infinite; }
+        @keyframes softPulse { 0% { opacity: 0.8; } 50% { opacity: 1; background: #ffe4e4; } 100% { opacity: 0.8; } }
+        .status-confirmed { background: #e6f7ff; color: #1890ff; }
+        .status-processing { background: #f4f0ff; color: #722ed1; }
+        .status-shipped { background: #e6fffa; color: #08979c; }
+        .status-delivered { background: #f6ffed; color: #52c41a; }
+        .status-cancelled { background: #fff1f0; color: #999; text-decoration: line-through; }
         
         .payment-badge {
             padding: 4px 12px;
-            border-radius: 20px;
+            border-radius: 40px;
             font-size: 11px;
             font-weight: 600;
-            display: inline-block;
         }
-        .payment-pending { background: #fff3e0; color: #ff9800; }
-        .payment-awaiting_verification { background: #e3f2fd; color: #2196f3; }
-        .payment-completed { background: #d4edda; color: #28a745; }
-        .payment-failed { background: #f8d7da; color: #dc3545; }
+        .payment-pending { background: #fff7e6; color: #fa8c16; }
+        .payment-completed { background: #f6ffed; color: #52c41a; }
+        .payment-awaiting_verification { background: #fff1f0; color: #ff3b30; }
         
-        .payment-method-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            display: inline-block;
-        }
-        .method-cod { background: #e8eaf6; color: #3f51b5; }
-        .method-bank_qr { background: #e0f2f1; color: #009688; }
-        .method-unknown { background: #f5f5f5; color: #999; }
-        
-        .order-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
+        .order-body { padding: 20px 24px; }
+        .order-actions { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
         .btn-view, .btn-update-status { 
-            padding: 8px 16px; 
-            border-radius: 8px; 
+            padding: 8px 22px; 
+            border-radius: 40px; 
             border: none; 
             font-size: 13px; 
-            font-weight: 500; 
-            cursor: pointer; 
-            transition: all 0.3s; 
+            font-weight: 600; 
+            transition: all 0.2s; 
+            cursor: pointer;
         }
-        .btn-view { background: #e3f2fd; color: #2196f3; }
-        .btn-view:hover { background: #2196f3; color: white; }
-        .btn-update-status { background: #e8eaf6; color: #3f51b5; }
-        .btn-update-status:hover { background: #3f51b5; color: white; }
+        .btn-view { background: #eef2ff; color: #4f46e5; }
+        .btn-view:hover { background: #4f46e5; color: white; transform: translateY(-2px); }
+        .btn-update-status { background: #fff7e6; color: #d46b00; }
+        .btn-update-status:hover { background: #d46b00; color: white; transform: translateY(-2px); }
         
-        .order-detail-row {
+        .pagination {
             display: flex;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #e9ecef;
-            padding-bottom: 10px;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            flex-wrap: wrap;
         }
-        .order-detail-label { font-weight: 600; width: 130px; color: #495057; }
-        .order-detail-value { flex: 1; color: #212529; }
-        
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .items-table th, .items-table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #e9ecef;
-        }
-        .items-table th {
-            background: #f8f9fa;
+        .page-btn {
+            padding: 10px 18px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 45px;
             font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+            min-width: 48px;
+        }
+        .page-btn:hover:not(:disabled) { background: #667eea; border-color: #667eea; color: white; transform: translateY(-2px); }
+        .page-btn.active { background: #667eea; border-color: #667eea; color: white; box-shadow: 0 4px 10px rgba(102,126,234,0.3); }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        #urgentCountBadge {
+            animation: gentlePulse 1.5s infinite;
+            cursor: help;
+        }
+        @keyframes gentlePulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); background-color: #dc2626; }
+            100% { transform: scale(1); opacity: 1; }
         }
         
-        .modal-content { border-radius: 20px; border: none; }
-        .modal-header { background: linear-gradient(135deg, #667eea, #a88930); color: white; border-radius: 20px 20px 0 0; border: none; }
-        .modal-header .btn-close { filter: brightness(0) invert(1); }
-        
-        .toast-notification { position: fixed; bottom: 20px; right: 20px; z-index: 9999; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .order-detail-row { display: flex; margin-bottom: 12px; border-bottom: 1px dashed #ececec; padding-bottom: 8px; }
+        .order-detail-label { font-weight: 700; width: 130px; color: #2c3e66; }
+        .items-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .items-table th, .items-table td { padding: 10px; border-bottom: 1px solid #f0f0f0; text-align: left; }
+        .items-table th { background: #f8f9fc; font-weight: 700; }
         
         @media (max-width: 991px) {
-            .sidebar { left: -280px; position: fixed; z-index: 1000; transition: left 0.3s; }
+            .sidebar { left: -280px; }
             .sidebar.show { left: 0; }
             .main-content { margin-left: 0; }
-            .menu-toggle { display: block; position: fixed; top: 20px; left: 20px; z-index: 1001; background: #667eea; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; }
+            .menu-toggle { display: block; position: fixed; top: 20px; left: 20px; z-index: 1001; background: #667eea; color: white; border: none; padding: 10px 16px; border-radius: 12px; }
         }
         @media (min-width: 992px) { .menu-toggle { display: none; } }
         
-        .loading-spinner { display: inline-block; width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 30px; }
-        .page-btn { padding: 8px 12px; border: 1px solid #e9ecef; background: white; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
-        .page-btn:hover { background: #667eea; color: white; border-color: #667eea; }
-        .page-btn.active { background: #667eea; color: white; border-color: #667eea; }
+        .loading-spinner { width: 44px; height: 44px; border: 3px solid #e0e0e0; border-top: 3px solid #667eea; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .toast-notification { position: fixed; bottom: 25px; right: 25px; background: #1e293b; color: white; padding: 12px 24px; border-radius: 50px; z-index: 10000; animation: slideInRight 0.3s ease; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
     </style>
 </head>
 <body>
@@ -234,6 +299,7 @@
             <a href="/admin-users/" class="nav-link"><i class="fas fa-users"></i> Users</a>
             <a href="/admin-update-qr/" class="nav-link"><i class="fas fa-qrcode"></i> QR</a>            
             <a href="/admin-payments/" class="nav-link"><i class="fas fa-credit-card"></i> Payments</a>
+            <a href="/admin-contact/" class="nav-link"><i class="fas fa-envelope"></i> Contacts</a>
             <hr style="margin: 20px; border-color: rgba(255,255,255,0.1);">
             <a href="#" class="nav-link" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </nav>
@@ -241,7 +307,10 @@
     
     <div class="main-content">
         <div class="top-header">
-            <h4 class="mb-0"><i class="fas fa-shopping-bag me-2 text-primary"></i>Orders Management</h4>
+            <h4 class="mb-0"><i class="fas fa-shopping-bag me-2 text-primary"></i>Orders Management 
+                <span class="badge bg-danger ms-2" id="urgentCountBadge" title="Bank QR payments awaiting verification">0 urgent (Bank QR)</span>
+            </h4>
+            <div><i class="fas fa-bell me-1 text-warning"></i> <span class="small fw-semibold">🔴 Red = Bank QR (Need Verification) | 🟠 Orange = COD Pending | 🟣 Purple = Recent Order</span></div>
         </div>
         
         <!-- Stats Cards -->
@@ -260,340 +329,280 @@
             </div>
             <select id="statusFilter" class="filter-select">
                 <option value="">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="awaiting_verification">Awaiting Verification</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="processing">Processing</option>
-                <option value="shipped">Shipped</option>
-                <option value="delivered">Delivered</option>
-                <option value="cancelled">Cancelled</option>
+                <option value="pending">⚠️ Pending</option>
+                <option value="awaiting_verification">⏳ Awaiting Verification</option>
+                <option value="confirmed">✅ Confirmed</option>
+                <option value="processing">🔄 Processing</option>
+                <option value="shipped">📦 Shipped</option>
+                <option value="delivered">🏠 Delivered</option>
+                <option value="cancelled">❌ Cancelled</option>
             </select>
             <select id="paymentFilter" class="filter-select">
                 <option value="">All Payment</option>
                 <option value="pending">Pending</option>
-                <option value="awaiting_verification">Awaiting Verification</option>
                 <option value="completed">Completed</option>
                 <option value="failed">Failed</option>
+                <option value="awaiting_verification">Awaiting Verification</option>
             </select>
             <button class="btn btn-outline-secondary" onclick="resetFilters()"><i class="fas fa-undo-alt me-1"></i> Reset</button>
         </div>
         
         <!-- Orders Container -->
         <div id="ordersContainer">
-            <div class="text-center py-5">
-                <div class="loading-spinner"></div>
-                <p class="mt-3 text-muted">Loading orders...</p>
-            </div>
+            <div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3 text-muted">Loading orders...</p></div>
         </div>
         
         <!-- Pagination -->
         <div class="pagination" id="pagination"></div>
+        <div class="text-center text-muted small mt-2" id="paginationInfo"></div>
     </div>
     
-    <!-- Order Details Modal -->
-    <div class="modal fade" id="orderModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Order Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="orderModalBody"></div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Update Status Modal -->
-    <div class="modal fade" id="statusModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Update Order Status</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="statusOrderId">
-                    <div class="mb-3">
-                        <label class="form-label">Order Status</label>
-                        <select id="newOrderStatus" class="form-select">
-                            <option value="pending">Pending</option>
-                            <option value="awaiting_verification">Awaiting Verification</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="processing">Processing</option>
-                            <option value="shipped">Shipped</option>
-                            <option value="delivered">Delivered</option>
-                            <option value="cancelled">Cancelled</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="updateOrderStatus()" style="background: #667eea; border: none;">Update Status</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Modals -->
+    <div class="modal fade" id="orderModal" tabindex="-1"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content"><div class="modal-header bg-primary text-white"><h5 class="modal-title"><i class="fas fa-receipt me-2"></i>Order Details</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body" id="orderModalBody"></div></div></div></div>
+    <div class="modal fade" id="statusModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header bg-warning text-dark"><h5 class="modal-title"><i class="fas fa-pen-alt me-2"></i>Update Order Status</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="statusOrderId"><label class="fw-bold mb-2">Change Status</label><select id="newOrderStatus" class="form-select"><option value="pending">Pending</option><option value="awaiting_verification">Awaiting Verification</option><option value="confirmed">Confirmed</option><option value="processing">Processing</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" onclick="updateOrderStatus()">Save Changes</button></div></div></div></div>
     
     <script>
         const API_BASE = window.location.origin + '/api';
         let orders = [];
         let currentPage = 1;
         let totalPages = 1;
-        let itemsPerPage = 10;
+        let itemsPerPage = 5;
         
-        // Cache for payment methods
         let paymentMethodsCache = {};
+        
+        // Helper: check if order is recent (last 24 hours)
+        function isRecentOrder(createdAt) {
+            if (!createdAt) return false;
+            const orderDate = new Date(createdAt);
+            const now = new Date();
+            const diffHours = (now - orderDate) / (1000 * 60 * 60);
+            return diffHours <= 24;
+        }
+        
+        // FIXED: Priority based on PAYMENT METHOD + STATUS
+        function getOrderPriorityClass(order, paymentMethod) {
+            const recent = isRecentOrder(order.created_at);
+            const isBankQR = paymentMethod === 'bank_qr';
+            const isCOD = paymentMethod === 'cod';
+            
+            // HIGHEST PRIORITY: Bank QR - Awaiting Verification (Need to verify payment)
+            if (isBankQR && (order.order_status === 'awaiting_verification' || order.order_status === 'pending')) {
+                return 'critical-bankqr';
+            }
+            // SECOND PRIORITY: COD - Confirmed but not delivered (Need delivery confirmation)
+            if (isCOD && order.order_status === 'confirmed' && order.payment_status === 'pending') {
+                return 'pending-cod';
+            }
+            // THIRD PRIORITY: Recent orders (within 24h)
+            if (recent) {
+                return 'recent-order';
+            }
+            return '';
+        }
+        
+        // Check if order needs urgent action
+        function isUrgentOrder(order, paymentMethod) {
+            const isBankQR = paymentMethod === 'bank_qr';
+            // Only Bank QR payments awaiting verification are URGENT
+            return isBankQR && (order.order_status === 'awaiting_verification' || order.order_status === 'pending');
+        }
         
         function showToast(message, type) {
             const toast = document.createElement('div');
-            toast.className = `toast-notification bg-${type === 'success' ? 'success' : 'danger'} text-white p-3 rounded shadow`;
-            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>${message}`;
+            toast.className = `toast-notification`;
+            toast.style.backgroundColor = type === 'success' ? '#10b981' : '#ef4444';
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>${message}`;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+            setTimeout(() => toast.remove(), 3500);
         }
         
         function logout() { localStorage.clear(); window.location.href = '/login/'; }
-        
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        function formatDate(dateString) {
-            if (!dateString) return 'N/A';
-            return new Date(dateString).toLocaleString();
-        }
-        
-        function formatCurrency(amount) {
-            return '₹' + parseFloat(amount).toFixed(2);
-        }
-        
-        function getStatusText(status) {
-            const texts = {
-                'pending': 'Pending',
-                'awaiting_verification': 'Awaiting Verification',
-                'confirmed': 'Confirmed',
-                'processing': 'Processing',
-                'shipped': 'Shipped',
-                'delivered': 'Delivered',
-                'cancelled': 'Cancelled'
-            };
-            return texts[status] || status;
-        }
-        
-        function getStatusClass(status) {
-            return `status-${status}`;
-        }
-        
-        // Fetch payment method from payment API
-        async function getPaymentMethodForOrder(orderId, orderStatus) {
-            // Check cache first
-            if (paymentMethodsCache[orderId]) {
-                return paymentMethodsCache[orderId];
-            }
-            
-            try {
-                const token = localStorage.getItem('access_token');
-                // Try to get payment details
-                const response = await fetch(`${API_BASE}/payments/status/${orderId}/`, {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    // Determine payment method from response
-                    let method = 'unknown';
-                    
-                    // Check if payment exists
-                    if (data.payment && data.payment.status) {
-                        // COD payments typically go directly to 'confirmed' order status
-                        if (orderStatus === 'confirmed') {
-                            method = 'cod';
-                        } else {
-                            method = 'bank_qr';
-                        }
-                    } else {
-                        // No payment record found
-                        if (orderStatus === 'confirmed') {
-                            method = 'cod';
-                        } else {
-                            method = 'bank_qr';
-                        }
-                    }
-                    
-                    paymentMethodsCache[orderId] = method;
-                    return method;
-                }
-            } catch (error) {
-                console.error('Error fetching payment:', error);
-            }
-            
-            // Fallback: Determine by order status
-            let method = 'unknown';
-            if (orderStatus === 'confirmed') {
-                method = 'cod';
-            } else if (orderStatus === 'pending' || orderStatus === 'awaiting_verification') {
-                method = 'bank_qr';
-            }
-            
-            paymentMethodsCache[orderId] = method;
-            return method;
-        }
-        
-        function getPaymentMethodText(method) {
-            if (method === 'cod') return 'Cash on Delivery';
-            if (method === 'bank_qr') return 'Bank QR / UPI';
-            return 'Unknown';
-        }
-        
-        function getPaymentMethodClass(method) {
-            if (method === 'cod') return 'method-cod';
-            if (method === 'bank_qr') return 'method-bank_qr';
-            return 'method-unknown';
-        }
-        
-        function getPaymentMethodIcon(method) {
-            if (method === 'cod') return 'truck';
-            if (method === 'bank_qr') return 'qrcode';
-            return 'credit-card';
-        }
+        function escapeHtml(text) { if (!text) return ''; return String(text).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+        function formatDate(dateString) { return dateString ? new Date(dateString).toLocaleString('en-IN', { hour12: true }) : 'N/A'; }
+        function formatCurrency(amount) { return '₹' + parseFloat(amount || 0).toFixed(2); }
+        function getStatusText(status) { const map = { 'pending':'Pending', 'awaiting_verification':'Awaiting Verification', 'confirmed':'Confirmed', 'processing':'Processing', 'shipped':'Shipped', 'delivered':'Delivered', 'cancelled':'Cancelled' }; return map[status] || status; }
+        function getStatusClass(status) { return `status-${status}`; }
+        function getPaymentMethodText(method) { if (method === 'cod') return 'Cash on Delivery'; if (method === 'bank_qr') return 'Bank QR / UPI'; return 'Unknown'; }
         
         async function loadOrders() {
             const container = document.getElementById('ordersContainer');
-            container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3 text-muted">Loading orders...</p></div>';
-            
+            container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3 fw-semibold">Fetching orders...</p></div>';
             try {
                 const token = localStorage.getItem('access_token');
-                const response = await fetch(`${API_BASE}/orders/admin/all/`, {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                });
-                const data = await response.json();
-                orders = data.orders || [];
-                
-                // Also fetch payments to get payment methods
-                const paymentsResponse = await fetch(`${API_BASE}/payments/admin/all/`, {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                });
-                const paymentsData = await paymentsResponse.json();
+                const [ordersRes, paymentsRes] = await Promise.all([
+                    fetch(`${API_BASE}/orders/admin/all/`, { headers: token ? { 'Authorization': `Bearer ${token}` } : {} }),
+                    fetch(`${API_BASE}/payments/admin/all/`, { headers: token ? { 'Authorization': `Bearer ${token}` } : {} })
+                ]);
+                const ordersData = await ordersRes.json();
+                const paymentsData = await paymentsRes.json();
+                orders = ordersData.orders || [];
                 const payments = paymentsData.payments || [];
-                
-                // Build payment method lookup from payments
-                payments.forEach(payment => {
-                    if (payment.order_number) {
-                        paymentMethodsCache[payment.order_number] = payment.payment_method;
-                    }
-                });
+                payments.forEach(p => { if(p.order_number) paymentMethodsCache[p.order_number] = p.payment_method; });
                 
                 // Apply filters
                 const searchTerm = document.getElementById('searchInput').value.toLowerCase();
                 const statusFilter = document.getElementById('statusFilter').value;
                 const paymentFilter = document.getElementById('paymentFilter').value;
-                
                 let filtered = orders.filter(order => {
-                    const matchSearch = order.order_number.toLowerCase().includes(searchTerm) || 
-                                      (order.full_name && order.full_name.toLowerCase().includes(searchTerm));
-                    const matchStatus = statusFilter === '' || order.order_status === statusFilter;
-                    const matchPayment = paymentFilter === '' || order.payment_status === paymentFilter;
+                    const paymentMethod = paymentMethodsCache[order.order_number] || 'cod';
+                    const matchSearch = order.order_number.toLowerCase().includes(searchTerm) || (order.full_name && order.full_name.toLowerCase().includes(searchTerm));
+                    const matchStatus = !statusFilter || order.order_status === statusFilter;
+                    const matchPayment = !paymentFilter || 
+                        (paymentFilter === 'awaiting_verification' ? order.payment_status === 'awaiting_verification' : order.payment_status === paymentFilter);
                     return matchSearch && matchStatus && matchPayment;
                 });
                 
-                // Calculate stats
+                // Sort: Bank QR urgent first, then COD pending, then recent, then others
+                filtered.sort((a,b) => {
+                    const aMethod = paymentMethodsCache[a.order_number] || 'cod';
+                    const bMethod = paymentMethodsCache[b.order_number] || 'cod';
+                    const aUrgent = (aMethod === 'bank_qr' && (a.order_status === 'awaiting_verification' || a.order_status === 'pending'));
+                    const bUrgent = (bMethod === 'bank_qr' && (b.order_status === 'awaiting_verification' || b.order_status === 'pending'));
+                    const aCodPending = (bMethod === 'cod' && a.order_status === 'confirmed' && a.payment_status === 'pending');
+                    const bCodPending = (bMethod === 'cod' && b.order_status === 'confirmed' && b.payment_status === 'pending');
+                    const aRecent = isRecentOrder(a.created_at);
+                    const bRecent = isRecentOrder(b.created_at);
+                    
+                    if (aUrgent && !bUrgent) return -1;
+                    if (!aUrgent && bUrgent) return 1;
+                    if (aCodPending && !bCodPending) return -1;
+                    if (!aCodPending && bCodPending) return 1;
+                    if (aRecent && !bRecent) return -1;
+                    if (!aRecent && bRecent) return 1;
+                    return 0;
+                });
+                
+                // Stats
                 const totalOrders = filtered.length;
-                const totalRevenue = filtered.reduce((sum, order) => sum + parseFloat(order.total_amount || 0), 0);
+                const totalRevenue = filtered.reduce((sum, o) => sum + parseFloat(o.total_amount || 0), 0);
                 const pendingOrders = filtered.filter(o => o.order_status === 'pending' || o.order_status === 'awaiting_verification').length;
                 const completedOrders = filtered.filter(o => o.order_status === 'delivered').length;
+                document.getElementById('totalOrders').innerText = totalOrders;
+                document.getElementById('totalRevenue').innerHTML = formatCurrency(totalRevenue);
+                document.getElementById('pendingOrders').innerText = pendingOrders;
+                document.getElementById('completedOrders').innerText = completedOrders;
                 
-                document.getElementById('totalOrders').textContent = totalOrders;
-                document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
-                document.getElementById('pendingOrders').textContent = pendingOrders;
-                document.getElementById('completedOrders').textContent = completedOrders;
+                // URGENT COUNT: Only Bank QR payments awaiting verification
+                const urgentCount = filtered.filter(o => {
+                    const method = paymentMethodsCache[o.order_number] || 'cod';
+                    return method === 'bank_qr' && (o.order_status === 'awaiting_verification' || o.order_status === 'pending');
+                }).length;
+                const urgentBadge = document.getElementById('urgentCountBadge');
+                urgentBadge.innerText = `${urgentCount} urgent`;
+                urgentBadge.className = urgentCount > 0 ? 'badge bg-danger ms-2' : 'badge bg-secondary ms-2';
                 
                 // Pagination
                 totalPages = Math.ceil(filtered.length / itemsPerPage);
+                if (currentPage > totalPages) currentPage = 1;
                 const start = (currentPage - 1) * itemsPerPage;
-                const paginatedOrders = filtered.slice(start, start + itemsPerPage);
+                const paginated = filtered.slice(start, start + itemsPerPage);
                 
-                if (paginatedOrders.length === 0) {
-                    container.innerHTML = '<div class="text-center py-5"><i class="fas fa-shopping-bag fa-4x text-muted mb-3"></i><h5>No orders found</h5><p class="text-muted">Try adjusting your search or filters</p></div>';
+                if(paginated.length === 0) {
+                    container.innerHTML = '<div class="text-center py-5"><i class="fas fa-inbox fa-4x text-muted mb-3"></i><h5>No orders found</h5><p class="text-muted">Adjust filters to see results</p></div>';
                     document.getElementById('pagination').innerHTML = '';
+                    document.getElementById('paginationInfo').innerHTML = '';
                     return;
                 }
                 
-                // Build order cards with payment method from cache or fallback
-                const orderCards = [];
-                for (const order of paginatedOrders) {
+                // Build cards
+                let cardsHtml = '';
+                for(const order of paginated){
                     let paymentMethod = paymentMethodsCache[order.order_number];
+                    if(!paymentMethod) paymentMethod = (order.order_status === 'confirmed' ? 'cod' : (order.order_status==='pending' || order.order_status==='awaiting_verification' ? 'bank_qr' : 'unknown'));
                     
-                    if (!paymentMethod) {
-                        // Fallback: determine by order status
-                        if (order.order_status === 'confirmed') {
-                            paymentMethod = 'cod';
-                        } else if (order.order_status === 'pending' || order.order_status === 'awaiting_verification') {
-                            paymentMethod = 'bank_qr';
-                        } else {
-                            paymentMethod = 'unknown';
-                        }
+                    const recentFlag = isRecentOrder(order.created_at);
+                    const isBankQR = paymentMethod === 'bank_qr';
+                    const isCOD = paymentMethod === 'cod';
+                    const isUrgent = isBankQR && (order.order_status === 'awaiting_verification' || order.order_status === 'pending');
+                    const isCodPending = isCOD && order.order_status === 'confirmed' && order.payment_status === 'pending';
+                    const priorityClass = getOrderPriorityClass(order, paymentMethod);
+                    
+                    let priorityBadgeHtml = '';
+                    if (isUrgent) {
+                        priorityBadgeHtml = '<div class="priority-badge"><i class="fas fa-bolt"></i> VERIFY PAYMENT NOW</div>';
+                    } else if (isCodPending) {
+                        priorityBadgeHtml = '<div class="priority-badge priority-badge-cod"><i class="fas fa-truck"></i> CONFIRM DELIVERY</div>';
                     }
                     
-                    orderCards.push(`
-                    <div class="order-card">
+                    let actionTags = '';
+                    if (isUrgent) {
+                        actionTags = '<span class="payment-action-tag bankqr-tag"><i class="fas fa-clock"></i> Payment Verification Required</span>';
+                    } else if (isCodPending) {
+                        actionTags = '<span class="payment-action-tag cod-tag"><i class="fas fa-hourglass-half"></i> Cash Collection Pending</span>';
+                    } else if (recentFlag && !isUrgent && !isCodPending) {
+                        actionTags = '<span class="payment-action-tag recent-tag"><i class="fas fa-clock"></i> Recent Order</span>';
+                    }
+                    
+                    cardsHtml += `
+                    <div class="order-card ${priorityClass}">
+                        ${priorityBadgeHtml}
                         <div class="order-header">
                             <div>
-                                <div class="order-number">Order #${order.order_number}</div>
+                                <div class="order-number">
+                                    <i class="fas fa-hashtag text-secondary me-1"></i>${order.order_number}
+                                    ${actionTags}
+                                </div>
                                 <div class="order-date"><i class="far fa-calendar-alt me-1"></i> ${formatDate(order.created_at)}</div>
                             </div>
-                            <div>
+                            <div class="d-flex flex-wrap gap-2">
                                 <span class="status-badge ${getStatusClass(order.order_status)}">${getStatusText(order.order_status).toUpperCase()}</span>
-                                <span class="payment-badge payment-${order.payment_status} ms-2">${order.payment_status.toUpperCase()}</span>
-                                <span class="payment-method-badge ${getPaymentMethodClass(paymentMethod)} ms-2">
-                                    <i class="fas fa-${getPaymentMethodIcon(paymentMethod)} me-1"></i>
-                                    ${getPaymentMethodText(paymentMethod)}
-                                </span>
+                                <span class="payment-badge payment-${order.payment_status}">${order.payment_status.toUpperCase()}</span>
+                                <span class="badge bg-light text-dark border"><i class="fas fa-${paymentMethod === 'cod' ? 'truck' : 'qrcode'} me-1"></i>${getPaymentMethodText(paymentMethod)}</span>
                             </div>
                         </div>
                         <div class="order-body">
-                            <div class="row">
+                            <div class="row align-items-center">
                                 <div class="col-md-6">
-                                    <div><strong>Customer:</strong> ${escapeHtml(order.full_name)}</div>
-                                    <div><strong>Email:</strong> ${escapeHtml(order.email)}</div>
-                                    <div><strong>Phone:</strong> ${escapeHtml(order.phone)}</div>
+                                    <div><i class="fas fa-user-circle text-primary me-2"></i><strong>${escapeHtml(order.full_name)}</strong></div>
+                                    <div class="small text-muted mt-1"><i class="fas fa-envelope me-1"></i> ${escapeHtml(order.email)} &nbsp;|&nbsp; <i class="fas fa-phone-alt me-1"></i> ${escapeHtml(order.phone)}</div>
                                 </div>
                                 <div class="col-md-6 text-md-end">
-                                    <div><strong>Total Amount:</strong> <span class="text-primary fs-5 fw-bold">${formatCurrency(order.total_amount)}</span></div>
-                                    <div><strong>Items:</strong> ${order.items?.length || 0} products</div>
+                                    <div class="fs-4 fw-bold text-success">${formatCurrency(order.total_amount)}</div>
+                                    <div class="small text-muted"><i class="fas fa-box"></i> ${order.items?.length || 0} items</div>
                                 </div>
                             </div>
                             <div class="order-actions">
                                 <button class="btn-view" onclick="viewOrderDetails(${order.id})"><i class="fas fa-eye me-1"></i> View Details</button>
-                                <button class="btn-update-status" onclick="openStatusModal(${order.id}, '${order.order_status}')"><i class="fas fa-edit me-1"></i> Update Status</button>
+                                <button class="btn-update-status" onclick="openStatusModal(${order.id}, '${order.order_status}')"><i class="fas fa-pen me-1"></i> Update Status</button>
                             </div>
                         </div>
-                    </div>
-                `);
+                    </div>`;
                 }
-                
-                container.innerHTML = orderCards.join('');
-                updatePagination();
-            } catch (error) {
-                console.error('Error:', error);
-                container.innerHTML = '<div class="text-center py-5 text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><h5>Error loading orders</h5><button class="btn btn-primary mt-3" onclick="loadOrders()">Retry</button></div>';
+                container.innerHTML = cardsHtml;
+                updatePagination(filtered.length);
+            } catch(e){ 
+                console.error(e); 
+                container.innerHTML = '<div class="text-center py-5 text-danger"><i class="fas fa-exclamation-triangle fa-3x mb-3"></i><h5>Failed to load orders</h5><button class="btn btn-primary mt-3" onclick="loadOrders()">Retry</button></div>'; 
             }
         }
         
-        function updatePagination() {
-            const pagination = document.getElementById('pagination');
-            if (totalPages <= 1) { pagination.innerHTML = ''; return; }
-            
-            let html = '';
-            if (currentPage > 1) html += `<button class="page-btn" onclick="changePage(${currentPage - 1})">Previous</button>`;
-            for (let i = 1; i <= Math.min(totalPages, 5); i++) html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
-            if (currentPage < totalPages) html += `<button class="page-btn" onclick="changePage(${currentPage + 1})">Next</button>`;
-            pagination.innerHTML = html;
+        function updatePagination(totalItems) {
+            const paginationDiv = document.getElementById('pagination');
+            const infoDiv = document.getElementById('paginationInfo');
+            if(totalPages <= 1) {
+                paginationDiv.innerHTML = '';
+                infoDiv.innerHTML = `<span class="text-muted">Showing ${totalItems} order${totalItems !== 1 ? 's' : ''}</span>`;
+                return;
+            }
+            let html = `<button class="page-btn" onclick="changePage(${currentPage-1})" ${currentPage===1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i> Prev</button>`;
+            for(let i = 1; i <= Math.min(totalPages, 5); i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+            if(totalPages > 5 && currentPage < totalPages-1) html += `<span class="px-2">...</span>`;
+            if(totalPages > 5 && currentPage < totalPages) {
+                html += `<button class="page-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+            }
+            html += `<button class="page-btn" onclick="changePage(${currentPage+1})" ${currentPage===totalPages ? 'disabled' : ''}>Next <i class="fas fa-chevron-right"></i></button>`;
+            paginationDiv.innerHTML = html;
+            infoDiv.innerHTML = `<span class="badge bg-light text-dark">Page ${currentPage} of ${totalPages} | ${itemsPerPage} orders per page | Total: ${totalItems} orders</span>`;
         }
         
-        function changePage(page) { currentPage = page; loadOrders(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function changePage(page) { 
+            if(page < 1 || page > totalPages) return;
+            currentPage = page; 
+            loadOrders(); 
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+        }
         
         function resetFilters() {
             document.getElementById('searchInput').value = '';
@@ -603,191 +612,53 @@
             loadOrders();
         }
         
-        async function viewOrderDetails(orderId) {
+        async function viewOrderDetails(orderId){
             const modalBody = document.getElementById('orderModalBody');
-            modalBody.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p>Loading order details...</p></div>';
-            
-            try {
+            modalBody.innerHTML = '<div class="text-center p-4"><div class="loading-spinner"></div></div>';
+            try{
                 const token = localStorage.getItem('access_token');
-                const response = await fetch(`${API_BASE}/orders/${orderId}/`, {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                });
-                
-                const result = await response.json();
-                console.log('Order details response:', result);
-                
+                const resp = await fetch(`${API_BASE}/orders/${orderId}/`, { headers: token ? { 'Authorization': `Bearer ${token}` } : {} });
+                const result = await resp.json();
                 let order = result.order || result;
-                
-                if (!order.order_number) {
-                    modalBody.innerHTML = '<div class="text-center py-5 text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><h5>Order not found</h5><p>Could not load order details</p></div>';
-                    return;
-                }
-                
-                // Determine payment method
-                let paymentMethod = paymentMethodsCache[order.order_number];
-                if (!paymentMethod) {
-                    if (order.order_status === 'confirmed') {
-                        paymentMethod = 'cod';
-                    } else if (order.order_status === 'pending' || order.order_status === 'awaiting_verification') {
-                        paymentMethod = 'bank_qr';
-                    } else {
-                        paymentMethod = 'unknown';
-                    }
-                }
-                
-                let itemsHtml = '';
-                if (order.items && order.items.length > 0) {
-                    itemsHtml = `
-                        <table class="items-table">
-                            <thead>
-                                <tr><th>Product</th><th>SKU</th><th>Quantity</th><th>Price</th><th>Total</th></tr>
-                            </thead>
-                            <tbody>
-                                ${order.items.map(item => `
-                                    <tr>
-                                        <td>${escapeHtml(item.product_name)}</td>
-                                        <td>${item.product_sku || 'N/A'}</td>
-                                        <td>${item.quantity}</td>
-                                        <td>${formatCurrency(item.product_price)}</td>
-                                        <td>${formatCurrency(item.total_price)}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                            <tfoot>
-                                <tr><td colspan="4" class="text-end"><strong>Subtotal:</strong></td><td>${formatCurrency(order.subtotal)}</td></tr>
-                                <tr><td colspan="4" class="text-end"><strong>Discount:</strong></td><td>-${formatCurrency(order.discount_amount || 0)}</td></tr>
-                                <tr><td colspan="4" class="text-end"><strong>Shipping:</strong></td><td>${order.shipping_charge > 0 ? formatCurrency(order.shipping_charge) : 'Free'}</td></tr>
-                                <tr style="border-top: 2px solid #e9ecef;"><td colspan="4" class="text-end"><strong class="text-primary">Total:</strong></td><td><strong class="text-primary">${formatCurrency(order.total_amount)}</strong></td></tr>
-                            </tfoot>
-                        </table>
-                    `;
-                } else {
-                    itemsHtml = '<p class="text-muted text-center py-3">No items found for this order.</p>';
-                }
-                
-                modalBody.innerHTML = `
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Order Number:</div>
-                                <div class="order-detail-value"><strong>${order.order_number}</strong></div>
-                            </div>
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Date:</div>
-                                <div class="order-detail-value">${formatDate(order.created_at)}</div>
-                            </div>
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Status:</div>
-                                <div class="order-detail-value"><span class="status-badge ${getStatusClass(order.order_status)}">${getStatusText(order.order_status)}</span></div>
-                            </div>
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Payment Status:</div>
-                                <div class="order-detail-value"><span class="payment-badge payment-${order.payment_status}">${order.payment_status.toUpperCase()}</span></div>
-                            </div>
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Payment Method:</div>
-                                <div class="order-detail-value">
-                                    <span class="payment-method-badge ${getPaymentMethodClass(paymentMethod)}">
-                                        <i class="fas fa-${getPaymentMethodIcon(paymentMethod)} me-1"></i>
-                                        ${getPaymentMethodText(paymentMethod)}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Customer:</div>
-                                <div class="order-detail-value">${escapeHtml(order.full_name)}</div>
-                            </div>
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Email:</div>
-                                <div class="order-detail-value">${escapeHtml(order.email)}</div>
-                            </div>
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Phone:</div>
-                                <div class="order-detail-value">${escapeHtml(order.phone)}</div>
-                            </div>
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Address:</div>
-                                <div class="order-detail-value">${escapeHtml(order.address)}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <h6 class="mt-4 mb-3"><i class="fas fa-box me-2"></i>Order Items</h6>
-                    ${itemsHtml}
-                `;
-                
-                const modal = new bootstrap.Modal(document.getElementById('orderModal'));
-                modal.show();
-            } catch (error) {
-                console.error('Error loading order details:', error);
-                modalBody.innerHTML = '<div class="text-center py-5 text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><h5>Error loading order details</h5><p>Please check your connection and try again</p></div>';
-            }
+                let paymentMethod = paymentMethodsCache[order.order_number] || (order.order_status==='confirmed'?'cod':(order.order_status==='pending'||order.order_status==='awaiting_verification'?'bank_qr':'unknown'));
+                let itemsHtml = order.items?.length ? `<table class="items-table"><thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead><tbody>${order.items.map(i => `<tr><td>${escapeHtml(i.product_name)}</td> <td>${i.quantity}</td><td>${formatCurrency(i.product_price)}</td><td>${formatCurrency(i.total_price)}</td></tr>`).join('')}</tbody><tfoot><tr class="fw-bold"><td colspan="3">Grand Total</td><td>${formatCurrency(order.total_amount)}</td></tr></tfoot></table>` : '<p class="text-muted">No items</p>';
+                modalBody.innerHTML = `<div class="row g-3"><div class="col-md-6"><div class="order-detail-row"><div class="order-detail-label">Order #</div><div><strong>${order.order_number}</strong></div></div><div class="order-detail-row"><div class="order-detail-label">Status</div><div><span class="status-badge ${getStatusClass(order.order_status)}">${getStatusText(order.order_status)}</span></div></div><div class="order-detail-row"><div class="order-detail-label">Payment</div><div>${order.payment_status} (${getPaymentMethodText(paymentMethod)})</div></div></div><div class="col-md-6"><div class="order-detail-row"><div class="order-detail-label">Customer</div><div>${escapeHtml(order.full_name)}<br>📧 ${escapeHtml(order.email)}<br>📞 ${escapeHtml(order.phone)}</div></div><div class="order-detail-row"><div class="order-detail-label">Address</div><div>${escapeHtml(order.address)}</div></div></div></div><h6 class="mt-4 fw-bold"><i class="fas fa-shopping-cart me-2"></i>Order Items</h6>${itemsHtml}`;
+                new bootstrap.Modal(document.getElementById('orderModal')).show();
+            } catch(e){ modalBody.innerHTML = '<div class="alert alert-danger m-3">Failed to load details</div>'; }
         }
         
-        function openStatusModal(orderId, currentStatus) {
-            document.getElementById('statusOrderId').value = orderId;
-            document.getElementById('newOrderStatus').value = currentStatus;
-            new bootstrap.Modal(document.getElementById('statusModal')).show();
+        function openStatusModal(orderId, currentStatus){ 
+            document.getElementById('statusOrderId').value = orderId; 
+            document.getElementById('newOrderStatus').value = currentStatus; 
+            new bootstrap.Modal(document.getElementById('statusModal')).show(); 
         }
         
-        async function updateOrderStatus() {
+        async function updateOrderStatus(){
             const orderId = document.getElementById('statusOrderId').value;
             const newStatus = document.getElementById('newOrderStatus').value;
             const modal = bootstrap.Modal.getInstance(document.getElementById('statusModal'));
-            
-            try {
+            try{
                 const token = localStorage.getItem('access_token');
-                const response = await fetch(`${API_BASE}/orders/admin/${orderId}/update-status/`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ order_status: newStatus })
+                const resp = await fetch(`${API_BASE}/orders/admin/${orderId}/update-status/`, {
+                    method:'PUT', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+                    body:JSON.stringify({order_status:newStatus})
                 });
-                
-                if (response.ok) {
-                    showToast(`Order status updated to ${newStatus}!`, 'success');
-                    modal.hide();
-                    loadOrders();
-                } else {
-                    const error = await response.json();
-                    showToast(error.error || 'Error updating order status', 'error');
-                }
-            } catch (error) {
-                console.error('Error updating status:', error);
-                showToast('Error updating order status', 'error');
-            }
+                if(resp.ok){ showToast(`✅ Status updated to ${newStatus}`, 'success'); modal.hide(); loadOrders(); }
+                else { const err = await resp.json(); showToast(err.error || 'Update failed', 'error'); }
+            } catch(e){ showToast('Network error', 'error'); }
         }
         
         let searchTimeout;
-        document.getElementById('searchInput').addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => { currentPage = 1; loadOrders(); }, 500);
-        });
-        
-        document.getElementById('statusFilter').addEventListener('change', () => { currentPage = 1; loadOrders(); });
-        document.getElementById('paymentFilter').addEventListener('change', () => { currentPage = 1; loadOrders(); });
-        document.getElementById('menuToggle').addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('show'); });
-        
-        document.addEventListener('click', (e) => {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.getElementById('menuToggle');
-            if (window.innerWidth < 992 && sidebar.classList.contains('show')) {
-                if (!sidebar.contains(e.target) && !toggle.contains(e.target)) sidebar.classList.remove('show');
-            }
-        });
+        document.getElementById('searchInput').addEventListener('input',()=>{ clearTimeout(searchTimeout); searchTimeout=setTimeout(()=>{ currentPage=1; loadOrders(); },500); });
+        document.getElementById('statusFilter').addEventListener('change',()=>{ currentPage=1; loadOrders(); });
+        document.getElementById('paymentFilter').addEventListener('change',()=>{ currentPage=1; loadOrders(); });
+        document.getElementById('menuToggle').addEventListener('click',()=>{ document.getElementById('sidebar').classList.toggle('show'); });
         
         const token = localStorage.getItem('access_token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        if (!token || (!user.is_staff && !user.is_superuser)) { 
-            window.location.href = '/login/'; 
-        } else { 
-            loadOrders(); 
-        }
+        if (!token || (!user.is_staff && !user.is_superuser)) window.location.href = '/login/';
+        else loadOrders();
     </script>
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

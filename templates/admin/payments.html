@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payments Management - Bag Admin</title>
+    <title>Payments Management - Bag Admin | Smart Priority View</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -79,9 +79,8 @@
         }
         .search-input { flex: 1; position: relative; min-width: 200px; }
         .search-input i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #adb5bd; }
-        .search-input input { width: 100%; padding: 12px 15px 12px 45px; border: 2px solid #e9ecef; border-radius: 12px; font-size: 14px; }
+        .search-input input { width: 100%; padding: 12px 15px 12px 45px; border: 2px solid #e9ecef; border-radius: 12px; font-size: 14px; transition: all 0.2s; }
         .search-input input:focus { border-color: #667eea; outline: none; }
-        
         .filter-select {
             padding: 10px 15px;
             border: 2px solid #e9ecef;
@@ -90,121 +89,234 @@
             min-width: 150px;
         }
         
+        /* ========= ENHANCED PAYMENT CARDS WITH PRIORITY HIGHLIGHTING ========= */
         .payment-card {
             background: white;
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
-            transition: all 0.3s;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+            border: 1px solid rgba(0,0,0,0.03);
+            position: relative;
         }
-        .payment-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .payment-card:hover { transform: translateY(-5px); box-shadow: 0 20px 30px -12px rgba(0,0,0,0.15); }
+        
+        /* 🔥 RECENT PAYMENT (Last 24 hours) - BLUE GLOW */
+        .payment-card.recent-payment {
+            border-left: 6px solid #3b82f6;
+            background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+            box-shadow: 0 6px 18px rgba(59, 130, 246, 0.2);
+            animation: recentGlow 2s ease-in-out infinite;
+        }
+        @keyframes recentGlow {
+            0% { box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1); border-left-color: #3b82f6; }
+            50% { box-shadow: 0 8px 22px rgba(59, 130, 246, 0.28); border-left-color: #60a5fa; }
+            100% { box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1); border-left-color: #3b82f6; }
+        }
+        
+        /* 🚨 CRITICAL: Bank QR awaiting verification - RED PULSE */
+        .payment-card.critical-verification {
+            border-left: 6px solid #ff3b30;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+            box-shadow: 0 8px 25px rgba(255, 59, 48, 0.25);
+            animation: criticalPulse 1.8s ease-in-out infinite;
+        }
+        @keyframes criticalPulse {
+            0% { box-shadow: 0 4px 15px rgba(255, 59, 48, 0.15); border-left-color: #ff3b30; }
+            50% { box-shadow: 0 10px 30px rgba(255, 59, 48, 0.45); border-left-color: #ff6b6b; }
+            100% { box-shadow: 0 4px 15px rgba(255, 59, 48, 0.15); border-left-color: #ff3b30; }
+        }
+        
+        /* 🟡 COD pending - ORANGE ATTENTION */
+        .payment-card.pending-cod {
+            border-left: 6px solid #ff9500;
+            background: linear-gradient(135deg, #fffbf0 0%, #ffffff 100%);
+            box-shadow: 0 6px 18px rgba(255, 149, 0, 0.2);
+            animation: warmGlow 2s ease-in-out infinite;
+        }
+        @keyframes warmGlow {
+            0% { box-shadow: 0 4px 12px rgba(255, 149, 0, 0.1); }
+            50% { box-shadow: 0 8px 22px rgba(255, 149, 0, 0.28); }
+            100% { box-shadow: 0 4px 12px rgba(255, 149, 0, 0.1); }
+        }
+        
+        /* Priority Badge */
+        .priority-badge {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff3b30, #ff6b6b);
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 5px 14px;
+            border-radius: 40px;
+            letter-spacing: 0.5px;
+            z-index: 2;
+            box-shadow: 0 3px 12px rgba(255,59,48,0.5);
+            animation: badgePop 0.4s ease-out;
+        }
+        .priority-badge.recent-badge {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            box-shadow: 0 3px 12px rgba(59,130,246,0.4);
+        }
+        .priority-badge.cod-badge {
+            background: linear-gradient(135deg, #ff9500, #ffb347);
+            box-shadow: 0 3px 12px rgba(255,149,0,0.4);
+        }
+        @keyframes badgePop {
+            0% { transform: scale(0.8); opacity: 0; }
+            80% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .priority-badge i { margin-right: 6px; font-size: 10px; }
+        
+        /* Status Tags */
+        .recent-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 40px;
+            margin-left: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
         
         .payment-header {
-            background: linear-gradient(135deg, #667eea, #a88930);
-            padding: 15px 20px;
-            color: white;
+            padding: 16px 24px;
+            background: rgba(102, 126, 234, 0.02);
+            border-bottom: 1px solid #f0f0f0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
         }
-        
-        .payment-id { font-size: 14px; font-weight: 600; }
-        .payment-date { font-size: 12px; opacity: 0.9; }
-        
-        .payment-body { padding: 20px; }
+        .payment-id { font-size: 14px; font-weight: 700; color: #1a1a2e; }
+        .payment-date { font-size: 12px; color: #6c757d; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
         
         .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
+            padding: 5px 14px;
+            border-radius: 40px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
             display: inline-block;
         }
-        .status-pending { background: #fff3e0; color: #ff9800; }
-        .status-awaiting_verification { background: #e3f2fd; color: #2196f3; }
+        .status-pending { background: #fff7e6; color: #fa8c16; border-left: 2px solid #fa8c16; }
+        .status-awaiting_verification { background: #fff1f0; color: #ff3b30; border-left: 2px solid #ff3b30; animation: softPulse 1.5s infinite; }
+        @keyframes softPulse { 0% { opacity: 0.8; } 50% { opacity: 1; background: #ffe4e4; } 100% { opacity: 0.8; } }
         .status-verified { background: #d4edda; color: #28a745; }
         .status-completed { background: #d4edda; color: #28a745; }
         .status-failed { background: #f8d7da; color: #dc3545; }
         .status-refunded { background: #e0e0e0; color: #6c757d; }
         
         .payment-method-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
+            padding: 4px 12px;
+            border-radius: 40px;
             font-size: 11px;
             font-weight: 600;
             background: #e8eaf6;
             color: #3f51b5;
         }
         
-        .payment-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
+        .payment-body { padding: 20px 24px; }
+        .payment-actions { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
         .btn-view, .btn-verify, .btn-reject, .btn-paid { 
-            padding: 8px 16px; 
-            border-radius: 8px; 
+            padding: 8px 22px; 
+            border-radius: 40px; 
             border: none; 
             font-size: 13px; 
-            font-weight: 500; 
+            font-weight: 600; 
             cursor: pointer; 
-            transition: all 0.3s; 
+            transition: all 0.2s; 
         }
-        .btn-view { background: #e3f2fd; color: #2196f3; }
-        .btn-view:hover { background: #2196f3; color: white; }
+        .btn-view { background: #eef2ff; color: #4f46e5; }
+        .btn-view:hover { background: #4f46e5; color: white; transform: translateY(-2px); }
         .btn-verify { background: #d4edda; color: #28a745; }
-        .btn-verify:hover { background: #28a745; color: white; }
+        .btn-verify:hover { background: #28a745; color: white; transform: translateY(-2px); }
         .btn-reject { background: #ffebee; color: #f44336; }
-        .btn-reject:hover { background: #f44336; color: white; }
-        .btn-paid { background: #28a745; color: white; }
-        .btn-paid:hover { background: #218838; transform: translateY(-2px); }
+        .btn-reject:hover { background: #f44336; color: white; transform: translateY(-2px); }
+        .btn-paid { background: linear-gradient(135deg, #28a745, #20c997); color: white; box-shadow: 0 2px 8px rgba(40,167,69,0.3); }
+        .btn-paid:hover { transform: translateY(-2px); filter: brightness(1.05); }
         
         .screenshot-preview {
-            max-width: 100px;
-            max-height: 100px;
+            max-width: 80px;
+            max-height: 80px;
             cursor: pointer;
-            border-radius: 8px;
-            transition: transform 0.3s;
+            border-radius: 12px;
+            transition: transform 0.3s, box-shadow 0.2s;
+            border: 2px solid #e9ecef;
         }
-        .screenshot-preview:hover { transform: scale(1.05); }
+        .screenshot-preview:hover { transform: scale(1.08); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
         
         .modal-content { border-radius: 20px; border: none; }
-        .modal-header { background: linear-gradient(135deg, #667eea, #a88930); color: white; border-radius: 20px 20px 0 0; border: none; }
+        .modal-header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 20px 20px 0 0; border: none; }
         .modal-header .btn-close { filter: brightness(0) invert(1); }
         
-        .toast-notification { position: fixed; bottom: 20px; right: 20px; z-index: 9999; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
-        .order-detail-row {
-            display: flex;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #e9ecef;
-            padding-bottom: 10px;
-        }
+        .order-detail-row { display: flex; margin-bottom: 15px; border-bottom: 1px solid #e9ecef; padding-bottom: 10px; }
         .order-detail-label { font-weight: 600; width: 140px; color: #495057; }
         .order-detail-value { flex: 1; color: #212529; }
+        
+        .amount { font-size: 22px; font-weight: 800; color: #667eea; }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .page-btn {
+            padding: 10px 18px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 45px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+            min-width: 48px;
+        }
+        .page-btn:hover:not(:disabled) { background: #667eea; border-color: #667eea; color: white; transform: translateY(-2px); }
+        .page-btn.active { background: #667eea; border-color: #667eea; color: white; box-shadow: 0 4px 10px rgba(102,126,234,0.3); }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
         @media (max-width: 991px) {
             .sidebar { left: -280px; position: fixed; z-index: 1000; transition: left 0.3s; }
             .sidebar.show { left: 0; }
             .main-content { margin-left: 0; }
-            .menu-toggle { display: block; position: fixed; top: 20px; left: 20px; z-index: 1001; background: #667eea; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; }
+            .menu-toggle { display: block; position: fixed; top: 20px; left: 20px; z-index: 1001; background: #667eea; color: white; border: none; padding: 10px 16px; border-radius: 12px; cursor: pointer; }
         }
         @media (min-width: 992px) { .menu-toggle { display: none; } }
         
-        .loading-spinner { display: inline-block; width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-spinner { width: 44px; height: 44px; border: 3px solid #e0e0e0; border-top: 3px solid #667eea; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .toast-notification { position: fixed; bottom: 25px; right: 25px; background: #1e293b; color: white; padding: 12px 24px; border-radius: 50px; z-index: 10000; animation: slideInRight 0.3s ease; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
         
-        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 30px; }
-        .page-btn { padding: 8px 12px; border: 1px solid #e9ecef; background: white; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
-        .page-btn:hover { background: #667eea; color: white; border-color: #667eea; }
-        .page-btn.active { background: #667eea; color: white; border-color: #667eea; }
+        #pendingVerificationBadge {
+            animation: gentlePulse 1.5s infinite;
+            cursor: help;
+        }
+        @keyframes gentlePulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); background-color: #dc2626; }
+            100% { transform: scale(1); opacity: 1; }
+        }
         
-        .amount { font-size: 20px; font-weight: 700; color: #667eea; }
+        .checklist-box {
+            background: #f8f9fc;
+            border-radius: 16px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #28a745;
+        }
+        .checklist-box ul { margin-bottom: 0; padding-left: 20px; }
+        .checklist-box li { margin: 8px 0; }
     </style>
 </head>
 <body>
@@ -223,6 +335,7 @@
             <a href="/admin-users/" class="nav-link"><i class="fas fa-users"></i> Users</a>
             <a href="/admin-update-qr/" class="nav-link"><i class="fas fa-qrcode"></i> QR</a>            
             <a href="/admin-payments/" class="nav-link active"><i class="fas fa-credit-card"></i> Payments</a>
+            <a href="/admin-contact/" class="nav-link"><i class="fas fa-envelope"></i> Contacts</a>
             <hr style="margin: 20px; border-color: rgba(255,255,255,0.1);">
             <a href="#" class="nav-link" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </nav>
@@ -230,7 +343,10 @@
     
     <div class="main-content">
         <div class="top-header">
-            <h4 class="mb-0"><i class="fas fa-credit-card me-2 text-primary"></i>Payments Management</h4>
+            <h4 class="mb-0"><i class="fas fa-credit-card me-2 text-primary"></i>Payments Management 
+                <span class="badge bg-danger ms-2" id="pendingVerificationBadge" title="Payments awaiting action">0 pending action</span>
+            </h4>
+            <div><i class="fas fa-bell me-1 text-warning"></i> <span class="small fw-semibold">🔵 Blue = Recent (24h) | 🔴 Red = Bank QR Verify | 🟠 Orange = COD Pending</span></div>
         </div>
         
         <!-- Stats Cards -->
@@ -249,159 +365,93 @@
             </div>
             <select id="statusFilter" class="filter-select">
                 <option value="">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="awaiting_verification">Awaiting Verification</option>
-                <option value="verified">Verified</option>
-                <option value="completed">Completed</option>
-                <option value="failed">Failed</option>
-                <option value="refunded">Refunded</option>
+                <option value="awaiting_verification">⚠️ Awaiting Verification (Urgent)</option>
+                <option value="pending">⏳ Pending</option>
+                <option value="verified">✅ Verified</option>
+                <option value="completed">💰 Completed</option>
+                <option value="failed">❌ Failed</option>
+                <option value="refunded">🔄 Refunded</option>
             </select>
             <select id="methodFilter" class="filter-select">
                 <option value="">All Methods</option>
-                <option value="bank_qr">Bank QR</option>
-                <option value="cod">Cash on Delivery</option>
+                <option value="bank_qr">🏦 Bank QR / UPI</option>
+                <option value="cod">🚚 Cash on Delivery</option>
             </select>
             <button class="btn btn-outline-secondary" onclick="resetFilters()"><i class="fas fa-undo-alt me-1"></i> Reset</button>
         </div>
         
-        <!-- Payments Container -->
+        <!-- Payments Container (4 per page) -->
         <div id="paymentsContainer">
-            <div class="text-center py-5">
-                <div class="loading-spinner"></div>
-                <p class="mt-3 text-muted">Loading payments...</p>
-            </div>
+            <div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3 text-muted">Loading payments...</p></div>
         </div>
         
         <!-- Pagination -->
         <div class="pagination" id="pagination"></div>
+        <div class="text-center text-muted small mt-2" id="paginationInfo"></div>
     </div>
     
     <!-- Payment Details Modal -->
-    <div class="modal fade" id="paymentModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Payment Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="paymentModalBody"></div>
-            </div>
-        </div>
-    </div>
+    <div class="modal fade" id="paymentModal" tabindex="-1"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title"><i class="fas fa-receipt me-2"></i>Payment Details</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body" id="paymentModalBody"></div></div></div></div>
     
     <!-- Verify/Complete Payment Modal -->
-    <div class="modal fade" id="actionModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Process Payment</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="actionPaymentId">
-                    <input type="hidden" id="actionType">
-                    <div id="bankQrFields">
-                        <div class="mb-3">
-                            <label class="form-label">Transaction ID</label>
-                            <input type="text" class="form-control" id="transactionId" placeholder="Enter transaction ID">
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Notes (Optional)</label>
-                        <textarea class="form-control" id="actionNotes" rows="2" placeholder="Add notes..."></textarea>
-                    </div>
-                    <div id="codChecklist" class="alert alert-info">
-                        <strong>Confirm Cash Collection:</strong>
-                        <ul class="mb-0 mt-2">
-                            <li>✓ Verify customer received the order</li>
-                            <li>✓ Confirm cash amount matches order total</li>
-                            <li>✓ Mark payment as completed</li>
-                        </ul>
-                    </div>
-                    <div id="bankQrChecklist" class="alert alert-info" style="display: none;">
-                        <strong>Verification Checklist:</strong>
-                        <ul class="mb-0 mt-2">
-                            <li>✓ Check if amount matches order total</li>
-                            <li>✓ Verify transaction ID in bank statement</li>
-                            <li>✓ Confirm payment date is recent</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" onclick="rejectPayment()" id="rejectBtn">Reject</button>
-                    <button type="button" class="btn btn-success" onclick="completePayment()" id="completeBtn">Complete Payment</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="modal fade" id="actionModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Process Payment</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="actionPaymentId"><input type="hidden" id="actionType"><div id="bankQrFields"><div class="mb-3"><label class="form-label fw-bold">Transaction ID / UTR</label><input type="text" class="form-control" id="transactionId" placeholder="Enter transaction ID from screenshot"></div></div><div class="mb-3"><label class="form-label">Notes (Optional)</label><textarea class="form-control" id="actionNotes" rows="2" placeholder="Add internal notes..."></textarea></div><div id="codChecklist" class="checklist-box"><strong><i class="fas fa-hand-holding-usd me-2"></i>Confirm Cash Collection:</strong><ul class="mt-2"><li>✓ Verify customer physically received the order</li><li>✓ Confirm cash amount matches order total (₹<span id="codAmountDisplay">0</span>)</li><li>✓ Mark payment as completed after collection</li></ul></div><div id="bankQrChecklist" class="checklist-box" style="display: none;"><strong><i class="fas fa-shield-alt me-2"></i>Verification Checklist:</strong><ul class="mt-2"><li>✓ Check if amount matches order total</li><li>✓ Verify transaction ID/UTR in bank statement</li><li>✓ Confirm screenshot is clear and recent</li></ul></div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-danger" onclick="rejectPayment()" id="rejectBtn">Reject Payment</button><button type="button" class="btn btn-success" onclick="completePayment()" id="completeBtn">Complete Payment</button></div></div></div></div>
     
     <script>
         const API_BASE = window.location.origin + '/api';
         let payments = [];
         let currentPage = 1;
         let totalPages = 1;
-        let itemsPerPage = 10;
+        let itemsPerPage = 4;  // ✅ 4 payments per page
         
         function showToast(message, type) {
             const toast = document.createElement('div');
-            toast.className = `toast-notification bg-${type === 'success' ? 'success' : 'danger'} text-white p-3 rounded shadow`;
-            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>${message}`;
+            toast.className = `toast-notification`;
+            toast.style.backgroundColor = type === 'success' ? '#10b981' : '#ef4444';
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>${message}`;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+            setTimeout(() => toast.remove(), 3500);
         }
         
         function logout() { localStorage.clear(); window.location.href = '/login/'; }
         
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+        function escapeHtml(text) { if (!text) return ''; return String(text).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
         
-        function formatDate(dateString) {
-            if (!dateString) return 'N/A';
-            return new Date(dateString).toLocaleString();
-        }
+        function formatDate(dateString) { return dateString ? new Date(dateString).toLocaleString('en-IN', { hour12: true }) : 'N/A'; }
+        function formatCurrency(amount) { return '₹' + parseFloat(amount || 0).toFixed(2); }
         
-        function formatCurrency(amount) {
-            return '₹' + parseFloat(amount).toFixed(2);
+        // Check if payment is recent (last 24 hours)
+        function isRecentPayment(dateString) {
+            if (!dateString) return false;
+            const paymentDate = new Date(dateString);
+            const now = new Date();
+            const diffHours = (now - paymentDate) / (1000 * 60 * 60);
+            return diffHours <= 24;
         }
         
         function getStatusBadgeClass(status) {
-            const statusMap = {
-                'pending': 'status-pending',
-                'awaiting_verification': 'status-awaiting_verification',
-                'verified': 'status-verified',
-                'completed': 'status-completed',
-                'failed': 'status-failed',
-                'refunded': 'status-refunded'
-            };
-            return statusMap[status] || 'status-pending';
+            const map = { 'pending':'status-pending', 'awaiting_verification':'status-awaiting_verification', 'verified':'status-verified', 'completed':'status-completed', 'failed':'status-failed', 'refunded':'status-refunded' };
+            return map[status] || 'status-pending';
         }
+        function getStatusText(status) { const map = { 'pending':'Pending', 'awaiting_verification':'Awaiting Verification', 'verified':'Verified', 'completed':'Completed', 'failed':'Failed', 'refunded':'Refunded' }; return map[status] || status; }
         
-        function getStatusText(status) {
-            const statusMap = {
-                'pending': 'Pending',
-                'awaiting_verification': 'Awaiting Verification',
-                'verified': 'Verified',
-                'completed': 'Completed',
-                'failed': 'Failed',
-                'refunded': 'Refunded'
-            };
-            return statusMap[status] || status;
+        // Priority classification for payment card
+        function getPaymentPriorityClass(payment) {
+            const isRecent = isRecentPayment(payment.payment_date);
+            const isBankQr = payment.payment_method === 'bank_qr';
+            const isCod = payment.payment_method === 'cod';
+            
+            if (isBankQr && payment.status === 'awaiting_verification') return 'critical-verification';
+            if (isCod && payment.status === 'pending') return 'pending-cod';
+            if (isRecent && payment.status !== 'completed' && payment.status !== 'verified') return 'recent-payment';
+            return '';
         }
         
         async function loadPayments() {
             const container = document.getElementById('paymentsContainer');
-            container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3 text-muted">Loading payments...</p></div>';
-            
+            container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3">Loading payments...</p></div>';
             try {
                 const token = localStorage.getItem('access_token');
-                const response = await fetch(`${API_BASE}/payments/admin/all/`, {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                });
+                const response = await fetch(`${API_BASE}/payments/admin/all/`, { headers: token ? { 'Authorization': `Bearer ${token}` } : {} });
                 const data = await response.json();
                 payments = data.payments || [];
                 
@@ -411,193 +461,160 @@
                 const methodFilter = document.getElementById('methodFilter').value;
                 
                 let filtered = payments.filter(payment => {
-                    const matchSearch = (payment.order_number || '').toLowerCase().includes(searchTerm) || 
-                                      (payment.customer_name || '').toLowerCase().includes(searchTerm);
-                    const matchStatus = statusFilter === '' || payment.status === statusFilter;
-                    const matchMethod = methodFilter === '' || payment.payment_method === methodFilter;
+                    const matchSearch = (payment.order_number || '').toLowerCase().includes(searchTerm) || (payment.customer_name || '').toLowerCase().includes(searchTerm);
+                    const matchStatus = !statusFilter || payment.status === statusFilter;
+                    const matchMethod = !methodFilter || payment.payment_method === methodFilter;
                     return matchSearch && matchStatus && matchMethod;
                 });
                 
-                // Calculate stats
+                // Sort: critical first, then recent, then by date
+                filtered.sort((a,b) => {
+                    const aCritical = (a.payment_method === 'bank_qr' && a.status === 'awaiting_verification');
+                    const bCritical = (b.payment_method === 'bank_qr' && b.status === 'awaiting_verification');
+                    const aRecent = isRecentPayment(a.payment_date);
+                    const bRecent = isRecentPayment(b.payment_date);
+                    
+                    if (aCritical && !bCritical) return -1;
+                    if (!aCritical && bCritical) return 1;
+                    if (aRecent && !bRecent) return -1;
+                    if (!aRecent && bRecent) return 1;
+                    return new Date(b.payment_date) - new Date(a.payment_date);
+                });
+                
+                // Stats
                 const totalPayments = filtered.length;
                 const totalAmount = filtered.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
-                const pendingVerification = filtered.filter(p => p.status === 'awaiting_verification').length;
-                const completedPayments = filtered.filter(p => p.status === 'completed' || p.status === 'verified').length;
+                const pendingVerificationCount = filtered.filter(p => p.status === 'awaiting_verification').length;
+                const completedPaymentsCount = filtered.filter(p => p.status === 'completed' || p.status === 'verified').length;
                 
                 document.getElementById('totalPayments').textContent = totalPayments;
                 document.getElementById('totalAmount').textContent = formatCurrency(totalAmount);
-                document.getElementById('pendingVerification').textContent = pendingVerification;
-                document.getElementById('completedPayments').textContent = completedPayments;
+                document.getElementById('pendingVerification').textContent = pendingVerificationCount;
+                document.getElementById('completedPayments').textContent = completedPaymentsCount;
                 
-                // Pagination
+                const pendingBadge = document.getElementById('pendingVerificationBadge');
+                if (pendingBadge) {
+                    pendingBadge.textContent = `${pendingVerificationCount} pending action`;
+                    pendingBadge.className = pendingVerificationCount > 0 ? 'badge bg-danger ms-2' : 'badge bg-secondary ms-2';
+                }
+                
+                // Pagination (4 per page)
                 totalPages = Math.ceil(filtered.length / itemsPerPage);
+                if (currentPage > totalPages) currentPage = 1;
                 const start = (currentPage - 1) * itemsPerPage;
-                const paginatedPayments = filtered.slice(start, start + itemsPerPage);
+                const paginated = filtered.slice(start, start + itemsPerPage);
                 
-                if (paginatedPayments.length === 0) {
-                    container.innerHTML = '<div class="text-center py-5"><i class="fas fa-credit-card fa-4x text-muted mb-3"></i><h5>No payments found</h5><p class="text-muted">Try adjusting your search or filters</p></div>';
+                if (paginated.length === 0) {
+                    container.innerHTML = '<div class="text-center py-5"><i class="fas fa-credit-card fa-4x text-muted mb-3"></i><h5>No payments found</h5><p class="text-muted">Adjust filters to see results</p></div>';
                     document.getElementById('pagination').innerHTML = '';
+                    document.getElementById('paginationInfo').innerHTML = '';
                     return;
                 }
                 
-                container.innerHTML = paginatedPayments.map(payment => `
-                    <div class="payment-card">
+                container.innerHTML = paginated.map(payment => {
+                    const priorityClass = getPaymentPriorityClass(payment);
+                    const isRecent = isRecentPayment(payment.payment_date);
+                    const isBankQr = payment.payment_method === 'bank_qr';
+                    const isCod = payment.payment_method === 'cod';
+                    const isCritical = isBankQr && payment.status === 'awaiting_verification';
+                    const isCodPending = isCod && payment.status === 'pending';
+                    
+                    let priorityBadgeHtml = '';
+                    if (isCritical) {
+                        priorityBadgeHtml = '<div class="priority-badge"><i class="fas fa-bolt"></i> VERIFY NOW</div>';
+                    } else if (isCodPending) {
+                        priorityBadgeHtml = '<div class="priority-badge cod-badge"><i class="fas fa-hand-holding-usd"></i> COLLECT CASH</div>';
+                    } else if (isRecent && !isCritical && !isCodPending) {
+                        priorityBadgeHtml = '<div class="priority-badge recent-badge"><i class="fas fa-clock"></i> RECENT (24h)</div>';
+                    }
+                    
+                    return `
+                    <div class="payment-card ${priorityClass}">
+                        ${priorityBadgeHtml}
                         <div class="payment-header">
                             <div>
-                                <div class="payment-id">Payment #${payment.id}</div>
+                                <div class="payment-id"><i class="fas fa-hashtag text-secondary me-1"></i>Payment #${payment.id} | Order: ${escapeHtml(payment.order_number || 'N/A')}</div>
                                 <div class="payment-date"><i class="far fa-calendar-alt me-1"></i> ${formatDate(payment.payment_date)}</div>
                             </div>
-                            <div>
+                            <div class="d-flex flex-wrap gap-2">
                                 <span class="status-badge ${getStatusBadgeClass(payment.status)}">${getStatusText(payment.status)}</span>
-                                <span class="payment-method-badge ms-2"><i class="fas fa-${payment.payment_method === 'bank_qr' ? 'qrcode' : 'truck'} me-1"></i> ${payment.payment_method === 'bank_qr' ? 'Bank QR' : 'Cash on Delivery'}</span>
+                                <span class="payment-method-badge"><i class="fas fa-${isBankQr ? 'qrcode' : 'truck'} me-1"></i> ${isBankQr ? 'Bank QR / UPI' : 'Cash on Delivery'}</span>
+                                ${isRecent ? '<span class="recent-tag"><i class="fas fa-clock"></i> RECENT</span>' : ''}
                             </div>
                         </div>
                         <div class="payment-body">
-                            <div class="row">
+                            <div class="row align-items-center">
                                 <div class="col-md-6">
-                                    <div><strong>Order #:</strong> <span class="text-primary">${escapeHtml(payment.order_number || 'N/A')}</span></div>
-                                    <div><strong>Customer:</strong> ${escapeHtml(payment.customer_name || 'N/A')}</div>
-                                    <div><strong>Email:</strong> ${escapeHtml(payment.customer_email || 'N/A')}</div>
+                                    <div><i class="fas fa-user-circle text-primary me-2"></i><strong>${escapeHtml(payment.customer_name || 'N/A')}</strong></div>
+                                    <div class="small text-muted mt-1"><i class="fas fa-envelope me-1"></i> ${escapeHtml(payment.customer_email || 'N/A')} &nbsp;|&nbsp; <i class="fas fa-phone-alt me-1"></i> ${escapeHtml(payment.customer_phone || 'N/A')}</div>
+                                    ${payment.transaction_id ? `<div class="small mt-1"><i class="fas fa-hashtag"></i> TXN: ${escapeHtml(payment.transaction_id)}</div>` : (isCod ? '<div class="small text-muted mt-1"><i class="fas fa-truck"></i> Cash on Delivery</div>' : '')}
                                 </div>
                                 <div class="col-md-6 text-md-end">
-                                    <div><strong>Amount:</strong> <span class="amount">${formatCurrency(payment.amount)}</span></div>
-                                    <div><strong>Transaction ID:</strong> ${escapeHtml(payment.transaction_id || 'N/A')}</div>
-                                    ${payment.payment_screenshot ? `<div class="mt-2"><img src="${payment.payment_screenshot}" class="screenshot-preview" onclick="window.open('${payment.payment_screenshot}', '_blank')" alt="Payment Screenshot"></div>` : ''}
+                                    <div class="amount">${formatCurrency(payment.amount)}</div>
+                                    ${payment.payment_screenshot ? `<img src="${payment.payment_screenshot}" class="screenshot-preview mt-2" onclick="window.open('${payment.payment_screenshot}', '_blank')" alt="Payment Screenshot" title="Click to view full screenshot">` : ''}
                                 </div>
                             </div>
                             <div class="payment-actions">
-                                <button class="btn-view" onclick="viewPayment(${payment.id})"><i class="fas fa-eye me-1"></i> View Details</button>
-                                ${payment.payment_method === 'bank_qr' && payment.status === 'awaiting_verification' ? `
-                                    <button class="btn-verify" onclick="openActionModal(${payment.id}, 'bank_qr', 'verify')"><i class="fas fa-check-circle me-1"></i> Verify Payment</button>
-                                    <button class="btn-reject" onclick="openActionModal(${payment.id}, 'bank_qr', 'reject')"><i class="fas fa-times-circle me-1"></i> Reject</button>
+                                <button class="btn-view" onclick="viewPayment(${payment.id})"><i class="fas fa-eye me-1"></i> Details</button>
+                                ${isBankQr && payment.status === 'awaiting_verification' ? `
+                                    <button class="btn-verify" onclick="openActionModal(${payment.id}, 'bank_qr', 'verify', ${payment.amount})"><i class="fas fa-check-circle me-1"></i> Verify Payment</button>
+                                    <button class="btn-reject" onclick="openActionModal(${payment.id}, 'bank_qr', 'reject', ${payment.amount})"><i class="fas fa-times-circle me-1"></i> Reject</button>
                                 ` : ''}
-                                ${payment.payment_method === 'cod' && payment.status === 'pending' ? `
-                                    <button class="btn-paid" onclick="openActionModal(${payment.id}, 'cod', 'complete')"><i class="fas fa-money-bill-wave me-1"></i> Mark as Paid</button>
+                                ${isCod && payment.status === 'pending' ? `
+                                    <button class="btn-paid" onclick="openActionModal(${payment.id}, 'cod', 'complete', ${payment.amount})"><i class="fas fa-money-bill-wave me-1"></i> Mark as Paid</button>
                                 ` : ''}
-                                ${payment.payment_method === 'cod' && payment.status === 'completed' ? `
-                                    <span class="badge bg-success px-3 py-2"><i class="fas fa-check-circle me-1"></i> Payment Completed</span>
-                                ` : ''}
-                                ${payment.payment_method === 'bank_qr' && payment.status === 'verified' ? `
-                                    <span class="badge bg-success px-3 py-2"><i class="fas fa-check-circle me-1"></i> Payment Verified</span>
-                                ` : ''}
+                                ${payment.status === 'completed' || payment.status === 'verified' ? `<span class="badge bg-success px-3 py-2"><i class="fas fa-check-circle me-1"></i> Payment Completed</span>` : ''}
+                                ${payment.status === 'refunded' ? `<span class="badge bg-secondary px-3 py-2"><i class="fas fa-undo-alt me-1"></i> Refunded</span>` : ''}
                             </div>
                         </div>
-                    </div>
-                `).join('');
+                    </div>`;
+                }).join('');
                 
-                updatePagination();
+                updatePagination(filtered.length);
             } catch (error) {
                 console.error('Error:', error);
                 container.innerHTML = '<div class="text-center py-5 text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><h5>Error loading payments</h5><button class="btn btn-primary mt-3" onclick="loadPayments()">Retry</button></div>';
             }
         }
         
-        function updatePagination() {
-            const pagination = document.getElementById('pagination');
-            if (totalPages <= 1) { pagination.innerHTML = ''; return; }
-            
-            let html = '';
-            if (currentPage > 1) html += `<button class="page-btn" onclick="changePage(${currentPage - 1})">Previous</button>`;
-            for (let i = 1; i <= Math.min(totalPages, 5); i++) html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
-            if (currentPage < totalPages) html += `<button class="page-btn" onclick="changePage(${currentPage + 1})">Next</button>`;
-            pagination.innerHTML = html;
+        function updatePagination(totalItems) {
+            const paginationDiv = document.getElementById('pagination');
+            const infoDiv = document.getElementById('paginationInfo');
+            if (totalPages <= 1) {
+                paginationDiv.innerHTML = '';
+                infoDiv.innerHTML = `<span class="text-muted">Showing ${totalItems} payment${totalItems !== 1 ? 's' : ''}</span>`;
+                return;
+            }
+            let html = `<button class="page-btn" onclick="changePage(${currentPage-1})" ${currentPage===1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i> Prev</button>`;
+            for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+            if (totalPages > 5 && currentPage < totalPages-1) html += `<span class="px-2">...</span>`;
+            if (totalPages > 5 && currentPage < totalPages) {
+                html += `<button class="page-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+            }
+            html += `<button class="page-btn" onclick="changePage(${currentPage+1})" ${currentPage===totalPages ? 'disabled' : ''}>Next <i class="fas fa-chevron-right"></i></button>`;
+            paginationDiv.innerHTML = html;
+            infoDiv.innerHTML = `<span class="badge bg-light text-dark">Page ${currentPage} of ${totalPages} | ${itemsPerPage} per page | Total: ${totalItems} payments</span>`;
         }
         
-        function changePage(page) { currentPage = page; loadPayments(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-        
-        function resetFilters() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('statusFilter').value = '';
-            document.getElementById('methodFilter').value = '';
-            currentPage = 1;
-            loadPayments();
-        }
+        function changePage(page) { if (page < 1 || page > totalPages) return; currentPage = page; loadPayments(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function resetFilters() { document.getElementById('searchInput').value = ''; document.getElementById('statusFilter').value = ''; document.getElementById('methodFilter').value = ''; currentPage = 1; loadPayments(); }
         
         async function viewPayment(paymentId) {
+            const payment = payments.find(p => p.id === paymentId);
+            if (!payment) { showToast('Payment not found', 'error'); return; }
             const modalBody = document.getElementById('paymentModalBody');
-            modalBody.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div></div>';
-            
-            try {
-                const payment = payments.find(p => p.id === paymentId);
-                
-                if (!payment) {
-                    modalBody.innerHTML = '<div class="text-center py-5 text-danger">Payment not found</div>';
-                    return;
-                }
-                
-                modalBody.innerHTML = `
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Payment ID:</div>
-                                <div class="order-detail-value"><strong>#${payment.id}</strong></div>
-                            </div>
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Order Number:</div>
-                                <div class="order-detail-value">${escapeHtml(payment.order_number)}</div>
-                            </div>
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Date:</div>
-                                <div class="order-detail-value">${formatDate(payment.payment_date)}</div>
-                            </div>
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Status:</div>
-                                <div class="order-detail-value"><span class="status-badge ${getStatusBadgeClass(payment.status)}">${getStatusText(payment.status)}</span></div>
-                            </div>
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Payment Method:</div>
-                                <div class="order-detail-value">${payment.payment_method === 'bank_qr' ? 'Bank QR Code' : 'Cash on Delivery'}</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Customer Name:</div>
-                                <div class="order-detail-value">${escapeHtml(payment.customer_name)}</div>
-                            </div>
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Customer Email:</div>
-                                <div class="order-detail-value">${escapeHtml(payment.customer_email)}</div>
-                            </div>
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Customer Phone:</div>
-                                <div class="order-detail-value">${escapeHtml(payment.customer_phone)}</div>
-                            </div>
-                            <div class="order-detail-row">
-                                <div class="order-detail-label">Amount:</div>
-                                <div class="order-detail-value"><strong class="text-primary fs-4">${formatCurrency(payment.amount)}</strong></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="order-detail-row">
-                        <div class="order-detail-label">Transaction ID:</div>
-                        <div class="order-detail-value">${escapeHtml(payment.transaction_id || 'Not provided')}</div>
-                    </div>
-                    ${payment.payment_screenshot ? `
-                    <div class="order-detail-row">
-                        <div class="order-detail-label">Payment Screenshot:</div>
-                        <div class="order-detail-value"><img src="${payment.payment_screenshot}" style="max-width: 300px; border-radius: 10px;" onclick="window.open('${payment.payment_screenshot}', '_blank')" alt="Payment Screenshot"></div>
-                    </div>
-                    ` : ''}
-                    ${payment.notes ? `
-                    <div class="order-detail-row">
-                        <div class="order-detail-label">Notes:</div>
-                        <div class="order-detail-value">${escapeHtml(payment.notes)}</div>
-                    </div>
-                    ` : ''}
-                    ${payment.verified_at ? `
-                    <div class="order-detail-row">
-                        <div class="order-detail-label">Verified At:</div>
-                        <div class="order-detail-value">${formatDate(payment.verified_at)}</div>
-                    </div>
-                    ` : ''}
-                `;
-                new bootstrap.Modal(document.getElementById('paymentModal')).show();
-            } catch (error) {
-                modalBody.innerHTML = '<div class="text-center py-5 text-danger">Error loading payment details</div>';
-            }
+            modalBody.innerHTML = `
+                <div class="row"><div class="col-md-6"><div class="order-detail-row"><div class="order-detail-label">Payment ID</div><div><strong>#${payment.id}</strong></div></div><div class="order-detail-row"><div class="order-detail-label">Order Number</div><div>${escapeHtml(payment.order_number)}</div></div><div class="order-detail-row"><div class="order-detail-label">Date</div><div>${formatDate(payment.payment_date)}</div></div><div class="order-detail-row"><div class="order-detail-label">Status</div><div><span class="status-badge ${getStatusBadgeClass(payment.status)}">${getStatusText(payment.status)}</span></div></div></div><div class="col-md-6"><div class="order-detail-row"><div class="order-detail-label">Customer</div><div>${escapeHtml(payment.customer_name)}<br>📧 ${escapeHtml(payment.customer_email)}<br>📞 ${escapeHtml(payment.customer_phone)}</div></div><div class="order-detail-row"><div class="order-detail-label">Amount</div><div class="amount">${formatCurrency(payment.amount)}</div></div></div></div>
+                <div class="order-detail-row"><div class="order-detail-label">Transaction ID</div><div>${escapeHtml(payment.transaction_id || 'Not provided')}</div></div>
+                ${payment.payment_screenshot ? `<div class="order-detail-row"><div class="order-detail-label">Screenshot</div><div><img src="${payment.payment_screenshot}" style="max-width: 250px; border-radius: 12px; cursor: pointer;" onclick="window.open('${payment.payment_screenshot}', '_blank')"></div></div>` : ''}
+                ${payment.notes ? `<div class="order-detail-row"><div class="order-detail-label">Notes</div><div>${escapeHtml(payment.notes)}</div></div>` : ''}
+            `;
+            new bootstrap.Modal(document.getElementById('paymentModal')).show();
         }
         
-        function openActionModal(paymentId, method, action) {
+        function openActionModal(paymentId, method, action, amount) {
             document.getElementById('actionPaymentId').value = paymentId;
             document.getElementById('actionType').value = action;
             document.getElementById('transactionId').value = '';
@@ -609,28 +626,29 @@
             const rejectBtn = document.getElementById('rejectBtn');
             const completeBtn = document.getElementById('completeBtn');
             
+            const codAmountSpan = document.getElementById('codAmountDisplay');
+            if (codAmountSpan) codAmountSpan.textContent = formatCurrency(amount);
+            
             if (method === 'cod') {
                 bankQrFields.style.display = 'none';
                 codChecklist.style.display = 'block';
                 bankQrChecklist.style.display = 'none';
                 rejectBtn.style.display = 'none';
-                completeBtn.innerHTML = '<i class="fas fa-money-bill-wave me-1"></i> Mark as Paid';
-                document.querySelector('#actionModal .modal-title').textContent = 'Confirm Cash Collection';
+                completeBtn.innerHTML = '<i class="fas fa-money-bill-wave me-1"></i> Confirm Cash Collected';
+                document.querySelector('#actionModal .modal-title').textContent = '💰 Confirm Cash on Delivery';
             } else {
                 bankQrFields.style.display = 'block';
                 codChecklist.style.display = 'none';
                 bankQrChecklist.style.display = 'block';
                 rejectBtn.style.display = 'inline-block';
-                
                 if (action === 'verify') {
-                    completeBtn.innerHTML = '<i class="fas fa-check-circle me-1"></i> Verify Payment';
-                    document.querySelector('#actionModal .modal-title').textContent = 'Verify Bank Payment';
+                    completeBtn.innerHTML = '<i class="fas fa-check-circle me-1"></i> Verify & Complete';
+                    document.querySelector('#actionModal .modal-title').textContent = '🏦 Verify Bank Payment';
                 } else {
-                    completeBtn.innerHTML = '<i class="fas fa-times-circle me-1"></i> Reject Payment';
-                    document.querySelector('#actionModal .modal-title').textContent = 'Reject Payment';
+                    completeBtn.innerHTML = '<i class="fas fa-times-circle me-1"></i> Confirm Rejection';
+                    document.querySelector('#actionModal .modal-title').textContent = '❌ Reject Payment';
                 }
             }
-            
             new bootstrap.Modal(document.getElementById('actionModal')).show();
         }
         
@@ -641,10 +659,7 @@
             const notes = document.getElementById('actionNotes').value;
             const modal = bootstrap.Modal.getInstance(document.getElementById('actionModal'));
             
-            const confirmMsg = actionType === 'complete' ? 
-                'Confirm cash collected for this order?' : 
-                'Confirm payment verification?';
-            
+            const confirmMsg = actionType === 'complete' ? 'Confirm cash collected for this order?' : 'Confirm payment verification?';
             if (!confirm(confirmMsg)) return;
             
             const completeBtn = document.getElementById('completeBtn');
@@ -655,102 +670,56 @@
                 const token = localStorage.getItem('access_token');
                 const response = await fetch(`${API_BASE}/payments/admin/verify/`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ 
-                        payment_id: parseInt(paymentId), 
-                        action: 'verify',
-                        notes: notes + (transactionId ? `\nTransaction ID: ${transactionId}` : '')
-                    })
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ payment_id: parseInt(paymentId), action: 'verify', notes: notes + (transactionId ? `\nTransaction ID: ${transactionId}` : '') })
                 });
-                
                 const data = await response.json();
-                
                 if (response.ok && data.success) {
                     showToast(data.message || 'Payment processed successfully!', 'success');
                     modal.hide();
                     loadPayments();
-                } else {
-                    showToast(data.error || 'Error processing payment', 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('Network error', 'error');
-            } finally {
-                completeBtn.disabled = false;
-                completeBtn.innerHTML = '<i class="fas fa-check-circle me-1"></i> Complete';
-            }
+                } else { showToast(data.error || 'Error processing payment', 'error'); }
+            } catch (error) { showToast('Network error', 'error'); }
+            finally { completeBtn.disabled = false; completeBtn.innerHTML = '<i class="fas fa-check-circle me-1"></i> Complete'; }
         }
         
         async function rejectPayment() {
             const paymentId = document.getElementById('actionPaymentId').value;
             const notes = document.getElementById('actionNotes').value;
             const modal = bootstrap.Modal.getInstance(document.getElementById('actionModal'));
-            
-            if (!confirm('Are you sure you want to REJECT this payment? This will cancel the order.')) return;
+            if (!confirm('⚠️ Are you sure you want to REJECT this payment? This will cancel the order.')) return;
             
             const rejectBtn = document.getElementById('rejectBtn');
             rejectBtn.disabled = true;
             rejectBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
-            
             try {
                 const token = localStorage.getItem('access_token');
                 const response = await fetch(`${API_BASE}/payments/admin/verify/`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ 
-                        payment_id: parseInt(paymentId), 
-                        action: 'reject',
-                        notes: notes
-                    })
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ payment_id: parseInt(paymentId), action: 'reject', notes: notes })
                 });
-                
                 const data = await response.json();
-                
-                if (response.ok && data.success) {
-                    showToast(data.message || 'Payment rejected', 'success');
-                    modal.hide();
-                    loadPayments();
-                } else {
-                    showToast(data.error || 'Error rejecting payment', 'error');
-                }
-            } catch (error) {
-                showToast('Network error', 'error');
-            } finally {
-                rejectBtn.disabled = false;
-                rejectBtn.innerHTML = '<i class="fas fa-times-circle me-1"></i> Reject';
-            }
+                if (response.ok && data.success) { showToast('Payment rejected', 'success'); modal.hide(); loadPayments(); }
+                else { showToast(data.error || 'Error rejecting payment', 'error'); }
+            } catch (error) { showToast('Network error', 'error'); }
+            finally { rejectBtn.disabled = false; rejectBtn.innerHTML = '<i class="fas fa-times-circle me-1"></i> Reject'; }
         }
         
         let searchTimeout;
-        document.getElementById('searchInput').addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => { currentPage = 1; loadPayments(); }, 500);
-        });
-        
+        document.getElementById('searchInput').addEventListener('input', () => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => { currentPage = 1; loadPayments(); }, 500); });
         document.getElementById('statusFilter').addEventListener('change', () => { currentPage = 1; loadPayments(); });
         document.getElementById('methodFilter').addEventListener('change', () => { currentPage = 1; loadPayments(); });
         document.getElementById('menuToggle').addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('show'); });
         
-        document.addEventListener('click', (e) => {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.getElementById('menuToggle');
-            if (window.innerWidth < 992 && sidebar.classList.contains('show')) {
-                if (!sidebar.contains(e.target) && !toggle.contains(e.target)) sidebar.classList.remove('show');
-            }
-        });
+        const toggle = document.getElementById('menuToggle');
+        document.addEventListener('click', (e) => { if (window.innerWidth < 992 && sidebar.classList.contains('show') && !sidebar.contains(e.target) && !toggle.contains(e.target)) sidebar.classList.remove('show'); });
         
         const token = localStorage.getItem('access_token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        if (!token || (!user.is_staff && !user.is_superuser)) { window.location.href = '/login/'; }
-        else { loadPayments(); }
+        if (!token || (!user.is_staff && !user.is_superuser)) window.location.href = '/login/';
+        else loadPayments();
     </script>
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

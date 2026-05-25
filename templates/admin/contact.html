@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Messages - Bag Admin | Manage Customer Inquiries</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f0f2f5; }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); }
+        .sidebar::-webkit-scrollbar-thumb { background: #667eea; border-radius: 4px; }
+        
+        .sidebar-header { padding: 25px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-header .logo-icon { font-size: 40px; margin-bottom: 10px; }
+        .sidebar-header h4 { font-size: 20px; font-weight: 700; margin: 0; }
+        
+        .nav-menu { padding: 20px 0; }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            margin: 4px 12px;
+            border-radius: 12px;
+        }
+        .nav-link:hover, .nav-link.active { background: #667eea; color: white; }
+        .nav-link i { width: 25px; margin-right: 15px; font-size: 18px; }
+        
+        .main-content { margin-left: 280px; padding: 20px; transition: all 0.3s; }
+        
+        .top-header {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .stat-icon { width: 50px; height: 50px; background: rgba(196,167,71,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
+        .stat-icon i { font-size: 24px; color: #667eea; }
+        .stat-value { font-size: 28px; font-weight: 700; margin-bottom: 5px; }
+        .stat-label { color: #6c757d; font-size: 14px; }
+        
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .search-input { flex: 1; position: relative; min-width: 200px; }
+        .search-input i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #adb5bd; }
+        .search-input input { width: 100%; padding: 12px 15px 12px 45px; border: 2px solid #e9ecef; border-radius: 12px; font-size: 14px; transition: all 0.2s; }
+        .search-input input:focus { border-color: #667eea; outline: none; }
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            background: white;
+            min-width: 150px;
+        }
+        
+        /* Message Cards */
+        .message-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border: 1px solid #f0ebe0;
+        }
+        .message-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .message-card.unread { border-left: 4px solid #dc3545; background: #fff8f8; }
+        .message-card.replied { border-left: 4px solid #28a745; }
+        
+        .message-header {
+            padding: 15px 20px;
+            background: #faf9f7;
+            border-bottom: 1px solid #f0ebe0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .customer-info h5 { font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+        .customer-info p { font-size: 12px; color: #6c757d; margin: 0; }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .status-pending { background: #fff3e0; color: #ff9800; }
+        .status-read { background: #e3f2fd; color: #2196f3; }
+        .status-replied { background: #d4edda; color: #28a745; }
+        .status-closed { background: #e0e0e0; color: #6c757d; }
+        
+        .message-body { padding: 20px; }
+        .message-subject { font-weight: 700; color: #1a1a2e; margin-bottom: 12px; font-size: 15px; }
+        .message-content { color: #4a4a4a; line-height: 1.6; font-size: 14px; background: #fafaf8; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        .admin-reply { background: #e8f5e9; padding: 15px; border-radius: 12px; margin-top: 10px; border-left: 3px solid #28a745; }
+        .admin-reply-label { font-size: 12px; font-weight: 600; color: #28a745; margin-bottom: 8px; }
+        
+        .message-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .btn-view, .btn-reply, .btn-delete {
+            padding: 8px 18px;
+            border-radius: 40px;
+            border: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-view { background: #e3f2fd; color: #2196f3; }
+        .btn-view:hover { background: #2196f3; color: white; }
+        .btn-reply { background: #d4edda; color: #28a745; }
+        .btn-reply:hover { background: #28a745; color: white; }
+        .btn-delete { background: #ffebee; color: #f44336; }
+        .btn-delete:hover { background: #f44336; color: white; }
+        
+        /* Modal Styles */
+        .modal-content { border-radius: 20px; border: none; }
+        .modal-header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 20px 20px 0 0; border: none; }
+        .modal-header .btn-close { filter: brightness(0) invert(1); }
+        .reply-preview { background: #f8f9fa; border-radius: 12px; padding: 15px; margin-bottom: 15px; max-height: 200px; overflow-y: auto; }
+        
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 30px; }
+        .page-btn { padding: 8px 14px; border: 1px solid #e9ecef; background: white; border-radius: 40px; cursor: pointer; transition: all 0.3s; }
+        .page-btn:hover { background: #667eea; color: white; border-color: #667eea; }
+        .page-btn.active { background: #667eea; color: white; border-color: #667eea; }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .toast-notification {
+            position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        .loading-spinner { width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        @media (max-width: 991px) {
+            .sidebar { left: -280px; position: fixed; z-index: 1000; transition: left 0.3s; }
+            .sidebar.show { left: 0; }
+            .main-content { margin-left: 0; }
+            .menu-toggle { display: block; position: fixed; top: 20px; left: 20px; z-index: 1001; background: #667eea; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; }
+        }
+        @media (min-width: 992px) { .menu-toggle { display: none; } }
+        
+        .attachment-img { max-width: 100px; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        .badge-pulse { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i> Menu</button>
+    
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon"><i class="fas fa-shopping-bag"></i></div>
+            <h4>Bag Admin</h4>
+        </div>
+        <nav class="nav-menu">
+            <a href="/admin-dashboard/" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="/admin-orders/" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a>
+            <a href="/admin-products/" class="nav-link"><i class="fas fa-box"></i> Products</a>
+            <a href="/admin-categories/" class="nav-link"><i class="fas fa-tags"></i> Categories</a>
+            <a href="/admin-users/" class="nav-link"><i class="fas fa-users"></i> Users</a>
+            <a href="/admin-update-qr/" class="nav-link"><i class="fas fa-qrcode"></i> QR</a>            
+            <a href="/admin-payments/" class="nav-link"><i class="fas fa-credit-card"></i> Payments</a>
+            <a href="/admin-contacts/" class="nav-link active"><i class="fas fa-envelope"></i> Contacts <span id="unreadBadge" style="display:none;" class="ms-1 bg-danger px-2 py-1 rounded-circle small"></span></a>
+            <hr style="margin: 20px; border-color: rgba(255,255,255,0.1);">
+            <a href="#" class="nav-link" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+    
+    <div class="main-content">
+        <div class="top-header">
+            <h4 class="mb-0"><i class="fas fa-envelope me-2 text-primary"></i>Contact Messages</h4>
+            <button class="btn btn-outline-primary" onclick="refreshMessages()"><i class="fas fa-sync-alt me-1"></i> Refresh</button>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-envelope"></i></div><div class="stat-value" id="totalMessages">0</div><div class="stat-label">Total Messages</div></div></div>
+            <div class="col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-value" id="pendingMessages">0</div><div class="stat-label">Pending / Unread</div></div></div>
+            <div class="col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-reply-all"></i></div><div class="stat-value" id="repliedMessages">0</div><div class="stat-label">Replied</div></div></div>
+            <div class="col-md-3"><div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-value" id="closedMessages">0</div><div class="stat-label">Closed</div></div></div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="filter-bar">
+            <div class="search-input">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search by name, email, or subject...">
+            </div>
+            <select id="statusFilter" class="filter-select">
+                <option value="">All Status</option>
+                <option value="pending">Pending (Unread)</option>
+                <option value="read">Read</option>
+                <option value="replied">Replied</option>
+                <option value="closed">Closed</option>
+            </select>
+            <button class="btn btn-outline-secondary" onclick="resetFilters()"><i class="fas fa-undo-alt me-1"></i> Reset</button>
+        </div>
+        
+        <!-- Messages Container -->
+        <div id="messagesContainer">
+            <div class="text-center py-5">
+                <div class="loading-spinner"></div>
+                <p class="mt-3 text-muted">Loading messages...</p>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+    </div>
+    
+    <!-- Reply Modal -->
+    <div class="modal fade" id="replyModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-reply-all me-2"></i>Reply to Customer</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="replyMessageId">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Customer Message</label>
+                        <div class="reply-preview" id="customerMessagePreview"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Customer Email</label>
+                        <div class="bg-light p-2 rounded" id="customerEmailDisplay"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Your Reply <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="adminReplyText" rows="6" placeholder="Write your response here..."></textarea>
+                        <small class="text-muted">This reply will be sent directly to the customer's email.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Update Status</label>
+                        <select id="replyStatusSelect" class="form-select">
+                            <option value="replied">Mark as Replied</option>
+                            <option value="closed">Mark as Closed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="sendReply()" id="sendReplyBtn">
+                        <i class="fas fa-paper-plane me-1"></i> Send Reply
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- View Message Modal -->
+    <div class="modal fade" id="viewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-envelope-open-text me-2"></i>Message Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="viewModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="viewReplyBtn" onclick="openReplyFromView()"><i class="fas fa-reply me-1"></i> Reply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin + '/api';
+        let messages = [];
+        let currentPage = 1;
+        let totalPages = 1;
+        let itemsPerPage = 10;
+        let currentViewMessageId = null;
+        
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast-notification bg-${type === 'success' ? 'success' : 'danger'} text-white p-3 rounded shadow`;
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function logout() { localStorage.clear(); window.location.href = '/login/'; }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            return new Date(dateString).toLocaleString();
+        }
+        
+        function getStatusBadgeClass(status) {
+            const map = {
+                'pending': 'status-pending',
+                'read': 'status-read',
+                'replied': 'status-replied',
+                'closed': 'status-closed'
+            };
+            return map[status] || 'status-pending';
+        }
+        
+        function getStatusText(status) {
+            const map = {
+                'pending': 'Pending',
+                'read': 'Read',
+                'replied': 'Replied',
+                'closed': 'Closed'
+            };
+            return map[status] || status;
+        }
+        
+        async function loadMessages() {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3 text-muted">Loading messages...</p></div>';
+            
+            try {
+                const token = localStorage.getItem('access_token');
+                if (!token) { window.location.href = '/login/'; return; }
+                
+                // Get stats first
+                const statsRes = await fetch(`${API_BASE}/contact/admin/stats/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const statsData = await statsRes.json();
+                if (statsData.success) {
+                    document.getElementById('totalMessages').innerText = statsData.stats.total || 0;
+                    document.getElementById('pendingMessages').innerText = statsData.stats.pending || 0;
+                    document.getElementById('repliedMessages').innerText = statsData.stats.replied || 0;
+                    document.getElementById('closedMessages').innerText = statsData.stats.closed || 0;
+                    
+                    const unreadBadge = document.getElementById('unreadBadge');
+                    if (statsData.stats.pending > 0) {
+                        unreadBadge.style.display = 'inline-block';
+                        unreadBadge.innerText = statsData.stats.pending;
+                    } else {
+                        unreadBadge.style.display = 'none';
+                    }
+                }
+                
+                // Get messages with filters
+                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                const statusFilter = document.getElementById('statusFilter').value;
+                
+                let url = `${API_BASE}/contact/admin/messages/`;
+                if (statusFilter) url += `?status=${statusFilter}`;
+                
+                const messagesRes = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const messagesData = await messagesRes.json();
+                
+                if (messagesData.success) {
+                    messages = messagesData.messages || [];
+                    
+                    // Apply search filter
+                    let filtered = messages;
+                    if (searchTerm) {
+                        filtered = messages.filter(msg => 
+                            msg.full_name.toLowerCase().includes(searchTerm) ||
+                            msg.email.toLowerCase().includes(searchTerm) ||
+                            msg.subject.toLowerCase().includes(searchTerm) ||
+                            msg.message.toLowerCase().includes(searchTerm)
+                        );
+                    }
+                    
+                    // Pagination
+                    totalPages = Math.ceil(filtered.length / itemsPerPage);
+                    const start = (currentPage - 1) * itemsPerPage;
+                    const paginated = filtered.slice(start, start + itemsPerPage);
+                    
+                    if (paginated.length === 0) {
+                        container.innerHTML = '<div class="text-center py-5"><i class="fas fa-inbox fa-4x text-muted mb-3"></i><h5>No messages found</h5><p class="text-muted">Try adjusting your search or filters</p></div>';
+                        document.getElementById('pagination').innerHTML = '';
+                        return;
+                    }
+                    
+                    // Render messages
+                    container.innerHTML = paginated.map(msg => `
+                        <div class="message-card ${msg.status === 'pending' ? 'unread' : ''} ${msg.status === 'replied' ? 'replied' : ''}">
+                            <div class="message-header">
+                                <div class="customer-info">
+                                    <h5>${escapeHtml(msg.full_name)} 
+                                        <small class="text-muted ms-2">${escapeHtml(msg.email)}</small>
+                                        ${msg.phone ? `<small class="text-muted ms-2"><i class="fas fa-phone-alt me-1"></i>${escapeHtml(msg.phone)}</small>` : ''}
+                                    </h5>
+                                    <p><i class="far fa-calendar-alt me-1"></i>${formatDate(msg.created_at)}</p>
+                                </div>
+                                <div>
+                                    <span class="status-badge ${getStatusBadgeClass(msg.status)}">${getStatusText(msg.status)}</span>
+                                </div>
+                            </div>
+                            <div class="message-body">
+                                <div class="message-subject"><i class="fas fa-tag me-2 text-muted"></i>${escapeHtml(msg.subject)}</div>
+                                <div class="message-content">
+                                    ${escapeHtml(msg.message.length > 200 ? msg.message.substring(0, 200) + '...' : msg.message)}
+                                </div>
+                                ${msg.admin_reply ? `
+                                    <div class="admin-reply">
+                                        <div class="admin-reply-label"><i class="fas fa-reply-all me-1"></i> Admin Response:</div>
+                                        <div>${escapeHtml(msg.admin_reply)}</div>
+                                        <small class="text-muted mt-2 d-block">Replied: ${formatDate(msg.replied_at)}</small>
+                                    </div>
+                                ` : ''}
+                                <div class="message-actions">
+                                    <button class="btn-view" onclick="viewMessage(${msg.id})"><i class="fas fa-eye me-1"></i> View Details</button>
+                                    <button class="btn-reply" onclick="openReplyModal(${msg.id}, '${escapeHtml(msg.message).replace(/'/g, "\\'")}', '${escapeHtml(msg.email)}', '${escapeHtml(msg.full_name)}', '${escapeHtml(msg.subject)}')"><i class="fas fa-reply me-1"></i> Reply</button>
+                                    <button class="btn-delete" onclick="deleteMessage(${msg.id})"><i class="fas fa-trash me-1"></i> Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    updatePagination(filtered.length);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                container.innerHTML = '<div class="text-center py-5 text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><h5>Error loading messages</h5><button class="btn btn-primary mt-3" onclick="loadMessages()">Retry</button></div>';
+            }
+        }
+        
+        function updatePagination(totalItems) {
+            const pagination = document.getElementById('pagination');
+            if (totalPages <= 1) { pagination.innerHTML = ''; return; }
+            
+            let html = '';
+            if (currentPage > 1) html += `<button class="page-btn" onclick="changePage(${currentPage - 1})"><i class="fas fa-chevron-left me-1"></i> Prev</button>`;
+            for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+            if (currentPage < totalPages) html += `<button class="page-btn" onclick="changePage(${currentPage + 1})">Next <i class="fas fa-chevron-right ms-1"></i></button>`;
+            pagination.innerHTML = html;
+        }
+        
+        function changePage(page) { currentPage = page; loadMessages(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            currentPage = 1;
+            loadMessages();
+        }
+        
+        function refreshMessages() { loadMessages(); showToast('Refreshing messages...', 'success'); }
+        
+        async function viewMessage(messageId) {
+            const token = localStorage.getItem('access_token');
+            const modalBody = document.getElementById('viewModalBody');
+            modalBody.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/contact/admin/messages/${messageId}/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    const msg = data.message;
+                    currentViewMessageId = msg.id;
+                    
+                    modalBody.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3"><strong>Full Name:</strong><br>${escapeHtml(msg.full_name)}</div>
+                                <div class="mb-3"><strong>Email:</strong><br>${escapeHtml(msg.email)}</div>
+                                <div class="mb-3"><strong>Phone:</strong><br>${escapeHtml(msg.phone || 'Not provided')}</div>
+                                <div class="mb-3"><strong>Subject:</strong><br><span class="badge bg-secondary">${escapeHtml(msg.subject)}</span></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3"><strong>Status:</strong><br><span class="status-badge ${getStatusBadgeClass(msg.status)}">${getStatusText(msg.status)}</span></div>
+                                <div class="mb-3"><strong>Received:</strong><br>${formatDate(msg.created_at)}</div>
+                                ${msg.replied_at ? `<div class="mb-3"><strong>Replied On:</strong><br>${formatDate(msg.replied_at)}</div>` : ''}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="mb-3"><strong>Customer Message:</strong></div>
+                        <div class="bg-light p-3 rounded mb-3">${escapeHtml(msg.message)}</div>
+                        ${msg.admin_reply ? `
+                            <div class="mb-3"><strong>Admin Response:</strong></div>
+                            <div class="bg-success bg-opacity-10 p-3 rounded">${escapeHtml(msg.admin_reply)}</div>
+                        ` : '<div class="alert alert-info">No reply sent yet.</div>'}
+                    `;
+                    
+                    new bootstrap.Modal(document.getElementById('viewModal')).show();
+                    
+                    // Refresh list to update status
+                    loadMessages();
+                }
+            } catch (error) {
+                modalBody.innerHTML = '<div class="alert alert-danger">Error loading message details</div>';
+            }
+        }
+        
+        function openReplyFromView() {
+            if (currentViewMessageId) {
+                bootstrap.Modal.getInstance(document.getElementById('viewModal')).hide();
+                // Need to fetch message details again or use cached
+                fetchMessageAndOpenReply(currentViewMessageId);
+            }
+        }
+        
+        async function fetchMessageAndOpenReply(messageId) {
+            const token = localStorage.getItem('access_token');
+            try {
+                const response = await fetch(`${API_BASE}/contact/admin/messages/${messageId}/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    const msg = data.message;
+                    openReplyModal(msg.id, msg.message, msg.email, msg.full_name, msg.subject);
+                }
+            } catch (error) {
+                showToast('Error loading message', 'error');
+            }
+        }
+        
+        function openReplyModal(messageId, customerMessage, customerEmail, customerName, subject) {
+            document.getElementById('replyMessageId').value = messageId;
+            document.getElementById('customerMessagePreview').innerHTML = `
+                <div class="mb-2"><strong>From:</strong> ${escapeHtml(customerName)}</div>
+                <div class="mb-2"><strong>Subject:</strong> ${escapeHtml(subject)}</div>
+                <hr>
+                <div>${escapeHtml(customerMessage)}</div>
+            `;
+            document.getElementById('customerEmailDisplay').innerHTML = `<i class="fas fa-envelope me-2"></i>${escapeHtml(customerEmail)}`;
+            document.getElementById('adminReplyText').value = '';
+            document.getElementById('replyStatusSelect').value = 'replied';
+            new bootstrap.Modal(document.getElementById('replyModal')).show();
+        }
+        
+        async function sendReply() {
+            const messageId = document.getElementById('replyMessageId').value;
+            const replyText = document.getElementById('adminReplyText').value.trim();
+            const status = document.getElementById('replyStatusSelect').value;
+            const sendBtn = document.getElementById('sendReplyBtn');
+            
+            if (!replyText) {
+                showToast('Please enter a reply message', 'error');
+                return;
+            }
+            
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
+            
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`${API_BASE}/contact/admin/messages/${messageId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        admin_reply: replyText,
+                        status: status
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showToast('Reply sent successfully to customer!', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('replyModal')).hide();
+                    loadMessages();
+                } else {
+                    showToast(data.error || 'Failed to send reply', 'error');
+                }
+            } catch (error) {
+                showToast('Network error. Please try again.', 'error');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane me-1"></i> Send Reply';
+            }
+        }
+        
+        async function deleteMessage(messageId) {
+            if (!confirm('Are you sure you want to delete this message? This action cannot be undone.')) return;
+            
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`${API_BASE}/contact/admin/messages/${messageId}/`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    showToast('Message deleted successfully', 'success');
+                    loadMessages();
+                } else {
+                    showToast('Failed to delete message', 'error');
+                }
+            } catch (error) {
+                showToast('Error deleting message', 'error');
+            }
+        }
+        
+        // Event listeners
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => { currentPage = 1; loadMessages(); }, 500);
+        });
+        document.getElementById('statusFilter').addEventListener('change', () => { currentPage = 1; loadMessages(); });
+        
+        // Mobile menu toggle
+        document.getElementById('menuToggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('show');
+        });
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('menuToggle');
+            if (window.innerWidth < 992 && sidebar.classList.contains('show')) {
+                if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                    sidebar.classList.remove('show');
+                }
+            }
+        });
+        
+        // Check authentication and load
+        const token = localStorage.getItem('access_token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token || (!user.is_staff && !user.is_superuser)) {
+            window.location.href = '/login/';
+        } else {
+            loadMessages();
+        }
+        
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            if (document.hasFocus()) {
+                loadMessages();
+            }
+        }, 30000);
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

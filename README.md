@@ -1,12 +1,6 @@
 # 👜 Bag - Premium Handcrafted Bags E-Commerce Website
 
 A complete, fully responsive e-commerce website for a premium handcrafted bags brand. This project delivers a seamless shopping experience with modern UI/UX, complete user account management, cart functionality, wishlist, and order tracking.
-
-<<<<<<< HEAD
----
-
-=======
->>>>>>> 2ec56ce941b1a0d74ca717269ac3297664679a3c
 ## 🎯 Overview
 
 **Bag** is a premium e-commerce platform specializing in handcrafted, embroidered bags. The website showcases products, allows users to browse collections, manage their shopping cart, save favorite items to wishlist, place orders, and track their purchase history.

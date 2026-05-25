@@ -369,23 +369,40 @@ class TrackOrderView(APIView):
         })
 # Admin Views
 class AdminOrderListView(APIView):
+    """
+    List all orders (Admin only)
+    """
     permission_classes = [IsAdminUser]
     
     def get(self, request):
         orders = Order.objects.all().order_by('-created_at')
+        
+        # Manually build orders with items to ensure items are included
         orders_data = []
         for order in orders:
+            # Get order items
+            items = OrderItem.objects.filter(order=order).select_related('product')
+            items_data = []
+            for item in items:
+                items_data.append({
+                    'id': item.id,
+                    'product_name': item.product_name,
+                    'product_sku': item.product_sku,
+                    'quantity': item.quantity,
+                    'product_price': float(item.product_price),
+                    'total_price': float(item.total_price),
+                    'product_details': {
+                        'image': item.product.image.url if item.product and item.product.image else None
+                    } if item.product else None
+                })
+            
             # Get payment method from Payment model
-            payment_method = None
+            payment_method = 'cod'
             try:
                 payment = Payment.objects.get(order=order)
                 payment_method = payment.payment_method
             except Payment.DoesNotExist:
-                # If no payment record, try to determine from order status
-                if order.order_status == 'confirmed':
-                    payment_method = 'cod'
-                else:
-                    payment_method = 'bank_qr'
+                pass
             
             orders_data.append({
                 'id': order.id,
@@ -400,10 +417,10 @@ class AdminOrderListView(APIView):
                 'total_amount': float(order.total_amount),
                 'order_status': order.order_status,
                 'payment_status': order.payment_status,
-                'payment_method': payment_method,  # ← ADD THIS LINE
+                'payment_method': payment_method,
                 'created_at': order.created_at,
                 'updated_at': order.updated_at,
-                'items': []
+                'items': items_data  # ✅ Make sure items are included
             })
         
         return Response({

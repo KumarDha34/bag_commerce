@@ -203,10 +203,6 @@
         .contact-info-card h4 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
         .contact-info-card p { color: #6b6a66; margin-bottom: 0; line-height: 1.5; font-size: 13px; }
         
-        @media (max-width: 768px) {
-            .contact-info-card { padding: 25px 15px; }
-        }
-        
         /* Form Section */
         .form-section { padding: 60px 0; background: white; }
         .form-card {
@@ -242,7 +238,8 @@
             transition: 0.3s;
             width: 100%;
         }
-        .submit-btn:hover { background: #c4a747; transform: translateY(-2px); }
+        .submit-btn:hover:not(:disabled) { background: #c4a747; transform: translateY(-2px); }
+        .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
         
         /* Business Hours Card */
         .hours-card {
@@ -291,7 +288,7 @@
         }
         .faq-item.active .faq-answer { display: block; }
         
-        /* Map Section - Kathmandu */
+        /* Map Section */
         .map-section { padding: 0; }
         .map-container {
             height: 350px;
@@ -354,11 +351,12 @@
         
         .toast-notification {
             position: fixed; bottom: 30px; right: 30px; background: #2d2a24; color: white;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 50px;
             z-index: 9999;
             animation: slideIn 0.3s ease;
             font-size: 14px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
         }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
@@ -372,6 +370,16 @@
         
         @media (max-width: 576px) {
             .back-to-top { width: 35px; height: 35px; bottom: 20px; left: 20px; }
+            .toast-notification { bottom: 20px; right: 20px; padding: 8px 16px; font-size: 12px; }
+        }
+        
+        /* Success/Error message animations */
+        .alert-message {
+            animation: fadeInUp 0.4s ease;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -456,12 +464,8 @@
                     <h2 class="mb-2" style="font-family:'Cormorant Garamond',serif; font-size:28px;">Send us a Message</h2>
                     <p class="text-muted mb-4">Fill out the form below and we'll get back to you within 24 hours.</p>
                     
-                    <div id="successMessage" style="display:none; background:#d4edda; color:#155724; padding:12px; border-radius:12px; margin-bottom:20px; font-size:14px;">
-                        <i class="fas fa-check-circle me-2"></i> Thank you! Your message has been sent.
-                    </div>
-                    <div id="errorMessage" style="display:none; background:#f8d7da; color:#721c24; padding:12px; border-radius:12px; margin-bottom:20px; font-size:14px;">
-                        <i class="fas fa-exclamation-circle me-2"></i> Something went wrong. Please try again.
-                    </div>
+                    <div id="successMessage" style="display:none;" class="alert-message"></div>
+                    <div id="errorMessage" style="display:none;" class="alert-message"></div>
                     
                     <form id="contactForm">
                         <div class="row">
@@ -568,7 +572,7 @@
     </div>
 </section>
 
-<!-- Map Section - Kathmandu -->
+<!-- Map Section -->
 <section class="map-section">
     <div class="map-container" data-aos="fade-up">
         <iframe 
@@ -638,38 +642,81 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-    document.getElementById('copyrightYear').innerHTML = new Date().getFullYear();
-
+    // Initialize AOS
     AOS.init({ duration: 800, once: true });
+    
+    // Copyright year
+    document.getElementById('copyrightYear').innerHTML = new Date().getFullYear();
     
     // Mobile Menu Toggle
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const navLinks = document.getElementById('navLinks');
     const menuOverlay = document.getElementById('menuOverlay');
-    function closeMenu() { navLinks.classList.remove('show'); menuOverlay.classList.remove('show'); if(mobileMenuBtn){const icon=mobileMenuBtn.querySelector('i');icon.classList.remove('fa-times');icon.classList.add('fa-bars');} document.body.style.overflow=''; }
-    function openMenu() { navLinks.classList.add('show'); menuOverlay.classList.add('show'); if(mobileMenuBtn){const icon=mobileMenuBtn.querySelector('i');icon.classList.remove('fa-bars');icon.classList.add('fa-times');} document.body.style.overflow='hidden'; }
-    if(mobileMenuBtn){ mobileMenuBtn.addEventListener('click',(e)=>{ e.stopPropagation(); if(navLinks.classList.contains('show')) closeMenu(); else openMenu(); }); }
+    
+    function closeMenu() { 
+        navLinks.classList.remove('show'); 
+        menuOverlay.classList.remove('show'); 
+        if(mobileMenuBtn){
+            const icon = mobileMenuBtn.querySelector('i');
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        } 
+        document.body.style.overflow = ''; 
+    }
+    
+    function openMenu() { 
+        navLinks.classList.add('show'); 
+        menuOverlay.classList.add('show'); 
+        if(mobileMenuBtn){
+            const icon = mobileMenuBtn.querySelector('i');
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-times');
+        } 
+        document.body.style.overflow = 'hidden'; 
+    }
+    
+    if(mobileMenuBtn){ 
+        mobileMenuBtn.addEventListener('click', (e) => { 
+            e.stopPropagation(); 
+            if(navLinks.classList.contains('show')) closeMenu(); 
+            else openMenu(); 
+        }); 
+    }
+    
     if(menuOverlay){ menuOverlay.addEventListener('click', closeMenu); }
-    document.querySelectorAll('#navLinks a').forEach(link=>{ link.addEventListener('click', closeMenu); });
+    document.querySelectorAll('#navLinks a').forEach(link => { link.addEventListener('click', closeMenu); });
     
     const API_BASE = window.location.origin + '/api';
     
-    window.addEventListener('scroll', () => { document.querySelector('.navbar')?.classList.toggle('scrolled', window.scrollY > 50); });
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => { 
+        document.querySelector('.navbar')?.classList.toggle('scrolled', window.scrollY > 50); 
+    });
     
+    // Back to top button
     const backToTop = document.getElementById('backToTop');
     window.addEventListener('scroll', () => { backToTop.classList.toggle('show', window.scrollY > 300); });
     backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     
+    // Auth UI
     function updateAuthUI() {
         const token = localStorage.getItem('access_token');
         const authContainer = document.getElementById('authContainer');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        if (token) {
+        if (token && user) {
             authContainer.innerHTML = `<div class="user-menu"><a href="#" class="auth-btn"><i class="fas fa-user-circle me-1"></i> ${user.full_name || user.email?.split('@')[0] || 'My Account'} <i class="fas fa-chevron-down ms-1"></i></a><div class="user-dropdown"><a href="/user/dashboard/">Dashboard</a><a href="/user/orders/">Orders</a><a href="/user/wishlist/">Wishlist</a><a href="/user/profile/">Profile</a><a href="/user/cart/">Cart</a><hr><a href="#" id="logoutBtn">Logout</a></div></div>`;
-            document.getElementById('logoutBtn')?.addEventListener('click', (e) => { e.preventDefault(); localStorage.clear(); showToast('Logged out'); setTimeout(() => location.reload(), 1000); });
-        } else authContainer.innerHTML = `<a href="/login/" class="auth-btn"><i class="fas fa-sign-in-alt me-1"></i> Sign In</a>`;
+            document.getElementById('logoutBtn')?.addEventListener('click', (e) => { 
+                e.preventDefault(); 
+                localStorage.clear(); 
+                showToast('Logged out successfully'); 
+                setTimeout(() => location.reload(), 1000); 
+            });
+        } else {
+            authContainer.innerHTML = `<a href="/login/" class="auth-btn"><i class="fas fa-sign-in-alt me-1"></i> Sign In</a>`;
+        }
     }
     
+    // Update cart and wishlist badges
     async function updateBadges() {
         const token = localStorage.getItem('access_token');
         if (token) {
@@ -682,20 +729,24 @@
                 const wishData = await wishRes.json();
                 document.getElementById('cartCount').innerText = cartData.cart?.total_items || 0;
                 document.getElementById('wishlistCount').innerText = wishData.wishlist?.items?.length || 0;
-            } catch(e) {}
-        } else { document.getElementById('cartCount').innerText = '0'; document.getElementById('wishlistCount').innerText = '0'; }
+            } catch(e) { console.log('Badge update error:', e); }
+        } else { 
+            document.getElementById('cartCount').innerText = '0'; 
+            document.getElementById('wishlistCount').innerText = '0'; 
+        }
     }
     
+    // Toast notification
     function showToast(message, isError = false) {
         const toast = document.createElement('div');
         toast.className = 'toast-notification';
         toast.style.backgroundColor = isError ? '#dc2626' : '#2d2a24';
         toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} me-2"></i> ${message}`;
         document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
+        setTimeout(() => toast.remove(), 4000);
     }
     
-    // Toggle FAQ
+    // FAQ Toggle
     document.querySelectorAll('.faq-item').forEach(item => {
         const question = item.querySelector('.faq-question');
         question.addEventListener('click', () => {
@@ -703,47 +754,144 @@
         });
     });
     
-    // Form submission handler
-    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+    // ========== CONTACT FORM SUBMISSION - FIXED VERSION ==========
+    const contactForm = document.getElementById('contactForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const successMsgDiv = document.getElementById('successMessage');
+    const errorMsgDiv = document.getElementById('errorMessage');
+    
+    contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        // Get form values
         const fullName = document.getElementById('fullName').value.trim();
         const email = document.getElementById('email').value.trim();
         const phone = document.getElementById('phone').value.trim();
         const subject = document.getElementById('subject').value;
         const message = document.getElementById('message').value.trim();
-        const submitBtn = document.getElementById('submitBtn');
-        const successMsg = document.getElementById('successMessage');
-        const errorMsg = document.getElementById('errorMessage');
         
-        successMsg.style.display = 'none';
-        errorMsg.style.display = 'none';
+        // Hide previous messages
+        successMsgDiv.style.display = 'none';
+        errorMsgDiv.style.display = 'none';
         
+        // Validation
         if (!fullName || !email || !subject || !message) {
             showToast('Please fill in all required fields', true);
+            errorMsgDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i> Please fill in all required fields.</div>`;
+            errorMsgDiv.style.display = 'block';
+            setTimeout(() => { errorMsgDiv.style.display = 'none'; }, 5000);
             return;
         }
         
         if (!email.includes('@') || !email.includes('.')) {
             showToast('Please enter a valid email address', true);
+            errorMsgDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i> Please enter a valid email address.</div>`;
+            errorMsgDiv.style.display = 'block';
+            setTimeout(() => { errorMsgDiv.style.display = 'none'; }, 5000);
             return;
         }
         
+        // Disable button and show loading state
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Sending...';
         
-        setTimeout(() => {
+        try {
+            // Construct API URL - ensure trailing slash for Django
+            const apiUrl = `${API_BASE}/contact/submit/`;
+            
+            console.log('Sending contact request to:', apiUrl);
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    full_name: fullName,
+                    email: email,
+                    phone: phone,
+                    subject: subject,
+                    message: message
+                })
+            });
+            
+            let data;
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                data = await response.json();
+            } else {
+                const textResponse = await response.text();
+                console.error('Non-JSON response:', textResponse);
+                throw new Error(`Server error (${response.status}): ${textResponse.substring(0, 100)}`);
+            }
+            
+            console.log('Response:', response.status, data);
+            
+            if (response.ok && data.success) {
+                // Success - show success message and reset form
+                successMsgDiv.innerHTML = `<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i> ${data.message || 'Thank you! Your message has been sent. We will get back to you within 24 hours.'}</div>`;
+                successMsgDiv.style.display = 'block';
+                
+                // Reset form
+                contactForm.reset();
+                showToast('Message sent successfully!');
+                
+                // Auto-hide success message after 6 seconds
+                setTimeout(() => {
+                    successMsgDiv.style.display = 'none';
+                }, 6000);
+            } else {
+                // Error from server
+                let errorMessage = 'Failed to send message. Please try again.';
+                if (data.errors) {
+                    if (typeof data.errors === 'object') {
+                        errorMessage = Object.values(data.errors).flat()[0];
+                    } else if (Array.isArray(data.errors)) {
+                        errorMessage = data.errors.join(', ');
+                    } else {
+                        errorMessage = data.errors;
+                    }
+                } else if (data.error) {
+                    errorMessage = data.error;
+                }
+                
+                errorMsgDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i> ${errorMessage}</div>`;
+                errorMsgDiv.style.display = 'block';
+                showToast(errorMessage, true);
+                setTimeout(() => { errorMsgDiv.style.display = 'none'; }, 5000);
+            }
+        } catch (error) {
+            console.error('Contact form error:', error);
+            
+            let errorMessage = 'Network error. Please check your connection and try again.';
+            
+            if (error.message) {
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    errorMessage = 'Cannot connect to server. Please check if the backend is running.';
+                } else if (error.message.includes('CORS')) {
+                    errorMessage = 'CORS error. Please check backend CORS configuration.';
+                } else {
+                    errorMessage = error.message;
+                }
+            }
+            
+            errorMsgDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i> ${errorMessage}</div>`;
+            errorMsgDiv.style.display = 'block';
+            showToast(errorMessage, true);
+            setTimeout(() => { errorMsgDiv.style.display = 'none'; }, 5000);
+        } finally {
+            // Re-enable button
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Send Message';
-            successMsg.style.display = 'block';
-            document.getElementById('contactForm').reset();
-            showToast('Message sent successfully!');
-            setTimeout(() => { successMsg.style.display = 'none'; }, 5000);
-        }, 1500);
+        }
     });
     
+    // Initialize
     updateAuthUI();
     updateBadges();
+    
+    // Log API base for debugging
+    console.log('API_BASE:', API_BASE);
 </script>
 </body>
 </html>
