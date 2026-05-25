@@ -98,6 +98,8 @@ urlpatterns = [
     path('admin-users/', TemplateView.as_view(template_name='admin/users.html'), name='admin_users'),
     path('admin-payments/', TemplateView.as_view(template_name='admin/payments.html'), name='admin_payments'),
     path('admin-update-qr/', TemplateView.as_view(template_name='admin/update_qr.html'), name='update-qr'),
+    path('admin-reviews/', TemplateView.as_view(template_name='admin/admin-reviews.html'), name='admin-reviews'),
+
 ]
 
 # Serve media files in development

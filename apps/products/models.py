@@ -11,6 +11,8 @@ class Category(models.Model):
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to='categories/', blank=True, null=True)
+    average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0)
+    review_count = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     

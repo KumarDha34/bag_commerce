@@ -373,11 +373,43 @@ class AdminOrderListView(APIView):
     
     def get(self, request):
         orders = Order.objects.all().order_by('-created_at')
-        serializer = OrderSerializer(orders, many=True)
+        orders_data = []
+        for order in orders:
+            # Get payment method from Payment model
+            payment_method = None
+            try:
+                payment = Payment.objects.get(order=order)
+                payment_method = payment.payment_method
+            except Payment.DoesNotExist:
+                # If no payment record, try to determine from order status
+                if order.order_status == 'confirmed':
+                    payment_method = 'cod'
+                else:
+                    payment_method = 'bank_qr'
+            
+            orders_data.append({
+                'id': order.id,
+                'order_number': order.order_number,
+                'full_name': order.full_name,
+                'email': order.email,
+                'phone': order.phone,
+                'address': order.address,
+                'subtotal': float(order.subtotal),
+                'discount_amount': float(order.discount_amount),
+                'shipping_charge': float(order.shipping_charge),
+                'total_amount': float(order.total_amount),
+                'order_status': order.order_status,
+                'payment_status': order.payment_status,
+                'payment_method': payment_method,  # ← ADD THIS LINE
+                'created_at': order.created_at,
+                'updated_at': order.updated_at,
+                'items': []
+            })
+        
         return Response({
             'success': True,
             'count': orders.count(),
-            'orders': serializer.data
+            'orders': orders_data
         })
 
 class AdminUpdateOrderStatusView(APIView):

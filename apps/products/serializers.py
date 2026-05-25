@@ -53,6 +53,10 @@ class BagSerializer(serializers.ModelSerializer):
     final_price = serializers.ReadOnlyField()
     discount_percentage = serializers.ReadOnlyField()
     is_in_stock = serializers.ReadOnlyField()
+
+
+    average_rating = serializers.DecimalField(max_digits=3, decimal_places=2, read_only=True)
+    review_count = serializers.IntegerField(read_only=True)
     
     class Meta:
         model = Bag
@@ -61,6 +65,7 @@ class BagSerializer(serializers.ModelSerializer):
             'name', 'slug', 'description', 'price', 'discount_price',
             'final_price', 'discount_percentage', 'stock', 'sku',
             'image', 'is_active', 'featured', 'is_in_stock',
+            'average_rating', 'review_count',
             'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'slug', 'sku', 'created_at', 'updated_at']
