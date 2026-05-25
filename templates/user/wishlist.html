@@ -210,7 +210,6 @@
             transition: all 0.4s;
             box-shadow: 0 5px 20px rgba(0,0,0,0.03);
             border: 1px solid #f0ebe0;
-            cursor: pointer;
         }
         .wishlist-card:hover { transform: translateY(-8px); box-shadow: 0 20px 35px rgba(196,167,71,0.12); border-color: #c4a747; }
         .wishlist-img { height: 240px; overflow: hidden; background: #faf7f0; display: flex; align-items: center; justify-content: center; position: relative; }
@@ -232,6 +231,7 @@
         .wishlist-price { font-size: 18px; font-weight: 800; color: #c4a747; }
         .old-price { text-decoration: line-through; font-size: 12px; color: #a0aaba; margin-left: 8px; }
         .product-rating i { color: #ffc107; font-size: 11px; margin-right: 2px; }
+        .product-rating { margin: 8px 0; }
         .btn-add-cart {
             background: #2d2a24;
             color: white;
@@ -243,6 +243,7 @@
             margin-top: 12px;
             transition: 0.3s;
             font-size: 13px;
+            cursor: pointer;
         }
         .btn-add-cart:hover { background: #c4a747; transform: translateY(-2px); }
         .btn-remove {
@@ -256,6 +257,7 @@
             font-weight: 500;
             transition: 0.3s;
             font-size: 13px;
+            cursor: pointer;
         }
         .btn-remove:hover { background: #fee2e2; border-color: #dc2626; }
         
@@ -313,6 +315,10 @@
         .back-to-top.show { opacity: 1; visibility: visible; }
         @media (max-width: 576px) {
             .back-to-top { width: 35px; height: 35px; bottom: 20px; left: 20px; }
+        }
+        
+        .wishlist-card {
+            cursor: default;
         }
     </style>
 </head>
@@ -377,6 +383,7 @@
     document.querySelectorAll('#navLinks a').forEach(link=>{ link.addEventListener('click', closeMenu); });
     
     const API_BASE = window.location.origin + '/api';
+    let productReviewsCache = {};
     
     window.addEventListener('scroll', () => { document.querySelector('.navbar')?.classList.toggle('scrolled', window.scrollY > 50); });
     const backToTop = document.getElementById('backToTop');
@@ -399,7 +406,33 @@
     
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
     
-    function generateStars(rating) { let stars=''; const full=Math.floor(rating||4.5); const half=(rating||4.5)%1!==0; for(let i=1;i<=5;i++){ if(i<=full) stars+='<i class="fas fa-star"></i>'; else if(half&&i===full+1) stars+='<i class="fas fa-star-half-alt"></i>'; else stars+='<i class="far fa-star"></i>'; } return stars; }
+    function renderStars(rating) { 
+        if(!rating || rating===0) return '<i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>';
+        let full=Math.floor(rating), html=''; 
+        for(let i=1;i<=full;i++) html+='<i class="fas fa-star"></i>'; 
+        if(rating-full>=0.5) html+='<i class="fas fa-star-half-alt"></i>'; 
+        for(let i=full+((rating-full>=0.5)?1:0);i<5;i++) html+='<i class="far fa-star"></i>'; 
+        return html; 
+    }
+    
+    async function fetchProductReviews(productId, productSlug) {
+        if (productReviewsCache[productId]) return productReviewsCache[productId];
+        
+        try {
+            const response = await fetch(`${API_BASE}/reviews/product/${productSlug}/`);
+            if (response.ok) {
+                const data = await response.json();
+                productReviewsCache[productId] = {
+                    average_rating: data.rating_summary?.average_rating || 0,
+                    total_reviews: data.rating_summary?.total_reviews || 0
+                };
+                return productReviewsCache[productId];
+            }
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
+        }
+        return { average_rating: 0, total_reviews: 0 };
+    }
     
     async function updateBadges() {
         const token = localStorage.getItem('access_token');
@@ -492,9 +525,49 @@
             if(guest.length===0){ empty.style.display='block'; return; }
             grid.style.display='block';
             countSpan.innerText=guest.length;
-            const proms = guest.map(async id=>{ try{ const r=await fetch(`${API_BASE}/products/bags/${id}/`); return await r.json(); }catch(e){return null;} });
+            
+            // Fetch products with their ratings
+            const proms = guest.map(async id => {
+                try { 
+                    const r = await fetch(`${API_BASE}/products/bags/${id}/`);
+                    const product = await r.json();
+                    // Fetch review data for this product
+                    const reviewData = await fetchProductReviews(product.id, product.slug);
+                    return { ...product, reviewData };
+                } catch(e){ return null; }
+            });
             const products = (await Promise.all(proms)).filter(p=>p);
-            container.innerHTML = products.map(p=>{ const final=(p.final_price||p.price).toFixed(2); const orig=p.discount_price?parseFloat(p.price).toFixed(2):null; const disc=p.discount_percentage||0; const img=p.image||'https://via.placeholder.com/300x300?text=Bag'; return `<div class="wishlist-card" onclick="window.location.href='/product/${p.slug}/'"><div class="wishlist-img"><img src="${img}" alt="${escapeHtml(p.name)}">${disc>0?`<span class="product-badge">-${disc}%</span>`:''}</div><div class="wishlist-info"><div class="wishlist-title">${escapeHtml(p.name)}</div><div class="product-rating">${generateStars(4.5)}</div><div><span class="wishlist-price">₹${final}</span>${orig?`<span class="old-price">₹${orig}</span>`:''}</div><button class="btn-add-cart" onclick="event.stopPropagation(); moveToCart(${p.id}, event)"><i class="fas fa-cart-plus me-2"></i> Move to Cart</button><button class="btn-remove" onclick="event.stopPropagation(); removeFromWishlist(${p.id}, event)"><i class="fas fa-trash-alt me-2"></i> Remove</button></div></div>`; }).join('');
+            
+            container.innerHTML = products.map(p => { 
+                const final = (p.final_price || p.price).toFixed(2); 
+                const orig = p.discount_price ? parseFloat(p.price).toFixed(2) : null; 
+                const disc = p.discount_percentage || 0; 
+                const img = p.image || 'https://via.placeholder.com/300x300?text=Bag';
+                const rating = p.reviewData?.average_rating || 0;
+                const reviewCount = p.reviewData?.total_reviews || 0;
+                const ratingStars = renderStars(rating);
+                
+                return `<div class="wishlist-card">
+                            <div class="wishlist-img">
+                                <img src="${img}" alt="${escapeHtml(p.name)}">
+                                ${disc > 0 ? `<span class="product-badge">-${disc}%</span>` : ''}
+                            </div>
+                            <div class="wishlist-info">
+                                <div class="wishlist-title">${escapeHtml(p.name)}</div>
+                                <div class="product-rating">${ratingStars} <span class="text-muted" style="font-size:11px;">(${reviewCount})</span></div>
+                                <div>
+                                    <span class="wishlist-price">₹${final}</span>
+                                    ${orig ? `<span class="old-price">₹${orig}</span>` : ''}
+                                </div>
+                                <button class="btn-add-cart" onclick="event.stopPropagation(); moveToCart(${p.id}, event)">
+                                    <i class="fas fa-cart-plus me-2"></i> Move to Cart
+                                </button>
+                                <button class="btn-remove" onclick="event.stopPropagation(); removeFromWishlist(${p.id}, event)">
+                                    <i class="fas fa-trash-alt me-2"></i> Remove
+                                </button>
+                            </div>
+                        </div>`; 
+            }).join('');
             return;
         }
         
@@ -506,8 +579,52 @@
             if(items.length===0){ empty.style.display='block'; return; }
             grid.style.display='block';
             countSpan.innerText=items.length;
-            container.innerHTML = items.map(item=>{ const bag=item.bag_details||{}; const final=(bag.final_price||bag.price||0).toFixed(2); const orig=bag.discount_price?parseFloat(bag.price).toFixed(2):null; const disc=bag.discount_percentage||0; const img=bag.image||'https://via.placeholder.com/300x300?text=Bag'; return `<div class="wishlist-card" onclick="window.location.href='/product/${bag.slug||item.bag}/'"><div class="wishlist-img"><img src="${img}" alt="${escapeHtml(bag.name||'Product')}">${disc>0?`<span class="product-badge">-${disc}%</span>`:''}</div><div class="wishlist-info"><div class="wishlist-title">${escapeHtml(bag.name||'Product')}</div><div class="product-rating">${generateStars(4.5)}</div><div><span class="wishlist-price">₹${final}</span>${orig?`<span class="old-price">₹${orig}</span>`:''}</div><button class="btn-add-cart" onclick="event.stopPropagation(); moveToCart(${item.bag}, event)"><i class="fas fa-cart-plus me-2"></i> Move to Cart</button><button class="btn-remove" onclick="event.stopPropagation(); removeFromWishlist(${item.bag}, event)"><i class="fas fa-trash-alt me-2"></i> Remove</button></div></div>`; }).join('');
-        } catch(e) { loading.style.display='none'; empty.style.display='block'; showToast('Failed to load wishlist', true); }
+            
+            // Fetch product details with ratings
+            const productPromises = items.map(async item => {
+                const bag = item.bag_details || {};
+                const productId = item.bag;
+                // Fetch review data for this product
+                const reviewData = await fetchProductReviews(productId, bag.slug);
+                return { bag, productId, reviewData };
+            });
+            const productsWithReviews = await Promise.all(productPromises);
+            
+            container.innerHTML = productsWithReviews.map(({ bag, productId, reviewData }) => { 
+                const final = (bag.final_price || bag.price || 0).toFixed(2); 
+                const orig = bag.discount_price ? parseFloat(bag.price).toFixed(2) : null; 
+                const disc = bag.discount_percentage || 0; 
+                const img = bag.image || 'https://via.placeholder.com/300x300?text=Bag';
+                const rating = reviewData?.average_rating || 0;
+                const reviewCount = reviewData?.total_reviews || 0;
+                const ratingStars = renderStars(rating);
+                
+                return `<div class="wishlist-card">
+                            <div class="wishlist-img">
+                                <img src="${img}" alt="${escapeHtml(bag.name || 'Product')}">
+                                ${disc > 0 ? `<span class="product-badge">-${disc}%</span>` : ''}
+                            </div>
+                            <div class="wishlist-info">
+                                <div class="wishlist-title">${escapeHtml(bag.name || 'Product')}</div>
+                                <div class="product-rating">${ratingStars} <span class="text-muted" style="font-size:11px;">(${reviewCount})</span></div>
+                                <div>
+                                    <span class="wishlist-price">₹${final}</span>
+                                    ${orig ? `<span class="old-price">₹${orig}</span>` : ''}
+                                </div>
+                                <button class="btn-add-cart" onclick="event.stopPropagation(); moveToCart(${productId}, event)">
+                                    <i class="fas fa-cart-plus me-2"></i> Move to Cart
+                                </button>
+                                <button class="btn-remove" onclick="event.stopPropagation(); removeFromWishlist(${productId}, event)">
+                                    <i class="fas fa-trash-alt me-2"></i> Remove
+                                </button>
+                            </div>
+                        </div>`; 
+            }).join('');
+        } catch(e) { 
+            loading.style.display='none'; 
+            empty.style.display='block'; 
+            showToast('Failed to load wishlist', true); 
+        }
     }
     
     document.getElementById('clearWishlistBtn')?.addEventListener('click', clearWishlist);

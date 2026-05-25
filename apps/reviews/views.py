@@ -26,43 +26,60 @@ class CreateReviewView(APIView):
         if not serializer.is_valid():
             return Response({
                 'success': False,
+                'error': 'Invalid review data',
                 'errors': serializer.errors
             }, status=status.HTTP_400_BAD_REQUEST)
         
         product = serializer.validated_data['product']
         
+        # Check if user purchased AND order is delivered
         has_purchased_and_delivered = OrderItem.objects.filter(
             order__user=request.user,
             product=product,
-            order__order_status='delivered'  # Must be delivered
+            order__order_status='delivered'
         ).exists()
         
-        if not has_purchased_and_delivered:
+        # Also check if order is confirmed (for COD orders that are confirmed but not yet delivered)
+        has_purchased_and_confirmed = OrderItem.objects.filter(
+            order__user=request.user,
+            product=product,
+            order__order_status='confirmed'
+        ).exists()
+        
+        if not has_purchased_and_delivered and not has_purchased_and_confirmed:
             return Response({
                 'success': False,
-                'error': 'You can only review products you have purchased and received (delivered).'
+                'error': 'You can only review products you have purchased.',
+                'can_review': False,
+                'has_purchased': False
             }, status=status.HTTP_403_FORBIDDEN)
         
         # Check if already reviewed
         if Review.objects.filter(user=request.user, product=product).exists():
             return Response({
                 'success': False,
-                'error': 'You have already reviewed this product.'
+                'error': 'You have already reviewed this product.',
+                'already_reviewed': True
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        # Create review (requires admin approval in real-world)
+        # Create review (auto-approved)
         review = Review.objects.create(
             user=request.user,
             product=product,
             rating=serializer.validated_data['rating'],
             comment=serializer.validated_data['comment'],
-            is_approved=False  # Admin must approve
+            is_approved=True
         )
+        
+        # Update product rating
+        from .signals import update_product_rating
+        update_product_rating(product)
         
         return Response({
             'success': True,
-            'message': 'Review submitted successfully. It will appear after admin approval.',
-            'review': ReviewSerializer(review).data
+            'message': 'Review submitted successfully!',
+            'review_id': review.id,
+            'rating': review.rating
         }, status=status.HTTP_201_CREATED)
 
 
@@ -205,81 +222,81 @@ class CanReviewProductView(APIView):
         })
 
 
-class AdminPendingReviewsView(APIView):
-    permission_classes = [IsAdminUser]
+# class AdminPendingReviewsView(APIView):
+#     permission_classes = [IsAdminUser]
     
-    @swagger_auto_schema(
-        operation_description="Get pending reviews (Admin only)",
-        responses={200: ReviewSerializer(many=True)},
-        tags=['Admin - Reviews']
-    )
-    def get(self, request):
-        reviews = Review.objects.filter(is_approved=False)
-        serializer = ReviewSerializer(reviews, many=True)
-        return Response({
-            'success': True,
-            'pending_count': reviews.count(),
-            'reviews': serializer.data
-        })
+#     @swagger_auto_schema(
+#         operation_description="Get pending reviews (Admin only)",
+#         responses={200: ReviewSerializer(many=True)},
+#         tags=['Admin - Reviews']
+#     )
+#     def get(self, request):
+#         reviews = Review.objects.filter(is_approved=False)
+#         serializer = ReviewSerializer(reviews, many=True)
+#         return Response({
+#             'success': True,
+#             'pending_count': reviews.count(),
+#             'reviews': serializer.data
+#         })
 
 
-class AdminApproveReviewView(APIView):
-    permission_classes = [IsAdminUser]
+# class AdminApproveReviewView(APIView):
+#     permission_classes = [IsAdminUser]
     
-    @swagger_auto_schema(
-        operation_description="Approve a review (Admin only)",
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'action': openapi.Schema(type=openapi.TYPE_STRING, enum=['approve', 'reject']),
-            }
-        ),
-        responses={200: 'Review approved/rejected'},
-        tags=['Admin - Reviews']
-    )
-    def post(self, request, review_id):
-        try:
-            review = Review.objects.get(id=review_id)
-        except Review.DoesNotExist:
-            return Response({
-                'success': False,
-                'error': 'Review not found'
-            }, status=status.HTTP_404_NOT_FOUND)
+#     @swagger_auto_schema(
+#         operation_description="Approve a review (Admin only)",
+#         request_body=openapi.Schema(
+#             type=openapi.TYPE_OBJECT,
+#             properties={
+#                 'action': openapi.Schema(type=openapi.TYPE_STRING, enum=['approve', 'reject']),
+#             }
+#         ),
+#         responses={200: 'Review approved/rejected'},
+#         tags=['Admin - Reviews']
+#     )
+#     def post(self, request, review_id):
+#         try:
+#             review = Review.objects.get(id=review_id)
+#         except Review.DoesNotExist:
+#             return Response({
+#                 'success': False,
+#                 'error': 'Review not found'
+#             }, status=status.HTTP_404_NOT_FOUND)
         
-        action = request.data.get('action')
+#         action = request.data.get('action')
         
-        if action == 'approve':
-            review.is_approved = True
-            review.save()
-            message = 'Review approved successfully'
-        elif action == 'reject':
-            review.delete()
-            message = 'Review rejected and deleted'
-        else:
-            return Response({
-                'success': False,
-                'error': 'Invalid action. Use "approve" or "reject"'
-            }, status=status.HTTP_400_BAD_REQUEST)
+#         if action == 'approve':
+#             review.is_approved = True
+#             review.save()
+#             message = 'Review approved successfully'
+#         elif action == 'reject':
+#             review.delete()
+#             message = 'Review rejected and deleted'
+#         else:
+#             return Response({
+#                 'success': False,
+#                 'error': 'Invalid action. Use "approve" or "reject"'
+#             }, status=status.HTTP_400_BAD_REQUEST)
         
-        return Response({
-            'success': True,
-            'message': message
-        })
+#         return Response({
+#             'success': True,
+#             'message': message
+#         })
 
 
-class AdminAllReviewsView(APIView):
-    permission_classes = [IsAdminUser]
+# class AdminAllReviewsView(APIView):
+#     permission_classes = [IsAdminUser]
     
-    @swagger_auto_schema(
-        operation_description="Get all reviews (Admin only)",
-        responses={200: ReviewSerializer(many=True)},
-        tags=['Admin - Reviews']
-    )
-    def get(self, request):
-        reviews = Review.objects.all().order_by('-created_at')
-        serializer = ReviewSerializer(reviews, many=True)
-        return Response({
-            'success': True,
-            'total_reviews': reviews.count(),
-            'reviews': serializer.data
-        })
+#     @swagger_auto_schema(
+#         operation_description="Get all reviews (Admin only)",
+#         responses={200: ReviewSerializer(many=True)},
+#         tags=['Admin - Reviews']
+#     )
+#     def get(self, request):
+#         reviews = Review.objects.all().order_by('-created_at')
+#         serializer = ReviewSerializer(reviews, many=True)
+#         return Response({
+#             'success': True,
+#             'total_reviews': reviews.count(),
+#             'reviews': serializer.data
+#         })

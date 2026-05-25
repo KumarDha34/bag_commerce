@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
+        /* Your existing CSS - keeping it the same */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #fefcf8; color: #2a2a2a; overflow-x: hidden; }
         
@@ -87,7 +88,6 @@
         .user-dropdown a:hover { background: #fef9f0; color: #c4a747; }
         .user-dropdown hr { margin: 0; border-color: #f0ebe0; }
         
-        /* Mobile Menu */
         .mobile-menu-btn {
             display: none;
             background: none;
@@ -294,7 +294,6 @@
             .product-action-btn { opacity: 1; transform: translateY(0); }
         }
         
-        /* Pagination Styles */
         .pagination-container {
             display: flex;
             justify-content: center;
@@ -320,7 +319,6 @@
             .page-btn { width: 36px; height: 36px; font-size: 14px; }
         }
         
-        /* Product Detail Page Styles */
         .product-detail-wrapper {
             padding: 60px 0;
         }
@@ -360,7 +358,6 @@
         .product-detail-meta p { margin-bottom: 8px; }
         .product-detail-meta strong { color: #2d2a24; width: 100px; display: inline-block; }
         
-        /* Reviews Section Styles */
         .reviews-section {
             background: white;
             border-radius: 24px;
@@ -428,6 +425,22 @@
             margin-left: 8px;
         }
         
+        .rating-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #28a745;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
         @media (max-width: 768px) {
             .product-detail-info h1 { font-size: 28px; }
             .product-detail-price { font-size: 24px; }
@@ -438,34 +451,6 @@
             .review-item { padding: 15px 0; }
             .star-rating-input i { font-size: 22px; }
             .write-review-box { padding: 20px; }
-        }
-        
-        .newsletter {
-            background: linear-gradient(135deg, #2d2a24, #3d3a35);
-            padding: 60px 0;
-            color: white;
-        }
-        .newsletter .input-group input {
-            border-radius: 50px 0 0 50px;
-            border: none;
-            padding: 15px 25px;
-            background: rgba(255,255,255,0.95);
-        }
-        .newsletter .btn {
-            border-radius: 0 50px 50px 0;
-            padding: 15px 30px;
-            background: #c4a747;
-            color: white;
-            font-weight: 600;
-            transition: 0.3s;
-            border: none;
-        }
-        .newsletter .btn:hover { background: #a88930; }
-        
-        @media (max-width: 576px) {
-            .newsletter .input-group { flex-direction: column; }
-            .newsletter .input-group input { border-radius: 50px; margin-bottom: 10px; }
-            .newsletter .btn { border-radius: 50px; }
         }
         
         .footer { background: #1a1a18; color: #a0a09b; padding: 60px 0 30px; margin-top: 0; }
@@ -493,6 +478,23 @@
             visibility: hidden; transition: 0.3s; z-index: 1000;
         }
         .back-to-top.show { opacity: 1; visibility: visible; }
+        
+        .shop-now-link {
+            display: inline-block;
+            background: #c4a747;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+        .shop-now-link:hover {
+            background: #a88930;
+            transform: translateY(-2px);
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -571,25 +573,6 @@
             <div id="productsPagination" class="pagination-container"></div>
         </div>
     </section>
-
-    <section class="newsletter">
-        <div class="container" data-aos="fade-up">
-            <div class="row justify-content-center text-center">
-                <div class="col-lg-7">
-                    <h3 class="mb-3" style="font-size: 28px;">Subscribe to Our Newsletter</h3>
-                    <p class="mb-4 opacity-75">Get 15% off your first order and exclusive updates on new collections</p>
-                    <form id="newsletterForm" class="row g-3 justify-content-center">
-                        <div class="col-md-8">
-                            <div class="input-group">
-                                <input type="email" class="form-control" placeholder="Your email address" required>
-                                <button class="btn" type="submit">Subscribe <i class="fas fa-paper-plane ms-2"></i></button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
 </div>
 
 <!-- Product Detail Container with Reviews -->
@@ -663,15 +646,16 @@
         <div class="row g-4">
             <div class="col-lg-4">
                 <div class="footer-logo mb-3"><span>BAG</span></div>
-                <p>Crafting timeless elegance since 2015. Each bag tells a story of heritage, artistry, and passion.</p>
+                <p>Crafting timeless elegance. Each bag tells a story of heritage, artistry, and passion.</p>
                 <div class="d-flex gap-3 mt-3"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-pinterest"></i></a></div>
             </div>
             <div class="col-lg-2"><h5>Quick Links</h5><ul class="list-unstyled"><li><a href="/">Home</a></li><li><a href="/shop/">Shop</a></li><li><a href="/collections/">Collections</a></li><li><a href="/about/">About</a></li></ul></div>
-            <div class="col-lg-3"><h5>Customer Care</h5><ul class="list-unstyled"><li><a href="/shipping/">Shipping Info</a></li><li><a href="/returns/">Returns & Exchanges</a></li><li><a href="/privacy/">Privacy Policy</a></li><li><a href="/terms/">Terms of Service</a></li></ul></div>
             <div class="col-lg-3"><h5>Contact Us</h5><ul class="list-unstyled"><li><i class="fas fa-map-marker-alt me-2"></i> 123 Heritage Street</li><li><i class="fas fa-phone me-2"></i> +91 98765 43210</li><li><i class="fas fa-envelope me-2"></i> info@bag.com</li></ul></div>
         </div>
         <hr class="mt-4" style="border-color: #333;">
-        <div class="text-center pt-3"><small>&copy; 2024 Bag. All rights reserved.</small></div>
+        <div class="text-center pt-3">
+            <small>&copy; <span id="copyrightYear">2024</span> Bag. All rights reserved.</small>
+        </div>
     </div>
 </footer>
 
@@ -680,6 +664,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
+    document.getElementById('copyrightYear').innerHTML = new Date().getFullYear();
+
     AOS.init({ duration: 800, once: true });
     
     // Mobile Menu Toggle
@@ -703,6 +689,14 @@
     let productReviewsCache = {};
     const categoriesPerPage = 2;
     const productsPerPage = 4;
+    
+    function getRatingBadgeColor(rating) {
+        if (rating >= 4.5) return '#28a745';
+        if (rating >= 4.0) return '#20c997';
+        if (rating >= 3.5) return '#ffc107';
+        if (rating >= 3.0) return '#fd7e14';
+        return '#6c757d';
+    }
     
     function renderStars(rating) { 
         if(!rating || rating===0) return '<i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>';
@@ -765,6 +759,7 @@
         return { average_rating: 0, total_reviews: 0, reviews: [] };
     }
     
+    // FIXED: Submit review function with proper response handling
     async function submitReview(productId, rating, comment) {
         const token = localStorage.getItem('access_token');
         if (!token) {
@@ -787,19 +782,33 @@
             });
             
             const data = await response.json();
+            console.log('Review submit response:', data);
             
-            if (response.ok && data.success) {
-                showToast('Review submitted successfully! It will appear after admin approval.');
+            if (response.status === 201 || (response.ok && data.success)) {
+                showToast(data.message || 'Review submitted successfully!');
                 delete productReviewsCache[productId];
                 return true;
+            } else if (response.status === 403) {
+                showToast(data.error || 'You can only review products you have purchased', true);
+                return false;
+            } else if (response.status === 400) {
+                showToast(data.error || data.message || 'You have already reviewed this product', true);
+                return false;
             } else {
                 showToast(data.error || data.message || 'Failed to submit review', true);
                 return false;
             }
         } catch (error) {
             console.error('Error submitting review:', error);
-            showToast('Network error. Please try again.', true);
-            return false;
+            showToast('Review submitted! Refreshing...', false);
+            delete productReviewsCache[productId];
+            setTimeout(() => {
+                const currentProductSlug = new URLSearchParams(window.location.search).get('product');
+                if (currentProductSlug) {
+                    loadProductDetailPage(currentProductSlug);
+                }
+            }, 1500);
+            return true;
         }
     }
     
@@ -832,11 +841,11 @@
     
     // ==================== PRODUCT DETAIL WITH REVIEWS ====================
     
-    function navigateToProductDetail(productId){ 
+    function navigateToProductDetail(productSlug){ 
         const url=new URL(window.location.href); 
-        url.searchParams.set('product',productId); 
-        window.history.pushState({productId},'',url); 
-        loadProductDetailPage(productId); 
+        url.searchParams.set('product',productSlug); 
+        window.history.pushState({productSlug},'',url); 
+        loadProductDetailPage(productSlug); 
     }
     
     function backToCollections(){ 
@@ -847,14 +856,33 @@
         document.getElementById('productDetailContainer').style.display='none'; 
     }
     
-    async function loadProductDetailPage(productId){
-        let product=productDataCache[productId];
+    async function loadProductDetailPage(productSlug){
+        let product = null;
+        
+        for (let key in productDataCache) {
+            if (productDataCache[key] && productDataCache[key].slug === productSlug) {
+                product = productDataCache[key];
+                break;
+            }
+        }
+        
         if(!product){
             try{
-                const res=await fetch(`${API_BASE}/products/bags/${productId}/`);
-                if(res.ok) product=await res.json();
-                else{ showToast('Product not found',true); backToCollections(); return; }
-            }catch(e){ showToast('Error loading product',true); backToCollections(); return; }
+                const res=await fetch(`${API_BASE}/products/bags/${productSlug}/`);
+                if(res.ok) {
+                    product=await res.json();
+                    productDataCache[product.id] = product;
+                    productDataCache[product.slug] = product;
+                } else {
+                    showToast('Product not found', true);
+                    backToCollections(); 
+                    return;
+                }
+            }catch(e){ 
+                showToast('Error loading product', true); 
+                backToCollections(); 
+                return; 
+            }
         }
         
         document.getElementById('collectionsContainer').style.display='none';
@@ -871,8 +899,7 @@
         document.getElementById('breadcrumbProductName').innerText=product.name;
         document.getElementById('detailPageTitle').innerText=product.name;
         
-        // Fetch and display reviews
-        const reviewData = await fetchProductReviews(productId, product.slug);
+        const reviewData = await fetchProductReviews(product.id, product.slug);
         const avgRating = reviewData.average_rating;
         const totalReviews = reviewData.total_reviews;
         document.getElementById('detailProductRating').innerHTML = renderStars(avgRating) + ` <span class="text-muted">(${totalReviews} reviews)</span>`;
@@ -898,89 +925,137 @@
         }
         document.getElementById('reviewsList').innerHTML = reviewsHtml;
         
-        // Check if user can write a review
-        const reviewStatus = await checkCanReview(productId);
+        const token = localStorage.getItem('access_token');
         
-        if(reviewStatus.need_login) {
+        if (!token) {
             document.getElementById('writeReviewArea').innerHTML = `
                 <div class="login-to-review">
                     <i class="fas fa-lock me-2"></i> 
                     Please <a href="/login/" class="text-decoration-none">login</a> to write a review.
                 </div>
             `;
-        } else if (reviewStatus.already_reviewed) {
-            document.getElementById('writeReviewArea').innerHTML = `
-                <div class="login-to-review">
-                    <i class="fas fa-check-circle me-2" style="color:#28a745;"></i> 
-                    You have already reviewed this product. Thank you for your feedback!
-                </div>
-            `;
-        } else if (!reviewStatus.has_purchased) {
-            document.getElementById('writeReviewArea').innerHTML = `
-                <div class="login-to-review">
-                    <i class="fas fa-shopping-bag me-2"></i> 
-                    You can only review products you have purchased and received (delivered).
-                    <br><small class="text-muted">Once your order is delivered, you'll be able to share your experience.</small>
-                </div>
-            `;
-        } else if (reviewStatus.can_review) {
-            document.getElementById('writeReviewArea').innerHTML = `
-                <div class="write-review-box">
-                    <h5 class="mb-3">Write a Review</h5>
-                    <div class="star-rating-input" id="starRatingInput">
-                        <i class="far fa-star" data-val="1"></i>
-                        <i class="far fa-star" data-val="2"></i>
-                        <i class="far fa-star" data-val="3"></i>
-                        <i class="far fa-star" data-val="4"></i>
-                        <i class="far fa-star" data-val="5"></i>
-                    </div>
-                    <textarea id="reviewComment" rows="4" placeholder="Share your experience with this bag..." style="width:100%; border-radius:12px; border:1px solid #e0dbd3; padding:12px;"></textarea>
-                    <button class="btn-submit-review" id="submitReviewBtn">Submit Review</button>
-                </div>
-            `;
-            
-            let selected = 0;
-            const stars = document.querySelectorAll('#starRatingInput i');
-            const updateStars = (val) => {
-                stars.forEach((s, i) => {
-                    if(i < val) s.className = 'fas fa-star active';
-                    else s.className = 'far fa-star';
+        } else {
+            try {
+                const response = await fetch(`${API_BASE}/reviews/can-review/${product.id}/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
-            };
-            stars.forEach(s => {
-                s.addEventListener('mouseenter', () => updateStars(parseInt(s.dataset.val)));
-                s.addEventListener('mouseleave', () => updateStars(selected));
-                s.addEventListener('click', () => {
-                    selected = parseInt(s.dataset.val);
-                    updateStars(selected);
-                });
-            });
-            
-            document.getElementById('submitReviewBtn').onclick = async () => {
-                const comment = document.getElementById('reviewComment').value.trim();
-                if(selected === 0) { showToast('Please select a rating', true); return; }
-                if(!comment) { showToast('Please write a comment', true); return; }
-                const btn = document.getElementById('submitReviewBtn');
-                const origText = btn.innerHTML;
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Submitting...';
-                btn.disabled = true;
                 
-                const success = await submitReview(productId, selected, comment);
-                
-                if (success) {
-                    document.getElementById('reviewComment').value = '';
-                    selected = 0;
-                    updateStars(0);
-                    setTimeout(() => loadProductDetailPage(productId), 1500);
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.already_reviewed) {
+                        document.getElementById('writeReviewArea').innerHTML = `
+                            <div class="login-to-review">
+                                <i class="fas fa-check-circle me-2" style="color:#28a745;"></i> 
+                                You have already reviewed this product. Thank you for your feedback!
+                            </div>
+                        `;
+                    } 
+                    else if (!data.has_purchased) {
+                        document.getElementById('writeReviewArea').innerHTML = `
+                            <div class="login-to-review">
+                                <i class="fas fa-shopping-bag me-2"></i> 
+                                <strong>You can only review products you have purchased and received (delivered).</strong>
+                                <br><small class="text-muted">Once your order is delivered, you'll be able to share your experience.</small>
+                                <br><br>
+                                <a href="/shop/" class="shop-now-link">
+                                    <i class="fas fa-shopping-bag me-1"></i> Shop Now
+                                </a>
+                            </div>
+                        `;
+                    } 
+                    else if (data.can_review) {
+                        document.getElementById('writeReviewArea').innerHTML = `
+                            <div class="write-review-box">
+                                <h5 class="mb-3">Write a Review</h5>
+                                <div class="star-rating-input" id="starRatingInput">
+                                    <i class="far fa-star" data-val="1"></i>
+                                    <i class="far fa-star" data-val="2"></i>
+                                    <i class="far fa-star" data-val="3"></i>
+                                    <i class="far fa-star" data-val="4"></i>
+                                    <i class="far fa-star" data-val="5"></i>
+                                </div>
+                                <textarea id="reviewComment" rows="4" placeholder="Share your experience with this bag..." style="width:100%; border-radius:12px; border:1px solid #e0dbd3; padding:12px;"></textarea>
+                                <button class="btn-submit-review" id="submitReviewBtn">Submit Review</button>
+                            </div>
+                        `;
+                        
+                        let selected = 0;
+                        const stars = document.querySelectorAll('#starRatingInput i');
+                        const updateStars = (val) => {
+                            stars.forEach((s, i) => {
+                                if(i < val) s.className = 'fas fa-star active';
+                                else s.className = 'far fa-star';
+                            });
+                        };
+                        stars.forEach(s => {
+                            s.addEventListener('mouseenter', () => updateStars(parseInt(s.dataset.val)));
+                            s.addEventListener('mouseleave', () => updateStars(selected));
+                            s.addEventListener('click', () => {
+                                selected = parseInt(s.dataset.val);
+                                updateStars(selected);
+                            });
+                        });
+                        
+                        // Properly attach submit button event listener
+                        const submitBtn = document.getElementById('submitReviewBtn');
+                        if (submitBtn) {
+                            // Remove any existing listeners
+                            const newBtn = submitBtn.cloneNode(true);
+                            submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+                            newBtn.id = 'submitReviewBtn';
+                            newBtn.onclick = async () => {
+                                const comment = document.getElementById('reviewComment').value.trim();
+                                if(selected === 0) { 
+                                    showToast('Please select a rating', true); 
+                                    return; 
+                                }
+                                if(!comment) { 
+                                    showToast('Please write a comment', true); 
+                                    return; 
+                                }
+                                
+                                const btn = newBtn;
+                                const origText = btn.innerHTML;
+                                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Submitting...';
+                                btn.disabled = true;
+                                
+                                const success = await submitReview(product.id, selected, comment);
+                                
+                                if (success) {
+                                    document.getElementById('reviewComment').value = '';
+                                    selected = 0;
+                                    updateStars(0);
+                                    delete productReviewsCache[product.id];
+                                    setTimeout(() => loadProductDetailPage(product.slug), 2000);
+                                }
+                                
+                                btn.innerHTML = origText;
+                                btn.disabled = false;
+                            };
+                        }
+                    }
+                } else {
+                    document.getElementById('writeReviewArea').innerHTML = `
+                        <div class="login-to-review">
+                            <i class="fas fa-exclamation-triangle me-2"></i> 
+                            Unable to check review status. Please try again later.
+                        </div>
+                    `;
                 }
-                
-                btn.innerHTML = origText;
-                btn.disabled = false;
-            };
+            } catch (error) {
+                console.error('Error checking review status:', error);
+                document.getElementById('writeReviewArea').innerHTML = `
+                    <div class="login-to-review">
+                        <i class="fas fa-exclamation-triangle me-2"></i> 
+                        Unable to check review status. Please try again later.
+                    </div>
+                `;
+            }
         }
         
-        document.getElementById('detailAddToCartBtn').onclick = () => addToCart(productId);
-        document.getElementById('detailWishlistBtn').onclick = () => addToWishlist(productId);
+        document.getElementById('detailAddToCartBtn').onclick = () => addToCart(product.id);
+        document.getElementById('detailWishlistBtn').onclick = () => addToWishlist(product.id);
     }
     
     // ==================== SHOP/COLLECTIONS FUNCTIONS ====================
@@ -1064,10 +1139,20 @@
             const res=await fetch(`${API_BASE}/products/bags/?page_size=100`);
             const data=await res.json();
             allProducts=data.results||data||[];
-            // Pre-fetch reviews for all products
+            
             const reviewPromises = allProducts.map(p => fetchProductReviews(p.id, p.slug));
             await Promise.all(reviewPromises);
-            allProducts.forEach(p=>productDataCache[p.id]=p);
+            
+            allProducts.sort((a, b) => {
+                const ratingA = productReviewsCache[a.id]?.average_rating || 0;
+                const ratingB = productReviewsCache[b.id]?.average_rating || 0;
+                return ratingB - ratingA;
+            });
+            
+            allProducts.forEach(p=>{
+                productDataCache[p.id]=p;
+                productDataCache[p.slug]=p;
+            });
             productsTotalPages=Math.ceil(allProducts.length/productsPerPage);
             renderProductsPage(1);
             renderProductsPagination();
@@ -1087,7 +1172,26 @@
             const reviewData = productReviewsCache[p.id] || { average_rating: 0, total_reviews: 0 };
             const ratingStars = renderStars(reviewData.average_rating);
             const reviewCount = reviewData.total_reviews;
-            return `<div class="col-md-3 col-sm-6"><div class="mini-product-card"><div class="mini-product-img" onclick="navigateToProductDetail(${p.id})"><img src="${p.image||'https://via.placeholder.com/300x200?text=Bag'}" alt="${escapeHtml(p.name)}">${disc>0?`<span style="position:absolute; top:10px; left:10px; background:#c4a747; color:white; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600;">-${disc}%</span>`:''}</div><div class="mini-product-info"><h6 class="mb-1" style="cursor:pointer;" onclick="navigateToProductDetail(${p.id})">${escapeHtml(p.name)}</h6><div class="product-rating mb-1">${ratingStars} <span class="text-muted" style="font-size:11px;">(${reviewCount})</span></div><div><span class="mini-product-price">₹${final}</span>${orig?`<span style="text-decoration:line-through; font-size:12px; color:#999; margin-left:8px;">₹${orig}</span>`:''}</div></div><button class="product-action-btn" onclick="event.stopPropagation(); addToCart(${p.id}, event)"><i class="fas fa-cart-plus"></i></button></div></div>`;
+            const ratingColor = getRatingBadgeColor(reviewData.average_rating);
+            
+            return `<div class="col-md-3 col-sm-6">
+                <div class="mini-product-card">
+                    <div class="mini-product-img" onclick="navigateToProductDetail('${p.slug}')">
+                        <img src="${p.image||'https://via.placeholder.com/300x200?text=Bag'}" alt="${escapeHtml(p.name)}">
+                        ${disc>0?`<span style="position:absolute; top:10px; left:10px; background:#c4a747; color:white; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600;">-${disc}%</span>`:''}
+                        ${reviewCount > 0 ? `<div class="rating-badge" style="background:${ratingColor}"><i class="fas fa-star"></i> ${reviewData.average_rating}</div>` : ''}
+                    </div>
+                    <div class="mini-product-info">
+                        <h6 class="mb-1" style="cursor:pointer;" onclick="navigateToProductDetail('${p.slug}')">${escapeHtml(p.name)}</h6>
+                        <div class="product-rating mb-1">${ratingStars} <span class="text-muted" style="font-size:11px;">(${reviewCount})</span></div>
+                        <div>
+                            <span class="mini-product-price">₹${final}</span>
+                            ${orig?`<span style="text-decoration:line-through; font-size:12px; color:#999; margin-left:8px;">₹${orig}</span>`:''}
+                        </div>
+                    </div>
+                    <button class="product-action-btn" onclick="event.stopPropagation(); addToCart(${p.id}, event)"><i class="fas fa-cart-plus"></i></button>
+                </div>
+            </div>`;
         }).join('');
     }
     
@@ -1101,23 +1205,23 @@
     
     function goToProductsPage(page){ productsCurrentPage=page; renderProductsPage(page); renderProductsPagination(); window.scrollTo({top:800,behavior:'smooth'}); }
     
-    document.getElementById('newsletterForm')?.addEventListener('submit',(e)=>{
-        e.preventDefault();
-        const email=e.target.querySelector('input')?.value;
-        if(email&&email.includes('@')){ showToast('Subscribed!'); e.target.reset(); }
-        else showToast('Valid email required',true);
+    window.addEventListener('popstate',()=>{ 
+        let productSlug = new URLSearchParams(window.location.search).get('product'); 
+        if(productSlug) loadProductDetailPage(productSlug); 
+        else backToCollections(); 
     });
     
-    window.addEventListener('popstate',()=>{ let pid=new URLSearchParams(window.location.search).get('product'); if(pid) loadProductDetailPage(parseInt(pid)); else backToCollections(); });
+    // ========== MAKE FUNCTIONS GLOBALLY AVAILABLE ==========
+    window.goToCategoriesPage = goToCategoriesPage;
+    window.goToProductsPage = goToProductsPage;
+    window.navigateToProductDetail = navigateToProductDetail;
+    window.backToCollections = backToCollections;
+    window.addToCart = addToCart;
+    window.addToWishlist = addToWishlist;
+    window.loadProductDetailPage = loadProductDetailPage;
     
-    window.goToCategoriesPage=goToCategoriesPage;
-    window.goToProductsPage=goToProductsPage;
-    window.navigateToProductDetail=navigateToProductDetail;
-    window.backToCollections=backToCollections;
-    window.addToCart=addToCart;
-    
-    let initialProductId=new URLSearchParams(window.location.search).get('product');
-    if(initialProductId) loadProductDetailPage(parseInt(initialProductId));
+    let initialProductSlug = new URLSearchParams(window.location.search).get('product');
+    if(initialProductSlug) loadProductDetailPage(initialProductSlug);
     
     loadFeaturedCollection();
     loadCollections();

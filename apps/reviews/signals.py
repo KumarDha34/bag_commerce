@@ -6,22 +6,22 @@ from apps.products.models import Bag
 
 def update_product_rating(product):
     """Update average rating and review count for a product"""
-    # Only count approved reviews
-    approved_reviews = Review.objects.filter(product=product, is_approved=True)
+    # Count ALL reviews (since all are auto-approved)
+    all_reviews = Review.objects.filter(product=product)
     
-    avg_rating = approved_reviews.aggregate(avg=Avg('rating'))['avg'] or 0
-    review_count = approved_reviews.count()
+    avg_rating = all_reviews.aggregate(avg=Avg('rating'))['avg'] or 0
+    review_count = all_reviews.count()
     
     # Update the Bag model fields
     product.average_rating = round(avg_rating, 2)
     product.review_count = review_count
     product.save(update_fields=['average_rating', 'review_count'])
+    print(f"Updated {product.name}: Rating={product.average_rating}, Count={product.review_count}")
 
 @receiver(post_save, sender=Review)
 def update_rating_on_save(sender, instance, **kwargs):
-    """Update rating when a review is saved (created or updated)"""
-    if instance.is_approved:
-        update_product_rating(instance.product)
+    """Update rating when a review is saved"""
+    update_product_rating(instance.product)
 
 @receiver(post_delete, sender=Review)
 def update_rating_on_delete(sender, instance, **kwargs):
