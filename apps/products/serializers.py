@@ -5,7 +5,7 @@ from django.utils.text import slugify
 
 class CategorySerializer(serializers.ModelSerializer):
     """Serializer for listing categories"""
-    product_count = serializers.IntegerField(read_only=True)
+    product_count = serializers.SerializerMethodField()
     
     class Meta:
         model = Category

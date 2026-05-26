@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Contact Us - Bag | Get in Touch</title>
-    <meta name="description" content="Connect with Bag. Visit our store, call us, or send a message. We'd love to hear from you!">
+    <meta name="description" content="Connect with Bag. Visit our store in Kathmandu, call us, or send a message. We'd love to hear from you!">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -381,6 +381,18 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
+        /* Domestic Shipping Badge */
+        .shipping-badge {
+            display: inline-block;
+            background: #d4edda;
+            color: #28a745;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
     </style>
 </head>
 <body>
@@ -533,10 +545,11 @@
                     <div class="faq-item">
                         <div class="faq-question">
                             <span>📦 How long does shipping take?</span>
+                            <span class="shipping-badge"><i class="fas fa-map-marker-alt me-1"></i> Nepal Only</span>
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="faq-answer">
-                            Domestic shipping takes 3-5 business days. International shipping takes 7-10 business days.
+                            Delivery across Nepal takes 3-5 business days. Free shipping on orders over ₹5,000 NPR.
                         </div>
                     </div>
                     <div class="faq-item">
@@ -545,7 +558,7 @@
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="faq-answer">
-                            We offer a 30-day hassle-free return policy. Items must be unused and in original condition.
+                            We offer a 30-day hassle-free return policy for customers in Nepal. Items must be unused and in original condition.
                         </div>
                     </div>
                     <div class="faq-item">
@@ -605,7 +618,7 @@
         <div class="row g-4">
             <div class="col-lg-4">
                 <div class="footer-logo mb-3"><span>BAG</span></div>
-                <p>Crafting timeless elegance. Each bag tells a story of heritage, artistry, and passion.</p>
+                <p>Crafting timeless elegance. Each bag tells a story of heritage, artistry, and passion. Proudly serving customers across Nepal.</p>
                 <div class="d-flex gap-3 mt-3">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
                     <a href="#"><i class="fab fa-instagram"></i></a>
@@ -632,7 +645,7 @@
         </div>
         <hr class="mt-4" style="border-color: #333;">
         <div class="text-center pt-3">
-            <small>&copy; <span id="copyrightYear">2024</span> Bag. All rights reserved.</small>
+            <small>&copy; <span id="copyrightYear">2024</span> Bag. All rights reserved. <span class="mx-2">|</span> <i class="fas fa-map-marker-alt me-1"></i> Delivery across Nepal only</small>
         </div>
     </div>
 </footer>
@@ -754,7 +767,7 @@
         });
     });
     
-    // ========== CONTACT FORM SUBMISSION - FIXED VERSION ==========
+    // ========== CONTACT FORM SUBMISSION ==========
     const contactForm = document.getElementById('contactForm');
     const submitBtn = document.getElementById('submitBtn');
     const successMsgDiv = document.getElementById('successMessage');
@@ -796,7 +809,6 @@
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Sending...';
         
         try {
-            // Construct API URL - ensure trailing slash for Django
             const apiUrl = `${API_BASE}/contact/submit/`;
             
             console.log('Sending contact request to:', apiUrl);
@@ -828,20 +840,15 @@
             console.log('Response:', response.status, data);
             
             if (response.ok && data.success) {
-                // Success - show success message and reset form
                 successMsgDiv.innerHTML = `<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i> ${data.message || 'Thank you! Your message has been sent. We will get back to you within 24 hours.'}</div>`;
                 successMsgDiv.style.display = 'block';
-                
-                // Reset form
                 contactForm.reset();
                 showToast('Message sent successfully!');
                 
-                // Auto-hide success message after 6 seconds
                 setTimeout(() => {
                     successMsgDiv.style.display = 'none';
                 }, 6000);
             } else {
-                // Error from server
                 let errorMessage = 'Failed to send message. Please try again.';
                 if (data.errors) {
                     if (typeof data.errors === 'object') {
@@ -880,7 +887,6 @@
             showToast(errorMessage, true);
             setTimeout(() => { errorMsgDiv.style.display = 'none'; }, 5000);
         } finally {
-            // Re-enable button
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Send Message';
         }
@@ -890,7 +896,6 @@
     updateAuthUI();
     updateBadges();
     
-    // Log API base for debugging
     console.log('API_BASE:', API_BASE);
 </script>
 </body>
